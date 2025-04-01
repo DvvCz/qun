@@ -15,6 +15,7 @@ add_executable(trender
     ./src/input/raw/mouse.cpp
     ./src/render/window.cpp
     ./src/render/renderer.cpp
+    ./src/shader/shader.cpp
 )
 
 target_include_directories(trender PRIVATE ./thirdparty)
