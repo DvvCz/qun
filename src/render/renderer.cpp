@@ -10,7 +10,10 @@ void Renderer::drawFrame() const {
     0.5f, -0.5f, 0.0f
   }; /* clang-format on */
 
-  glGenBuffers(1, nullptr);
+  uint32_t vbo;
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(triangles), triangles, GL_STATIC_DRAW);
 
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
