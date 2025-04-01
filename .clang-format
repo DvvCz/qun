@@ -3,3 +3,4 @@ ColumnLimit: 120
 AllowShortFunctionsOnASingleLine: None
 NamespaceIndentation: All
 FixNamespaceComments: false
+SortIncludes: false

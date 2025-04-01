@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.20)
-project(trender VERSION 0.1.0 LANGUAGES CXX)
+project(trender VERSION 0.1.0 LANGUAGES C CXX)
 
 find_package(OpenGL REQUIRED)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_library(glad STATIC ./thirdparty/glad/glad.c)
+target_include_directories(glad PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
 
 add_executable(trender
     ./src/main.cpp
@@ -16,7 +19,4 @@ add_executable(trender
 
 target_include_directories(trender PRIVATE ./thirdparty)
 
-target_link_libraries(trender glfw OpenGL::GL)
-
-# Define OpenGL version 4.6
-target_compile_definitions(trender PRIVATE GL_VERSION_MAJOR=4 GL_VERSION_MINOR=6)
+target_link_libraries(trender glad glfw OpenGL::GL)
