@@ -14,28 +14,34 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto window = Window(800, 600, "OpenGL Window");
-  Input::Keyboard::bindGlfwCallbacks(window.getGlfwWindow());
+  auto window = std::make_shared<Window>(800, 600, "OpenGL Window");
+  Input::Keyboard::bindGlfwCallbacks(window->getGlfwWindow());
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::println("Failed to initialize GLAD");
     return EXIT_FAILURE;
   }
 
-  auto renderer = Renderer(std::make_shared<Window>(window));
+  auto renderer = std::make_unique<Renderer>(window);
 
-  while (!window.shouldClose()) {
-    glfwSwapBuffers(window.getGlfwWindow());
-    glfwPollEvents();
+  while (!window->shouldClose()) {
+    // Update
+    {
+      glfwPollEvents();
 
-    // Needs to run after glfwPollEvents
-    if (Input::Keyboard::wasJustPressed(Input::Key::Escape)) {
-      break;
+      // Needs to run after glfwPollEvents
+      if (Input::Keyboard::wasJustPressed(Input::Key::Escape)) {
+        break;
+      }
+
+      Input::Keyboard::resetCurrentKeyMaps();
     }
 
-    Input::Keyboard::resetCurrentKeyMaps();
-
-    renderer.drawFrame();
+    // Draw
+    {
+      renderer->drawFrame();
+      glfwSwapBuffers(window->getGlfwWindow());
+    }
   }
 
   glfwTerminate();
