@@ -10,7 +10,6 @@ Window::Window(uint16_t width, uint16_t height, std::string title)
   glfwWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
   glfwSetWindowUserPointer(glfwWindow, this);
   glfwMakeContextCurrent(glfwWindow);
-  glViewport(0, 0, width, height);
 
   glfwSetFramebufferSizeCallback(glfwWindow, onResize); /* clang-format on */
 }
@@ -23,8 +22,6 @@ void Window::onResize(GLFWwindow* window, int width, int height) {
   auto* wrappedWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
   wrappedWindow->currentWidth = static_cast<uint16_t>(width);
   wrappedWindow->currentHeight = static_cast<uint16_t>(height);
-
-  glViewport(0, 0, width, height);
 }
 
 bool Window::shouldClose() const {

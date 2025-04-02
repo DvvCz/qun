@@ -2,6 +2,8 @@
 
 #include <filesystem>
 #include <expected>
+#include <string>
+#include <optional>
 
 namespace shader {
   enum class ShaderType {
@@ -14,6 +16,8 @@ namespace shader {
   class Shader {
   public:
     Shader(std::filesystem::path path, const ShaderType type);
+    ~Shader();
+    [[nodiscard]] uint32_t getShaderIdx() const;
 
   private:
     std::filesystem::path shaderPath;
@@ -22,6 +26,4 @@ namespace shader {
 
     [[nodiscard]] static std::expected<bool, std::string> tryCompile(uint32_t shaderIdx, std::string content) noexcept;
   };
-
-  class ShaderGroup {}
 }

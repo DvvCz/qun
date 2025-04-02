@@ -16,6 +16,7 @@ add_executable(trender
     ./src/render/window.cpp
     ./src/render/renderer.cpp
     ./src/shader/shader.cpp
+    ./src/shader/program.cpp
 )
 
 target_include_directories(trender PRIVATE ./thirdparty)

@@ -17,6 +17,11 @@ int main() {
   auto window = Window(800, 600, "OpenGL Window");
   Input::Keyboard::bindGlfwCallbacks(window.getGlfwWindow());
 
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    std::println("Failed to initialize GLAD");
+    return EXIT_FAILURE;
+  }
+
   auto renderer = Renderer(std::make_shared<Window>(window));
 
   while (!window.shouldClose()) {
