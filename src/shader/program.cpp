@@ -3,8 +3,7 @@
 #include <glad/glad.h>
 
 namespace shader {
-  Program::Program() {
-    programIdx = glCreateProgram();
+  Program::Program() : programIdx(glCreateProgram()) {
   }
 
   Program::~Program() {
