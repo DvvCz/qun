@@ -15,7 +15,7 @@ public:
 
 private:
   std::shared_ptr<Window> window;
-  shader::Program shaderProgram;
+  std::unique_ptr<shader::Program> shaderProgram;
   uint32_t vao;
   uint32_t vbo;
 };

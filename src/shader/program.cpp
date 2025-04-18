@@ -10,9 +10,9 @@ namespace shader {
     glDeleteProgram(programIdx);
   }
 
-  void Program::addShader(const Shader& shader) {
-    glAttachShader(programIdx, shader.getShaderIdx());
-    shaders.push_back(shader);
+  void Program::addShader(std::unique_ptr<Shader> shader) {
+    glAttachShader(programIdx, shader->getShaderIdx());
+    shaders.push_back(std::move(shader));
   }
 
   void Program::link() {
