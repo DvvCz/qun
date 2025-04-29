@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(trender VERSION 0.1.0 LANGUAGES C CXX)
 
 find_package(OpenGL REQUIRED)
+find_package(glm REQUIRED)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -21,4 +22,4 @@ add_executable(trender
 
 target_include_directories(trender PRIVATE ./thirdparty)
 
-target_link_libraries(trender glad glfw OpenGL::GL)
+target_link_libraries(trender glad glfw OpenGL::GL glm::glm)

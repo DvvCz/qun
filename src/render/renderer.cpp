@@ -2,12 +2,28 @@
 
 #include "../shader/shader.hpp"
 #include "../shader/program.hpp"
+#include <glm/glm.hpp>
 #include <print>
 
-float triangles[] = {/* clang-format off */
-  -0.5f, -0.5f, 0.0f,
-  0.5f, -0.5f, 0.0f,
-  0.0f, 0.5f, 0.0f
+struct Vertex {
+  glm::vec3 vertPos;
+  glm::vec3 vertNormal;
+};
+
+// Create vertex data with positions and normals
+Vertex vertices[] = {/* clang-format off */
+  {
+    .vertPos = glm::vec3(-0.5f, -0.5f, 0.0f),
+    .vertNormal = glm::vec3(0.0f, 0.0f, 1.0f)
+  },
+  {
+    .vertPos = glm::vec3(0.5f, -0.5f, 0.0f),
+    .vertNormal = glm::vec3(0.0f, 0.0f, 1.0f)
+  },
+  {
+    .vertPos = glm::vec3(0.0f, 0.5f, 0.0f),
+    .vertNormal = glm::vec3(0.0f, 0.0f, 1.0f)
+  }
 }; /* clang-format on */
 
 Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
@@ -16,6 +32,10 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
 
   auto vertShader = std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.vert"),
                                                      shader::ShaderType::Vertex);
+
+  glm::mat4x4 projMatrix;
+  glm::mat4x4 viewMatrix;
+  glm::mat4x4 modelMatrix;
 
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback([](/* clang-format off */
@@ -43,10 +63,15 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
 
   // VBO
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(triangles), triangles, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  // Position attribute (location=0)
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertPos));
   glEnableVertexAttribArray(0);
+
+  // Normal attribute (location=1)
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertNormal));
+  glEnableVertexAttribArray(1);
 }
 
 void Renderer::drawFrame() const {
