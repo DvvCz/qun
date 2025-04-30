@@ -1,5 +1,5 @@
 PointerAlignment: Left
-ColumnLimit: 120
+ColumnLimit: 128
 AllowShortFunctionsOnASingleLine: None
 AllowShortEnumsOnASingleLine: false
 NamespaceIndentation: All
