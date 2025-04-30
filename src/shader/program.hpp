@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
+#include <string>
+#include <glm/glm.hpp>
 #include "shader.hpp"
 
 namespace shader {
@@ -15,6 +17,8 @@ namespace shader {
     void addShader(std::unique_ptr<Shader> shader);
 
     void link();
+    void use() const;
+    bool setUniformMatrix4fv(const std::string& name, const glm::mat4& matrix);
     [[nodiscard]] uint32_t getProgramIdx() const;
 
   private:

@@ -1,4 +1,4 @@
 {
-    "cmake.sourceDirectory": "/home/oncelock/Projects/trender",
+    "cmake.sourceDirectory": "${workspaceFolder}",
     "C_Cpp.autoAddFileAssociations": false,
 }

@@ -30,6 +30,20 @@ namespace shader {
     }
   }
 
+  void Program::use() const {
+    glUseProgram(programIdx);
+  }
+
+  bool Program::setUniformMatrix4fv(const std::string& name, const glm::mat4& matrix) {
+    GLint location = glGetUniformLocation(programIdx, name.c_str());
+    if (location == -1) {
+      return false;
+    }
+
+    glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
+    return true;
+  }
+
   uint32_t Program::getProgramIdx() const {
     return programIdx;
   }

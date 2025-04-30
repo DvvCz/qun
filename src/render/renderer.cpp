@@ -3,26 +3,27 @@
 #include "../shader/shader.hpp"
 #include "../shader/program.hpp"
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <print>
 
 struct Vertex {
-  glm::vec3 vertPos;
-  glm::vec3 vertNormal;
+  glm::vec3 pos;
+  glm::vec3 normal;
 };
 
 // Create vertex data with positions and normals
 Vertex vertices[] = {/* clang-format off */
   {
-    .vertPos = glm::vec3(-0.5f, -0.5f, 0.0f),
-    .vertNormal = glm::vec3(0.0f, 0.0f, 1.0f)
+    .pos = glm::vec3(-0.5f, 0.0f, -0.5f),
+    .normal = glm::vec3(0.0f, 0.0f, 1.0f)
   },
   {
-    .vertPos = glm::vec3(0.5f, -0.5f, 0.0f),
-    .vertNormal = glm::vec3(0.0f, 0.0f, 1.0f)
+    .pos = glm::vec3(0.5f, 0.0f, -0.5f),
+    .normal = glm::vec3(0.0f, 0.0f, 1.0f)
   },
   {
-    .vertPos = glm::vec3(0.0f, 0.5f, 0.0f),
-    .vertNormal = glm::vec3(0.0f, 0.0f, 1.0f)
+    .pos = glm::vec3(0.0f, 0.0f, 0.5f),
+    .normal = glm::vec3(0.0f, 0.0f, 1.0f)
   }
 }; /* clang-format on */
 
@@ -33,11 +34,19 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
   auto vertShader = std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.vert"),
                                                      shader::ShaderType::Vertex);
 
-  glm::mat4x4 projMatrix;
-  glm::mat4x4 viewMatrix;
-  glm::mat4x4 modelMatrix;
+  glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
+  glm::vec3 cameraPos = glm::vec3(0.0f, 3.0f, 0.0f);
+  glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+
+  float aspectRatio = (float)window->getWidth() / (float)window->getHeight();
+
+  glm::mat4x4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+  glm::mat4x4 viewMatrix = glm::lookAt(cameraPos, cameraTarget, upDir);
+  glm::mat4x4 modelMatrix = glm::mat4(1.0f);
 
   glEnable(GL_DEBUG_OUTPUT);
+  glEnable(GL_DEPTH_TEST);
+
   glDebugMessageCallback([](/* clang-format off */
     GLenum source,
     GLenum type,
@@ -55,6 +64,12 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
   shaderProgram->addShader(std::move(fragShader));
   shaderProgram->link();
 
+  // Set the uniform matrices for the shader program
+  shaderProgram->use();
+  shaderProgram->setUniformMatrix4fv("projMatrix", projMatrix);
+  shaderProgram->setUniformMatrix4fv("viewMatrix", viewMatrix);
+  shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
+
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
 
@@ -66,19 +81,19 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   // Position attribute (location=0)
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertPos));
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
   glEnableVertexAttribArray(0);
 
   // Normal attribute (location=1)
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertNormal));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
   glEnableVertexAttribArray(1);
 }
 
 void Renderer::drawFrame() const {
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
-  glUseProgram(shaderProgram->getProgramIdx());
+  shaderProgram->use();
   glBindVertexArray(vao);
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }
