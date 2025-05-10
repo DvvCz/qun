@@ -12,6 +12,7 @@ std::expected<void, std::string> resource::Obj::consumeComment(size_t& ptr, cons
 
 std::expected<float, std::string> resource::Obj::consumeFloat(size_t& ptr, const std::vector<std::byte>& buffer) noexcept {
   std::string number;
+  size_t start = ptr;
 
   while (ptr < buffer.size()) {
     std::byte currentByte = buffer.at(ptr);
@@ -25,23 +26,26 @@ std::expected<float, std::string> resource::Obj::consumeFloat(size_t& ptr, const
   }
 
   if (number.empty()) {
+    ptr = start;
     return std::unexpected(std::format("Failed to parse float at {}", ptr));
   }
 
   try {
     return std::stof(number);
   } catch (const std::exception&) {
+    ptr = start;
     return std::unexpected(std::format("Failed to convert '{}' to float at {}", number, ptr));
   }
 }
 
 std::expected<int, std::string> resource::Obj::consumeInt(size_t& ptr, const std::vector<std::byte>& buffer) noexcept {
   std::string number;
+  size_t start = ptr;
 
   while (ptr < buffer.size()) {
     std::byte currentByte = buffer.at(ptr);
 
-    if (currentByte == (std::byte)' ' || currentByte == (std::byte)'\n') {
+    if (currentByte < (std::byte)'0' && currentByte > (std::byte)'9' && currentByte != (std::byte)'-') {
       break;
     }
 
@@ -50,6 +54,7 @@ std::expected<int, std::string> resource::Obj::consumeInt(size_t& ptr, const std
   }
 
   if (number.empty()) {
+    ptr = start;
     return std::unexpected(std::format("Failed to parse int at {}", ptr));
   }
 
@@ -189,6 +194,7 @@ std::expected<resource::Obj::Face, std::string> resource::Obj::consumeFace(size_
       auto normalIndex = consumeInt(++ptr, buffer);
 
       if (!normalIndex.has_value()) {
+        std::println("the fuck");
         return std::unexpected(normalIndex.error());
       }
 
@@ -270,6 +276,8 @@ std::expected<Asset, std::string> resource::Obj::tryFromBuffer(const std::vector
 
     std::byte currentByte = buffer.at(ptr);
 
+    std::println("Current byte: {}", static_cast<char>(currentByte));
+
     switch (currentByte) {
     case (std::byte)'#':
       consumeComment(++ptr, buffer);
@@ -296,6 +304,7 @@ std::expected<Asset, std::string> resource::Obj::tryFromBuffer(const std::vector
       }
 
       vertices.push_back(vertex.value());
+
       break;
     }
     case (std::byte)'f': {
@@ -329,6 +338,17 @@ std::expected<Asset, std::string> resource::Obj::tryFromBuffer(const std::vector
       std::println("Object name: {}", objName.value());
       break;
     }
+    case (std::byte)'s': {
+      consumeWhitespace(++ptr, buffer);
+
+      auto shading = consumeIdent(ptr, buffer);
+      if (!shading.has_value()) {
+        return std::unexpected(shading.error());
+      }
+
+      std::println("Shading: {}", shading.value());
+      break;
+    }
     default: {
       auto command = consumeIdent(ptr, buffer);
       if (!command.has_value()) {
@@ -344,6 +364,16 @@ std::expected<Asset, std::string> resource::Obj::tryFromBuffer(const std::vector
         }
 
         std::println("Material library: {}", mtlFileName.value());
+        break;
+      } else if (command.value() == "usemtl") {
+        consumeWhitespace(ptr, buffer);
+
+        auto mtlName = consumeIdent(ptr, buffer);
+        if (!mtlName.has_value()) {
+          return std::unexpected(mtlName.error());
+        }
+
+        std::println("Using material: {}", mtlName.value());
         break;
       }
 
