@@ -27,28 +27,10 @@ int main() {
 
   auto renderer = std::make_unique<Renderer>(window);
 
-  std::vector<std::byte> objBuffer;
-  std::ifstream file("../sphere.obj", std::ios::binary | std::ios::ate);
-  if (!file) {
-    std::println("Failed to open sphere.obj");
-    return EXIT_FAILURE;
-  }
-
-  std::streamsize size = file.tellg();
-  file.seekg(0, std::ios::beg);
-
-  objBuffer.resize(size);
-  file.read(reinterpret_cast<char*>(objBuffer.data()), size);
-  file.close();
-
-  if (!file) {
-    std::println("Failed to read sphere.obj");
-    return EXIT_FAILURE;
-  }
-
-  auto out = resource::Obj::tryFromBuffer(objBuffer);
+  auto out = resource::ObjAsset::tryFromFile("../sphere.obj");
   if (out.has_value()) {
     std::println("Successfully loaded OBJ file");
+    renderer->objects.push_back(out.value());
   } else {
     std::println("Failed to load OBJ file: {}", out.error());
     return EXIT_FAILURE;

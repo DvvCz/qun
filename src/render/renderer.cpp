@@ -28,11 +28,11 @@ Vertex vertices[] = {/* clang-format off */
 }; /* clang-format on */
 
 Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
-  auto fragShader = std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.frag"),
-                                                     shader::ShaderType::Fragment);
+  auto fragShader =
+      std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.frag"), shader::ShaderType::Fragment);
 
-  auto vertShader = std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.vert"),
-                                                     shader::ShaderType::Vertex);
+  auto vertShader =
+      std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.vert"), shader::ShaderType::Vertex);
 
   glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
   glm::vec3 cameraPos = glm::vec3(0.0f, 3.0f, 0.0f);
@@ -89,11 +89,21 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
   glEnableVertexAttribArray(1);
 }
 
+void Renderer::drawObject(const ObjectAsset& object) const {
+  // Bind the VAO and draw the object
+  glBindVertexArray(vao);
+  glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(object.getVertices().size()));
+}
+
 void Renderer::drawFrame() const {
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
   shaderProgram->use();
-  glBindVertexArray(vao);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  // glBindVertexArray(vao);
+  // glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  for (const auto& object : objects) {
+    drawObject(object);
+  }
 }
