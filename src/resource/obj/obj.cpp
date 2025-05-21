@@ -32,10 +32,38 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
     for (const auto& index : shape.mesh.indices) {
       auto vertexIndex = vertices.size();
 
+      /* clang-format off */
+      glm::vec3 position = glm::vec3(
+        obj.attributes.positions[index.position_index * 3],
+        obj.attributes.positions[index.position_index * 3 + 1],
+        obj.attributes.positions[index.position_index * 3 + 2]
+      );/* clang-format on */
+
+      // Default values for normal and UV in case they're not provided
+      glm::vec3 normal = position;
+      glm::vec2 uv = glm::vec2(0.0f, 0.0f);
+
+      // Check if normal index is valid and normals array is not empty
+      if (index.normal_index >= 0) {
+        normal = glm::vec3(/* clang-format off */
+          obj.attributes.normals[index.normal_index * 3],
+          obj.attributes.normals[index.normal_index * 3 + 1],
+          obj.attributes.normals[index.normal_index * 3 + 2]
+        );/* clang-format on */
+      }
+
+      // Check if texcoord index is valid and texcoords array is not empty
+      if (index.texcoord_index >= 0) {
+        uv = glm::vec2(/* clang-format off */
+          obj.attributes.texcoords[index.texcoord_index * 2],
+          obj.attributes.texcoords[index.texcoord_index * 2 + 1]
+        ); /* clang-format on */
+      }
+
       vertices.push_back(Vertex{
-          .pos = glm::vec3(obj.attributes.positions[index.position_index]),
-          .normal = glm::vec3(obj.attributes.normals[index.normal_index]),
-          .uv = glm::vec2(obj.attributes.texcoords[index.texcoord_index]),
+          .pos = position,
+          .normal = normal,
+          .uv = uv,
       });
 
       shapeIndices.push_back(vertexIndex);
