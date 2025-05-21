@@ -1,11 +1,10 @@
 #include "model.hpp"
 
 TriangleModel::TriangleModel(Vertex v1, Vertex v2, Vertex v3) {
-  glGenVertexArrays(1, &glAttributesIdx);
-  glGenBuffers(1, &glBufferIdx);
+  glCreateVertexArrays(1, &glAttributesIdx);
+  glCreateBuffers(1, &glBufferIdx);
 
   {
-    //   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
     glVertexArrayAttribFormat(glAttributesIdx, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
     glEnableVertexArrayAttrib(glAttributesIdx, 0);
 
