@@ -7,6 +7,8 @@ in vec2 fragUV;
 out vec4 outColor;
 
 void main() {
-    // outColor = vec4(vec3(0.5, 0.5, 0.5), 1.0); // Set color to gray
-    outColor = vec4(fragNormal * 0.5 + 0.5, 1.0);
+    vec3 positionColor = fragPos * 0.5 + 0.5;
+    vec3 normalColor = fragNormal * 0.5 + 0.5;
+
+    outColor = vec4(positionColor * 0.5 + normalColor * 0.5, 1.0);
 }

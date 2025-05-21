@@ -38,16 +38,21 @@ AssetModel::AssetModel(const resource::ObjAsset& asset) : inner(asset) {
   glCreateBuffers(1, &glIndexBufferIdx);
 
   {
-    glVertexArrayAttribFormat(glAttributesIdx, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
+    GLuint glAttrSlot1 = 0;
+
+    glVertexArrayAttribFormat(glAttributesIdx, 0, 3, GL_FLOAT, GL_FALSE, 0);
     glEnableVertexArrayAttrib(glAttributesIdx, 0);
+    glVertexArrayAttribBinding(glAttributesIdx, 0, glAttrSlot1);
 
-    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
+    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal) - offsetof(Vertex, pos));
     glEnableVertexArrayAttrib(glAttributesIdx, 1);
+    glVertexArrayAttribBinding(glAttributesIdx, 1, glAttrSlot1);
 
-    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv) - offsetof(Vertex, normal));
     glEnableVertexArrayAttrib(glAttributesIdx, 2);
+    glVertexArrayAttribBinding(glAttributesIdx, 2, glAttrSlot1);
 
-    glVertexArrayVertexBuffer(glAttributesIdx, 0, glBufferIdx, 0, sizeof(Vertex));
+    glVertexArrayVertexBuffer(glAttributesIdx, glAttrSlot1, glBufferIdx, 0, sizeof(Vertex));
     glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx); // Bind index buffer to VAO
   }
 

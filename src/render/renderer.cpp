@@ -66,11 +66,8 @@ void Renderer::drawFrame() const {
 
   shaderProgram->use();
 
-  // Draw all loaded obj models
-  if (!assetModels.empty()) {
-    for (const auto& assetModel : assetModels) {
-      assetModel->draw();
-    }
+  for (const auto& assetModel : assetModels) {
+    assetModel->draw();
   }
 }
 

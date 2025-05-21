@@ -17,7 +17,7 @@ void main() {
     vec4 modelNormal = modelMatrix * vec4(vertNormal, 1.0);
 
     vec4 worldPos = projMatrix * viewMatrix * modelPos;
-    // vec4 worldNormal = projMatrix * viewMatrix * modelNormal;
+    vec4 worldNormal = projMatrix * viewMatrix * modelNormal;
 
     fragNormal = modelNormal.xyz;
     fragPos = modelPos.xyz;

@@ -27,7 +27,7 @@ int main() {
 
   auto renderer = std::make_unique<Renderer>(window);
 
-  auto out = resource::ObjAsset::tryFromFile("../sphere.obj");
+  auto out = resource::ObjAsset::tryFromFile("../triangle.obj");
   if (out.has_value()) {
     std::println("Successfully loaded tri OBJ file");
     renderer->addModel(out.value());
