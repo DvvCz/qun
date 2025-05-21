@@ -6,11 +6,8 @@
 #include <array>
 
 #include "../resource/asset.hpp"
-
-struct Vertex {
-  glm::vec3 pos;
-  glm::vec3 normal;
-};
+#include "../resource/obj/obj.hpp"
+#include "vertex.hpp"
 
 class Model {
 public:
@@ -31,7 +28,7 @@ private:
 
 class AssetModel : public Model {
 public:
-  AssetModel(const ObjectAsset& asset);
+  AssetModel(const resource::ObjAsset& asset);
   ~AssetModel();
   void draw() const;
 

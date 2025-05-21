@@ -7,19 +7,5 @@
 
 class Asset {
 public:
-  Asset();
-
-  [[nodiscard]] std::optional<std::string> getName() const noexcept;
-};
-
-class ObjectAsset : public Asset {
-public:
-  ObjectAsset();
-
-  [[nodiscard]] virtual std::vector<std::array<float, 3>> getVertices() const noexcept;
-  [[nodiscard]] virtual std::vector<int> getIndices() const noexcept;
-
-private:
-  std::vector<std::array<float, 3>> vertices;
-  std::vector<int> indices;
+  [[nodiscard]] virtual std::optional<std::string> getName() const noexcept = 0;
 };

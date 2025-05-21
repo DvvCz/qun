@@ -16,7 +16,7 @@ public:
   Renderer(const std::shared_ptr<Window>& window);
 
   void drawFrame() const;
-  void addModel(const ObjectAsset& asset);
+  void addModel(const resource::ObjAsset& asset);
 
 private:
   TriangleModel triangleModel;

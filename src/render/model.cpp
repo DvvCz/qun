@@ -29,7 +29,7 @@ void TriangleModel::draw() const {
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-AssetModel::AssetModel(const ObjectAsset& asset) : indices(asset.getIndices()) {
+AssetModel::AssetModel(const resource::ObjAsset& asset) : indices(asset.getIndices()) {
   glCreateVertexArrays(1, &glAttributesIdx);
   glCreateBuffers(1, &glBufferIdx);
   glCreateBuffers(1, &glIndexBufferIdx);

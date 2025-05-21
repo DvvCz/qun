@@ -2,6 +2,7 @@
 
 #include "../shader/shader.hpp"
 #include "../shader/program.hpp"
+#include "../resource/obj/obj.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <print>
@@ -73,6 +74,6 @@ void Renderer::drawFrame() const {
   }
 }
 
-void Renderer::addModel(const ObjectAsset& asset) {
+void Renderer::addModel(const resource::ObjAsset& asset) {
   assetModels.push_back(std::make_unique<AssetModel>(asset));
 }
