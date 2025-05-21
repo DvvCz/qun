@@ -27,9 +27,9 @@ int main() {
 
   auto renderer = std::make_unique<Renderer>(window);
 
-  auto out = resource::ObjAsset::tryFromFile("../triangle.obj");
+  auto out = resource::ObjAsset::tryFromFile("../resources/Audi_R8_2017.obj");
   if (out.has_value()) {
-    std::println("Successfully loaded tri OBJ file");
+    std::println("Successfully loaded OBJ file");
     renderer->addModel(out.value());
   } else {
     std::println("Failed to load OBJ file: {}", out.error());

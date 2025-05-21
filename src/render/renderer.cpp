@@ -12,7 +12,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
       Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f)},
       Vertex{glm::vec3(0.5f, 0.0f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f)},
       Vertex{glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f)}
-  )) {
+  )), uniformProjMatrix(0), uniformViewMatrix(1), uniformModelMatrix(2) {
   auto fragShader =
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.frag"), shader::ShaderType::Fragment);
 
@@ -20,14 +20,14 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.vert"), shader::ShaderType::Vertex);
 
   glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
-  glm::vec3 cameraPos = glm::vec3(0.0f, 3.0f, 0.0f);
+  glm::vec3 cameraPos = glm::vec3(00.0f, 5.0f, 10.0f);
   glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
   float aspectRatio = (float)window->getWidth() / (float)window->getHeight();
 
-  glm::mat4x4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
-  glm::mat4x4 viewMatrix = glm::lookAt(cameraPos, cameraTarget, upDir);
-  glm::mat4x4 modelMatrix = glm::mat4(1.0f);
+  projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+  viewMatrix = glm::lookAt(cameraPos, cameraTarget, upDir);
+  modelMatrix = glm::mat4(1.0f);
 
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEPTH_TEST);
@@ -48,16 +48,6 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
   shaderProgram->addShader(std::move(vertShader));
   shaderProgram->addShader(std::move(fragShader));
   shaderProgram->link();
-
-  shaderProgram->use();
-
-  Uniform<glm::mat4x4> uniformProjMatrix(0);
-  Uniform<glm::mat4x4> uniformViewMatrix(1);
-  Uniform<glm::mat4x4> uniformModelMatrix(2);
-
-  uniformProjMatrix.set(projMatrix);
-  uniformViewMatrix.set(viewMatrix);
-  uniformModelMatrix.set(modelMatrix);
 }
 
 void Renderer::drawFrame() const {
@@ -65,6 +55,10 @@ void Renderer::drawFrame() const {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
   shaderProgram->use();
+
+  uniformProjMatrix.set(projMatrix);
+  uniformViewMatrix.set(viewMatrix);
+  uniformModelMatrix.set(modelMatrix);
 
   for (const auto& assetModel : assetModels) {
     assetModel->draw();
