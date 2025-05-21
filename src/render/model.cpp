@@ -12,6 +12,9 @@ TriangleModel::TriangleModel(Vertex v1, Vertex v2, Vertex v3) {
     glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
     glEnableVertexArrayAttrib(glAttributesIdx, 1);
 
+    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+    glEnableVertexArrayAttrib(glAttributesIdx, 2);
+
     glVertexArrayVertexBuffer(glAttributesIdx, 0, glBufferIdx, 0, sizeof(Vertex));
   }
 
@@ -40,6 +43,9 @@ AssetModel::AssetModel(const resource::ObjAsset& asset) : inner(asset) {
 
     glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
     glEnableVertexArrayAttrib(glAttributesIdx, 1);
+
+    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+    glEnableVertexArrayAttrib(glAttributesIdx, 2);
 
     glVertexArrayVertexBuffer(glAttributesIdx, 0, glBufferIdx, 0, sizeof(Vertex));
     glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx); // Bind index buffer to VAO
