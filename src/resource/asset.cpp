@@ -1,4 +1,5 @@
 #include "asset.hpp"
+#include <print>
 
 Asset::Asset::Asset() {
 }

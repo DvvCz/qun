@@ -16,8 +16,8 @@ class ObjectAsset : public Asset {
 public:
   ObjectAsset();
 
-  [[nodiscard]] std::vector<std::array<float, 3>> getVertices() const noexcept;
-  [[nodiscard]] std::vector<int> getIndices() const noexcept;
+  [[nodiscard]] virtual std::vector<std::array<float, 3>> getVertices() const noexcept;
+  [[nodiscard]] virtual std::vector<int> getIndices() const noexcept;
 
 private:
   std::vector<std::array<float, 3>> vertices;

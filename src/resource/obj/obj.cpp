@@ -49,3 +49,11 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
 resource::ObjAsset::ObjAsset(std::vector<std::array<float, 3>> vertices, std::vector<int> indices)
     : vertices(std::move(vertices)), indices(std::move(indices)) {
 }
+
+std::vector<std::array<float, 3>> resource::ObjAsset::getVertices() const noexcept {
+  return vertices;
+}
+
+std::vector<int> resource::ObjAsset::getIndices() const noexcept {
+  return indices;
+}

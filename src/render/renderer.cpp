@@ -48,9 +48,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
   shaderProgram->addShader(std::move(fragShader));
   shaderProgram->link();
 
-  useShader(*shaderProgram);
-  // // Set the uniform matrices for the shader program
-  // shaderProgram->use(); // todo: convert to renderer->useShader(shaderProgram);
+  shaderProgram->use();
 
   Uniform<glm::mat4x4> uniformProjMatrix(0);
   Uniform<glm::mat4x4> uniformViewMatrix(1);
@@ -66,9 +64,15 @@ void Renderer::drawFrame() const {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
   shaderProgram->use();
-  triangleModel.draw();
+
+  // Draw all loaded obj models
+  if (!assetModels.empty()) {
+    for (const auto& assetModel : assetModels) {
+      assetModel->draw();
+    }
+  }
 }
 
-void Renderer::useShader(const shader::Program& program) const {
-  program.use();
+void Renderer::addModel(const ObjectAsset& asset) {
+  assetModels.push_back(std::make_unique<AssetModel>(asset));
 }

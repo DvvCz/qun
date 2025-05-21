@@ -1,0 +1,7 @@
+# triangle.obj - A simple triangle
+# Vertices
+v -0.5 0.0 -0.5
+v 0.5 0.0 -0.5
+v 0.0 0.0 0.5
+# Faces (indices are 1-based in OBJ format)
+f 1 2 3

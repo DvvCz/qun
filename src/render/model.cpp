@@ -1,4 +1,5 @@
 #include "model.hpp"
+#include <print>
 
 TriangleModel::TriangleModel(Vertex v1, Vertex v2, Vertex v3) {
   glCreateVertexArrays(1, &glAttributesIdx);
@@ -28,7 +29,7 @@ void TriangleModel::draw() const {
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-AssetModel::AssetModel(const ObjectAsset& asset) : asset(asset) {
+AssetModel::AssetModel(const ObjectAsset& asset) : indices(asset.getIndices()) {
   glCreateVertexArrays(1, &glAttributesIdx);
   glCreateBuffers(1, &glBufferIdx);
   glCreateBuffers(1, &glIndexBufferIdx);
@@ -41,20 +42,36 @@ AssetModel::AssetModel(const ObjectAsset& asset) : asset(asset) {
     glEnableVertexArrayAttrib(glAttributesIdx, 1);
 
     glVertexArrayVertexBuffer(glAttributesIdx, 0, glBufferIdx, 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx); // Bind index buffer to VAO
   }
 
-  glNamedBufferData(glBufferIdx, sizeof(Vertex) * asset.getVertices().size(), asset.getVertices().data(), GL_STATIC_DRAW);
-  glNamedBufferData(glIndexBufferIdx, sizeof(GLuint) * asset.getIndices().size(), asset.getIndices().data(), GL_STATIC_DRAW);
+  // Convert vertices from std::array<float, 3> to Vertex struct
+  std::vector<Vertex> vertices;
+  auto rawVertices = asset.getVertices();
+  vertices.reserve(rawVertices.size());
+
+  for (const auto& rawVertex : rawVertices) {
+    Vertex vertex;
+    vertex.pos = glm::vec3(rawVertex[0], rawVertex[1], rawVertex[2]);
+    // For simplicity, using position as normal until normal data is available
+    vertex.normal = glm::normalize(glm::vec3(rawVertex[0], rawVertex[1], rawVertex[2]));
+    vertices.push_back(vertex);
+  }
+
+  glNamedBufferData(glBufferIdx, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+
+  // Convert signed indices to unsigned indices for OpenGL
+  std::vector<GLuint> unsignedIndices(indices.begin(), indices.end());
+  glNamedBufferData(glIndexBufferIdx, sizeof(GLuint) * unsignedIndices.size(), unsignedIndices.data(), GL_STATIC_DRAW);
 }
 
 AssetModel::~AssetModel() {
   glDeleteVertexArrays(1, &glAttributesIdx);
   glDeleteBuffers(1, &glBufferIdx);
+  glDeleteBuffers(1, &glIndexBufferIdx);
 }
 
 void AssetModel::draw() const {
   glBindVertexArray(glAttributesIdx);
-  // glDrawArrays(GL_TRIANGLES, 0, asset.getVertices().size());
-
-  glDrawElements(GL_TRIANGLES, asset.getIndices().size(), GL_UNSIGNED_INT, nullptr);
+  glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 }

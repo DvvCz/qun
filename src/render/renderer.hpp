@@ -16,13 +16,11 @@ public:
   Renderer(const std::shared_ptr<Window>& window);
 
   void drawFrame() const;
-
-  std::vector<ObjectAsset> objects;
+  void addModel(const ObjectAsset& asset);
 
 private:
-  void useShader(const shader::Program& program) const;
-
   TriangleModel triangleModel;
+  std::vector<std::unique_ptr<AssetModel>> assetModels;
 
   std::shared_ptr<Window> window;
   std::unique_ptr<shader::Program> shaderProgram;
