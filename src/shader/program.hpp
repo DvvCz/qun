@@ -5,7 +5,9 @@
 #include <memory>
 #include <string>
 #include <glm/glm.hpp>
+
 #include "shader.hpp"
+#include "../render/uniform.hpp"
 
 namespace shader {
   class Program {
@@ -18,7 +20,6 @@ namespace shader {
 
     void link();
     void use() const;
-    bool setUniformMatrix4fv(const std::string& name, const glm::mat4& matrix);
     [[nodiscard]] uint32_t getProgramIdx() const;
 
   private:

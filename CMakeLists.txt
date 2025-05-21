@@ -22,6 +22,8 @@ add_executable(trender
     ./src/input/raw/mouse.cpp
     ./src/render/window.cpp
     ./src/render/renderer.cpp
+    ./src/render/uniform.cpp
+    ./src/render/model.cpp
     ./src/shader/shader.cpp
     ./src/shader/program.cpp
     ./src/resource/asset.cpp

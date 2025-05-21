@@ -6,28 +6,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <print>
 
-struct Vertex {
-  glm::vec3 pos;
-  glm::vec3 normal;
-};
-
-// Create vertex data with positions and normals
-Vertex vertices[] = {/* clang-format off */
-  {
-    .pos = glm::vec3(-0.5f, 0.0f, -0.5f),
-    .normal = glm::vec3(0.0f, 0.0f, 1.0f)
-  },
-  {
-    .pos = glm::vec3(0.5f, 0.0f, -0.5f),
-    .normal = glm::vec3(0.0f, 0.0f, 1.0f)
-  },
-  {
-    .pos = glm::vec3(0.0f, 0.0f, 0.5f),
-    .normal = glm::vec3(0.0f, 0.0f, 1.0f)
-  }
-}; /* clang-format on */
-
-Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
+Renderer::Renderer(const std::shared_ptr<Window>& window)
+    : window(window), triangleModel(TriangleModel(/* clang-format off */
+      Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f)},
+      Vertex{glm::vec3(0.5f, 0.0f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f)},
+      Vertex{glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f)}
+  )) {
   auto fragShader =
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.frag"), shader::ShaderType::Fragment);
 
@@ -64,35 +48,19 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) : window(window) {
   shaderProgram->addShader(std::move(fragShader));
   shaderProgram->link();
 
-  // Set the uniform matrices for the shader program
-  shaderProgram->use();
-  shaderProgram->setUniformMatrix4fv("projMatrix", projMatrix);
-  shaderProgram->setUniformMatrix4fv("viewMatrix", viewMatrix);
-  shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
+  useShader(*shaderProgram);
+  // // Set the uniform matrices for the shader program
+  // shaderProgram->use(); // todo: convert to renderer->useShader(shaderProgram);
 
-  glGenVertexArrays(1, &vao);
-  glGenBuffers(1, &vbo);
+  addUniform(Mat4x4Uniform("projMatrix", 0, projMatrix));
+  addUniform(Mat4x4Uniform("viewMatrix", 1, viewMatrix));
+  addUniform(Mat4x4Uniform("modelMatrix", 2, modelMatrix));
+}
 
-  // VAO
-  glBindVertexArray(vao);
-
-  // VBO
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  // Position attribute (location=0)
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
-  glEnableVertexAttribArray(0);
-
-  // Normal attribute (location=1)
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-  glEnableVertexAttribArray(1);
+void Renderer::updateObjects() {
 }
 
 void Renderer::drawObject(const ObjectAsset& object) const {
-  // Bind the VAO and draw the object
-  glBindVertexArray(vao);
-  glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(object.getVertices().size()));
 }
 
 void Renderer::drawFrame() const {
@@ -100,10 +68,13 @@ void Renderer::drawFrame() const {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
   shaderProgram->use();
-  // glBindVertexArray(vao);
-  // glDrawArrays(GL_TRIANGLES, 0, 3);
+  triangleModel.draw();
+}
 
-  for (const auto& object : objects) {
-    drawObject(object);
-  }
+void Renderer::useShader(const shader::Program& program) const {
+  program.use();
+}
+
+void Renderer::addUniform(const Uniform& uniform) const {
+  uniform.addToProgram();
 }
