@@ -17,14 +17,10 @@ public:
 
   void drawFrame() const;
 
-  void updateObjects();
   std::vector<ObjectAsset> objects;
 
 private:
-  void addUniform(const Uniform& uniform) const;
   void useShader(const shader::Program& program) const;
-
-  void drawObject(const ObjectAsset& object) const;
 
   TriangleModel triangleModel;
 

@@ -1,28 +1,20 @@
 #pragma once
 
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <string>
 
-class Uniform {
+template <typename T> class Uniform;
+
+template <> class Uniform<glm::mat4> {
 public:
-  [[nodiscard]] virtual int getLocation() const = 0;
-  [[nodiscard]] virtual const std::string& getName() const = 0;
+  Uniform(const GLint location) : location(location) {
+  }
 
-  virtual void addToProgram() const = 0;
-};
-
-class Mat4x4Uniform : public Uniform {
-public:
-  Mat4x4Uniform(std::string name, int location, const glm::mat4x4 value);
-
-  [[nodiscard]] int getLocation() const;
-  [[nodiscard]] const std::string& getName() const;
-  [[nodiscard]] const glm::mat4x4& getValue() const;
-
-  void addToProgram() const;
+  void set(const glm::mat4x4& value) {
+    glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
+  }
 
 private:
-  glm::mat4x4 value;
-  std::string name;
-  int location;
+  GLint location;
 };

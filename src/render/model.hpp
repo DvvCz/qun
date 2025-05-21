@@ -5,6 +5,8 @@
 
 #include <array>
 
+#include "../resource/asset.hpp"
+
 struct Vertex {
   glm::vec3 pos;
   glm::vec3 normal;
@@ -25,4 +27,17 @@ private:
   std::array<Vertex, 3> vertices;
   GLuint glAttributesIdx;
   GLuint glBufferIdx;
+};
+
+class AssetModel : public Model {
+public:
+  AssetModel(const ObjectAsset& asset);
+  ~AssetModel();
+  void draw() const;
+
+private:
+  ObjectAsset asset;
+  GLuint glAttributesIdx;
+  GLuint glBufferIdx;
+  GLuint glIndexBufferIdx;
 };

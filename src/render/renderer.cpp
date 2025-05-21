@@ -52,15 +52,13 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
   // // Set the uniform matrices for the shader program
   // shaderProgram->use(); // todo: convert to renderer->useShader(shaderProgram);
 
-  addUniform(Mat4x4Uniform("projMatrix", 0, projMatrix));
-  addUniform(Mat4x4Uniform("viewMatrix", 1, viewMatrix));
-  addUniform(Mat4x4Uniform("modelMatrix", 2, modelMatrix));
-}
+  Uniform<glm::mat4x4> uniformProjMatrix(0);
+  Uniform<glm::mat4x4> uniformViewMatrix(1);
+  Uniform<glm::mat4x4> uniformModelMatrix(2);
 
-void Renderer::updateObjects() {
-}
-
-void Renderer::drawObject(const ObjectAsset& object) const {
+  uniformProjMatrix.set(projMatrix);
+  uniformViewMatrix.set(viewMatrix);
+  uniformModelMatrix.set(modelMatrix);
 }
 
 void Renderer::drawFrame() const {
@@ -73,8 +71,4 @@ void Renderer::drawFrame() const {
 
 void Renderer::useShader(const shader::Program& program) const {
   program.use();
-}
-
-void Renderer::addUniform(const Uniform& uniform) const {
-  uniform.addToProgram();
 }
