@@ -2,6 +2,7 @@
 
 layout(location = 0) in vec3 vertPos;
 layout(location = 1) in vec3 vertNormal;
+layout(location = 2) in vec2 vertUV;
 
 uniform mat4x4 projMatrix;
 uniform mat4x4 viewMatrix;
@@ -9,6 +10,7 @@ uniform mat4x4 modelMatrix;
 
 out vec3 fragPos;
 out vec3 fragNormal;
+out vec2 fragUV;
 
 void main() {
     vec4 modelPos = modelMatrix * vec4(vertPos, 1.0);
@@ -19,6 +21,7 @@ void main() {
 
     fragNormal = modelNormal.xyz;
     fragPos = modelPos.xyz;
+    fragUV = vertUV;
 
     gl_Position = worldPos;
 }

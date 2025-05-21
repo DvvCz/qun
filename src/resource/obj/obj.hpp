@@ -7,23 +7,31 @@
 #include <filesystem>
 #include <optional>
 
+#include <rapidobj/rapidobj.hpp>
+
 #include "../asset.hpp"
+#include "../../render/vertex.hpp"
 
 namespace resource {
+  struct ObjShape {
+  public:
+    std::string name;
+    std::vector<int> indices;
+  };
+
   class ObjAsset : public Asset {
   public:
     [[nodiscard]] static std::expected<ObjAsset, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
 
-    [[nodiscard]] std::vector<std::array<float, 3>> getVertices() const noexcept;
-    [[nodiscard]] std::vector<int> getIndices() const noexcept;
-    [[nodiscard]] std::optional<std::string> getName() const noexcept override {
-      return std::nullopt;
-    };
+    [[nodiscard]] std::optional<std::string> getName() const noexcept {
+      return "OBJ Asset";
+    }
 
-  private:
-    ObjAsset(std::vector<std::array<float, 3>> vertices, std::vector<int> indices);
+    std::vector<Vertex> vertices;
+    std::vector<ObjShape> shapes;
 
-    std::vector<std::array<float, 3>> vertices;
-    std::vector<int> indices;
+    ObjAsset(std::vector<Vertex> vertices, std::vector<ObjShape> shapes)
+        : vertices(std::move(vertices)), shapes(std::move(shapes)) {
+    }
   };
 }

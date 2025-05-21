@@ -29,7 +29,7 @@ void TriangleModel::draw() const {
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-AssetModel::AssetModel(const resource::ObjAsset& asset) : indices(asset.getIndices()) {
+AssetModel::AssetModel(const resource::ObjAsset& asset) : inner(asset) {
   glCreateVertexArrays(1, &glAttributesIdx);
   glCreateBuffers(1, &glBufferIdx);
   glCreateBuffers(1, &glIndexBufferIdx);
@@ -45,24 +45,12 @@ AssetModel::AssetModel(const resource::ObjAsset& asset) : indices(asset.getIndic
     glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx); // Bind index buffer to VAO
   }
 
-  // Convert vertices from std::array<float, 3> to Vertex struct
-  std::vector<Vertex> vertices;
-  auto rawVertices = asset.getVertices();
-  vertices.reserve(rawVertices.size());
-
-  for (const auto& rawVertex : rawVertices) {
-    Vertex vertex;
-    vertex.pos = glm::vec3(rawVertex[0], rawVertex[1], rawVertex[2]);
-    // For simplicity, using position as normal until normal data is available
-    vertex.normal = glm::normalize(glm::vec3(rawVertex[0], rawVertex[1], rawVertex[2]));
-    vertices.push_back(vertex);
+  for (const auto& shape : asset.shapes) {
+    allIndices.insert(allIndices.end(), shape.indices.begin(), shape.indices.end());
   }
 
-  glNamedBufferData(glBufferIdx, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-
-  // Convert signed indices to unsigned indices for OpenGL
-  std::vector<GLuint> unsignedIndices(indices.begin(), indices.end());
-  glNamedBufferData(glIndexBufferIdx, sizeof(GLuint) * unsignedIndices.size(), unsignedIndices.data(), GL_STATIC_DRAW);
+  glNamedBufferData(glBufferIdx, sizeof(Vertex) * asset.vertices.size(), asset.vertices.data(), GL_STATIC_DRAW);
+  glNamedBufferData(glIndexBufferIdx, sizeof(GLuint) * allIndices.size(), allIndices.data(), GL_STATIC_DRAW);
 }
 
 AssetModel::~AssetModel() {
@@ -73,5 +61,5 @@ AssetModel::~AssetModel() {
 
 void AssetModel::draw() const {
   glBindVertexArray(glAttributesIdx);
-  glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+  glDrawElements(GL_TRIANGLES, allIndices.size(), GL_UNSIGNED_INT, nullptr);
 }

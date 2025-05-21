@@ -33,7 +33,8 @@ public:
   void draw() const;
 
 private:
-  std::vector<int> indices;
+  resource::ObjAsset inner;
+  std::vector<GLuint> allIndices;
   GLuint glAttributesIdx;
   GLuint glBufferIdx;
   GLuint glIndexBufferIdx;
