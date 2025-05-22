@@ -47,7 +47,18 @@ std::expected<GLuint, std::string> TextureManager::addTexture(const resource::Im
     );/* clang-format on */
   }
 
+  if (/* clang-format off */
+    texture.getData().empty() ||
+    texture.getWidth() <= 0 ||
+    texture.getHeight() <= 0 ||
+    (texture.getChannels() != 3 && texture.getChannels() != 4)
+  ) {/* clang-format on */
+    return std::unexpected("Invalid texture data");
+  }
+
   GLuint textureId = textures.size();
+  GLenum textureFormat = texture.getChannels() == 3 ? GL_RGB : GL_RGBA;
+
   glTextureSubImage3D(/* clang-format off */
     sampler2DArrayIdx,
     0,
@@ -57,7 +68,7 @@ std::expected<GLuint, std::string> TextureManager::addTexture(const resource::Im
     texture.getWidth(),
     texture.getHeight(),
     1,
-    GL_RGBA,
+    textureFormat,
     GL_UNSIGNED_BYTE,
     texture.getData().data()
   ); /* clang-format on */

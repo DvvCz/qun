@@ -28,7 +28,7 @@ int main() {
 
   auto renderer = std::make_unique<Renderer>(window);
 
-  auto out = resource::ObjAsset::tryFromFile("../resources/Audi_R8_2017.obj");
+  auto out = resource::ObjAsset::tryFromFile("../resources/sphere.obj");
   if (out.has_value()) {
     std::println("Successfully loaded OBJ file");
     renderer->addModel(out.value());

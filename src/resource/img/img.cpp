@@ -12,7 +12,6 @@ std::expected<resource::ImgAsset, std::string> resource::ImgAsset::tryFromFile(c
   }
 
   std::vector<unsigned char> imageData(data, data + (width * height * channels));
-  std::copy(imageData.begin(), imageData.end(), data);
 
   stbi_image_free(data);
 
