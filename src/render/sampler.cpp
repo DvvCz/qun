@@ -2,7 +2,7 @@
 
 #define MAX_WIDTH 1024
 #define MAX_HEIGHT 1024
-#define MAX_TEXTURES 512
+#define MAX_TEXTURES 128
 
 TextureManager::TextureManager(Uniform<GLuint> sampler2DUniform, Uniform<GLint> textureIdxUniform)
     : sampler2DArray(sampler2DUniform), textureIdx(textureIdxUniform) {
@@ -33,6 +33,18 @@ std::expected<GLuint, std::string> TextureManager::addTexture(const resource::Im
   // todo: allow freeing up slots
   if (textures.size() >= MAX_TEXTURES) {
     return std::unexpected("Maximum number of textures reached");
+  }
+
+  if (texture.getWidth() > MAX_WIDTH || texture.getHeight() > MAX_HEIGHT) {
+    return std::unexpected(/* clang-format off */
+      std::format(
+        "Texture of {}x{} exceeds maximum dimensions of {}x{}",
+        texture.getWidth(),
+        texture.getHeight(),
+        MAX_WIDTH,
+        MAX_HEIGHT
+      )
+    );/* clang-format on */
   }
 
   GLuint textureId = textures.size();
