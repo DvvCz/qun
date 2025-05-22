@@ -59,6 +59,8 @@ void Renderer::drawFrame() const {
   uniformViewMatrix.set(viewMatrix);
   uniformModelMatrix.set(modelMatrix);
 
+  textureManager->bindTexture(0);
+
   for (const auto& assetModel : assetModels) {
     assetModel->draw();
   }

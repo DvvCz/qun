@@ -18,6 +18,7 @@ public:
 private:
   std::vector<resource::ImgAsset> textures;
   GLuint sampler2DArrayIdx;
+  GLuint samplerIdx;
   Uniform<GLuint> sampler2DArray;
   Uniform<GLint> textureIdx;
 };
