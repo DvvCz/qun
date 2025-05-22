@@ -16,7 +16,7 @@ layout(location = 2) uniform mat4x4 modelMatrix;
 layout(location = 3) uniform sampler2DArray textureList;
 layout(location = 4) uniform int textureIdx;
 
-layout(location = 5) uniform float cameraPos;
+layout(location = 5) uniform vec3 cameraPos;
 
 #define MAX_LIGHTS 20
 
