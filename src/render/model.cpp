@@ -2,6 +2,8 @@
 #include "texture.hpp"
 #include "material.hpp"
 
+#include <print>
+
 TriangleModel::TriangleModel(Vertex v1, Vertex v2, Vertex v3) {
   glCreateVertexArrays(1, &glAttributesIdx);
   glCreateBuffers(1, &glBufferIdx);
@@ -66,7 +68,26 @@ AssetModel::AssetModel(/* clang-format off */
   }
 
   for (const auto& shape : asset.shapes) {
-    allIndices.insert(allIndices.end(), shape.indices.begin(), shape.indices.end());
+    for (const auto& group : shape.groups) {
+      allIndices.insert(allIndices.end(), group.indices.begin(), group.indices.end());
+      materialGroups.push_back(group);
+    }
+  }
+
+  for (const auto& material : asset.materials) {
+    if (material.diffuseTexture.has_value()) {
+      auto texture = resource::ImgAsset::tryFromFile(material.diffuseTexture.value());
+      if (texture.has_value()) {
+        auto textureId = textureManager->addTexture(texture.value());
+        if (textureId.has_value()) {
+          std::println("Added texture with ID {}", textureId.value());
+        } else {
+          std::println(stderr, "Failed to add texture: {}", textureId.error());
+        }
+      } else {
+        std::println(stderr, "Failed to load texture: {}", texture.error());
+      }
+    }
   }
 
   glNamedBufferData(glBufferIdx, sizeof(Vertex) * asset.vertices.size(), asset.vertices.data(), GL_STATIC_DRAW);
@@ -81,5 +102,16 @@ AssetModel::~AssetModel() {
 
 void AssetModel::draw() const {
   glBindVertexArray(glAttributesIdx);
-  glDrawElements(GL_TRIANGLES, allIndices.size(), GL_UNSIGNED_INT, nullptr);
+
+  size_t currentOffset = 0;
+  for (const auto& group : materialGroups) {
+    if (group.materialId >= 0 && group.materialId < static_cast<int>(inner.materials.size())) {
+      const auto& material = inner.materials[group.materialId];
+
+      materialManager->setMaterial(material);
+    }
+
+    glDrawElements(GL_TRIANGLES, group.indices.size(), GL_UNSIGNED_INT, (void*)currentOffset);
+    currentOffset += group.indices.size() * sizeof(GLuint);
+  }
 }

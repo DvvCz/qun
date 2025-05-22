@@ -39,8 +39,10 @@ void main() {
     vec3 fragToCameraDir = normalize(cameraPos - fragPos);
     vec3 normal = normalize(fragNormal);
 
-    vec3 ambientColor = texture(textureList, vec3(fragUV, float(textureIdx))).rgb;
-    vec3 ambient = ambientColor;
+    vec3 ambient = vec3(1.0);
+    if (textureIdx >= 0) {
+        ambient = texture(textureList, vec3(fragUV, float(textureIdx))).rgb;
+    }
 
     vec3 diffuse = vec3(0.0);
     for (uint i = 0; i < lightCount; i++) {

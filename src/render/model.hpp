@@ -38,6 +38,8 @@ private:
   std::shared_ptr<TextureManager> textureManager;
   std::shared_ptr<MaterialManager> materialManager;
 
+  std::vector<resource::ObjMaterialGroup> materialGroups;
+
   resource::ObjAsset inner;
   std::vector<GLuint> allIndices;
   GLuint glAttributesIdx;

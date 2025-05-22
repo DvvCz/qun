@@ -34,7 +34,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   viewMatrix = glm::lookAt(cameraPos, cameraTarget, upDir);
   modelMatrix = glm::mat4(1.0f);
 
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(20, 20, 20));
+  // modelMatrix = glm::scale(modelMatrix, glm::vec3(20, 20, 20));
 
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEPTH_TEST);
@@ -62,7 +62,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   textureManager = std::make_shared<TextureManager>(uniformTextureArray, uniformTextureIdx);
 
   // todo: probably only store the uniform in the material manager itself
-  materialManager = std::make_shared<MaterialManager>(uniformMaterialBlock);
+  materialManager = std::make_shared<MaterialManager>(uniformMaterialBlock, textureManager);
 
   lightBlock = {/* clang-format off */
       .lightCount = 2,

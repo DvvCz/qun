@@ -14,6 +14,7 @@ public:
 
   std::expected<GLuint, std::string> addTexture(const resource::ImgAsset& texture) noexcept;
   void bindTexture(GLuint textureId) noexcept;
+  void unbindTexture() noexcept;
 
 private:
   std::vector<resource::ImgAsset> textures;

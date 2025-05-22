@@ -13,23 +13,29 @@
 #include "../../render/vertex.hpp"
 
 namespace resource {
+  struct ObjMaterialGroup {
+  public:
+    int materialId;
+    std::vector<int> indices;
+  };
+
   struct ObjShape {
   public:
     std::string name;
-    std::vector<int> indices;
-
-    /// Material ids corresponding to each tri
-    std::vector<int> materialIds;
+    std::vector<ObjMaterialGroup> groups;
   };
 
   struct ObjMaterial {
   public:
     std::string name;
+
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
     float shininess;
     float dissolve;
+
+    std::optional<std::string> diffuseTexture;
   };
 
   class ObjAsset : public Asset {

@@ -4,6 +4,7 @@
 #include <optional>
 #include <filesystem>
 #include <print>
+#include <map>
 
 #include <rapidobj/rapidobj.hpp>
 
@@ -25,14 +26,17 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
 
   std::vector<ObjMaterial> materials;
   for (const auto& material : obj.materials) {
-    ObjMaterial mat = {
+    ObjMaterial mat = {/* clang-format off */
         .name = material.name,
+
         .ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]),
         .diffuse = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]),
         .specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]),
         .shininess = material.shininess,
         .dissolve = material.dissolve,
-    };
+
+        .diffuseTexture = material.diffuse_texname.empty() ? std::nullopt : std::make_optional(material.diffuse_texname)
+    };/* clang-format on */
 
     materials.push_back(mat);
   }
@@ -41,9 +45,11 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
   std::vector<ObjShape> shapes;
 
   for (const auto& shape : obj.shapes) {
-    std::vector<int> shapeIndices;
+    // Create a map of material ID to vector of indices
+    std::map<int, std::vector<int>> materialGroups;
 
-    for (const auto& index : shape.mesh.indices) {
+    for (size_t i = 0; i < shape.mesh.indices.size(); i++) {
+      const auto& index = shape.mesh.indices[i];
       auto vertexIndex = vertices.size();
 
       /* clang-format off */
@@ -80,18 +86,26 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
           .uv = uv,
       });
 
-      shapeIndices.push_back(vertexIndex);
+      // Get material ID for the current face (each triangle/3 vertices)
+      int faceIndex = i / 3;
+      int materialId = 0; // Default material ID
+      if (faceIndex < static_cast<int>(shape.mesh.material_ids.size())) {
+        materialId = shape.mesh.material_ids[faceIndex];
+      }
+
+      // Add vertex index to the appropriate material group
+      materialGroups[materialId].push_back(vertexIndex);
     }
 
-    std::vector<int> materialIds;
-    for (const auto& materialId : shape.mesh.material_ids) {
-      materialIds.push_back(materialId);
+    // Convert the map to the vector of ObjMaterialGroup
+    std::vector<ObjMaterialGroup> groups;
+    for (const auto& [materialId, indices] : materialGroups) {
+      groups.push_back(ObjMaterialGroup{.materialId = materialId, .indices = indices});
     }
 
     shapes.push_back(ObjShape{/* clang-format off */
         .name = shape.name,
-        .indices = std::move(shapeIndices),
-        .materialIds = materialIds
+        .groups = std::move(groups)
     });/* clang-format on */
   }
 

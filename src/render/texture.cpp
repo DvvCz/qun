@@ -83,3 +83,8 @@ void TextureManager::bindTexture(GLuint textureId) noexcept {
   glBindImageTexture(0, sampler2DArrayIdx, 0, GL_FALSE, textureId, GL_READ_ONLY, GL_RGBA8);
   textureIdx.set(textureId);
 }
+
+void TextureManager::unbindTexture() noexcept {
+  glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
+  textureIdx.set(-1);
+}

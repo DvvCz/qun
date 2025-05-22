@@ -1,20 +1,31 @@
 #include "material.hpp"
+#include "texture.hpp"
 
-MaterialManager::MaterialManager(UniformBlock<MaterialBlock> uniformMaterialBlock)
-    : uniformMaterialBlock(uniformMaterialBlock) {
+#include <print>
+
+MaterialManager::MaterialManager(UniformBlock<MaterialBlock> uniformMaterialBlock, std::shared_ptr<TextureManager> texMan)
+    : uniformMaterialBlock(uniformMaterialBlock), textureManager(texMan) {
 }
 
 MaterialManager::~MaterialManager() {
 }
 
 void MaterialManager::setMaterial(const resource::ObjMaterial& material) noexcept {
-  MaterialBlock newMaterial = {/* clang-format off */
+  /* clang-format off */
+  MaterialBlock newMaterial = {
     .ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]),
     .diffuse = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]),
     .specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]),
     .shininess = material.shininess,
-    .dissolve = material.dissolve
+    .dissolve = material.dissolve,
   };/* clang-format on */
+
+  if (material.diffuseTexture.has_value()) {
+    textureManager->bindTexture(0);
+    // std::println("Theres a texture: {}", material.diffuseTexture.value());
+  } else {
+    textureManager->unbindTexture();
+  }
 
   uniformMaterialBlock.set(newMaterial);
   currentMaterial = newMaterial;
