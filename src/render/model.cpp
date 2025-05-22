@@ -90,9 +90,7 @@ AssetModel::AssetModel(/* clang-format off */
       auto texture = resource::ImgAsset::tryFromFile(resolvedPath);
       if (texture.has_value()) {
         auto textureId = textureManager->addTexture(texture.value());
-        if (textureId.has_value()) {
-          std::println("Added texture with ID {}: {}", textureId.value(), resolvedPath.string());
-        } else {
+        if (!textureId.has_value()) {
           std::println(stderr, "Failed to add texture: {}", textureId.error());
         }
       } else {

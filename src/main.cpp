@@ -37,16 +37,6 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto out2 = resource::ImgAsset::tryFromFile("../resources/Car.Brake-Disk.BMP.png");
-  if (out2.has_value()) {
-    std::println("Successfully loaded img file {}, {}, {}", out2.value().getWidth(), out2.value().getHeight(),
-                 out2.value().getChannels());
-    renderer->addTexture(out2.value());
-  } else {
-    std::println("Failed to load img file: {}", out2.error());
-    return EXIT_FAILURE;
-  }
-
   while (!window->shouldClose()) {
     // Update
     {

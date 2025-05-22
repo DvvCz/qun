@@ -24,9 +24,9 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   auto vertShader =
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.vert"), shader::ShaderType::Vertex);
 
-  glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
+  glm::vec3 upDir = glm::vec3(0.0f, 1.0f, 0.0f);
   glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-  cameraPos = glm::vec3(00.0f, 5.0f, 10.0f);
+  cameraPos = glm::vec3(0.0f, 2.0f, 3.0f);
 
   float aspectRatio = (float)window->getWidth() / (float)window->getHeight();
 
@@ -36,6 +36,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
 
   // modelMatrix = glm::scale(modelMatrix, glm::vec3(20, 20, 20));
   modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1, 0.1, 0.1));
+  modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEPTH_TEST);

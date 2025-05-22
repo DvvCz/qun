@@ -52,14 +52,27 @@ std::expected<GLuint, std::string> TextureManager::addTexture(const resource::Im
   if (/* clang-format off */
     texture.getData().empty() ||
     texture.getWidth() <= 0 ||
-    texture.getHeight() <= 0 ||
-    (texture.getChannels() != 3 && texture.getChannels() != 4)
+    texture.getHeight() <= 0
   ) {/* clang-format on */
     return std::unexpected("Invalid texture data");
   }
 
   GLuint textureId = textures.size();
-  GLenum textureFormat = texture.getChannels() == 3 ? GL_RGB : GL_RGBA;
+
+  GLenum textureFormat;
+  switch (texture.getChannels()) {
+  case 2:
+    textureFormat = GL_RG;
+    break;
+  case 3:
+    textureFormat = GL_RGB;
+    break;
+  case 4:
+    textureFormat = GL_RGBA;
+    break;
+  default:
+    return std::unexpected("Invalid number of channels");
+  }
 
   glTextureSubImage3D(/* clang-format off */
     sampler2DArrayIdx,
