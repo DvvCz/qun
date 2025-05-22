@@ -1,4 +1,4 @@
-#include "sampler.hpp"
+#include "texture.hpp"
 
 #define MAX_WIDTH 1024
 #define MAX_HEIGHT 1024

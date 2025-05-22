@@ -1,6 +1,6 @@
 #include "model.hpp"
-#include "sampler.hpp"
-#include <print>
+#include "texture.hpp"
+#include "material.hpp"
 
 TriangleModel::TriangleModel(Vertex v1, Vertex v2, Vertex v3) {
   glCreateVertexArrays(1, &glAttributesIdx);
@@ -33,8 +33,15 @@ void TriangleModel::draw() const {
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-AssetModel::AssetModel(const resource::ObjAsset& asset, std::shared_ptr<TextureManager> texMan)
-    : inner(asset), textureManager(texMan) {
+AssetModel::AssetModel(/* clang-format off */
+  const resource::ObjAsset& asset,
+  std::shared_ptr<TextureManager> texMan,
+  std::shared_ptr<MaterialManager> matMan
+):
+  inner(asset),
+  textureManager(texMan),
+  materialManager(matMan)
+{/* clang-format on */
   glCreateVertexArrays(1, &glAttributesIdx);
   glCreateBuffers(1, &glBufferIdx);
   glCreateBuffers(1, &glIndexBufferIdx);
@@ -60,9 +67,6 @@ AssetModel::AssetModel(const resource::ObjAsset& asset, std::shared_ptr<TextureM
 
   for (const auto& shape : asset.shapes) {
     allIndices.insert(allIndices.end(), shape.indices.begin(), shape.indices.end());
-  }
-
-  for (const auto& material : asset.materials) {
   }
 
   glNamedBufferData(glBufferIdx, sizeof(Vertex) * asset.vertices.size(), asset.vertices.data(), GL_STATIC_DRAW);

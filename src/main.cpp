@@ -28,7 +28,7 @@ int main() {
 
   auto renderer = std::make_unique<Renderer>(window);
 
-  auto out = resource::ObjAsset::tryFromFile("../resources/sphere.obj");
+  auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
   if (out.has_value()) {
     std::println("Successfully loaded OBJ file");
     renderer->addModel(out.value());

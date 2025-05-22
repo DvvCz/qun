@@ -5,7 +5,8 @@
 #include "../resource/asset.hpp"
 #include "uniform.hpp"
 #include "model.hpp"
-#include "sampler.hpp"
+#include "texture.hpp"
+#include "material.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -24,13 +25,6 @@ struct LightBlock {
   Light lights[MAX_LIGHTS];
 };
 
-struct MaterialBlock {
-  alignas(16) glm::vec3 ambient;
-  alignas(16) glm::vec3 diffuse;
-  alignas(16) glm::vec3 specular;
-  float shininess;
-};
-
 class Renderer final {
 public:
   Renderer(const std::shared_ptr<Window>& window);
@@ -41,6 +35,8 @@ public:
 
 private:
   std::shared_ptr<TextureManager> textureManager;
+  std::shared_ptr<MaterialManager> materialManager;
+
   std::vector<std::unique_ptr<AssetModel>> assetModels;
 
   Uniform<glm::mat4x4> uniformProjMatrix;

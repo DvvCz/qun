@@ -30,6 +30,7 @@ layout(std140, binding = 1) uniform MaterialBlock {
     vec3 materialDiffuse;
     vec3 materialSpecular;
     float materialShininess;
+    float materialDissolve;
 };
 
 out vec4 outColor;
@@ -58,6 +59,6 @@ void main() {
         specular += spec * lights[i].color;
     }
 
-    vec3 resultColor = materialAmbient * ambient + materialDiffuse * diffuse + materialSpecular * specular;
-    outColor = vec4(resultColor, 1.0);
+    vec3 resultColor = 0.5 * materialAmbient * ambient + materialDiffuse * diffuse + materialSpecular * specular;
+    outColor = vec4(resultColor, materialDissolve);
 }

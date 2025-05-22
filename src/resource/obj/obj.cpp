@@ -23,9 +23,18 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
     return std::unexpected{errMsg};
   }
 
-  std::vector<rapidobj::Material> materials;
+  std::vector<ObjMaterial> materials;
   for (const auto& material : obj.materials) {
-    materials.push_back(material);
+    ObjMaterial mat = {
+        .name = material.name,
+        .ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]),
+        .diffuse = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]),
+        .specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]),
+        .shininess = material.shininess,
+        .dissolve = material.dissolve,
+    };
+
+    materials.push_back(mat);
   }
 
   std::vector<Vertex> vertices;

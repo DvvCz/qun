@@ -22,6 +22,16 @@ namespace resource {
     std::vector<int> materialIds;
   };
 
+  struct ObjMaterial {
+  public:
+    std::string name;
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    float shininess;
+    float dissolve;
+  };
+
   class ObjAsset : public Asset {
   public:
     [[nodiscard]] static std::expected<ObjAsset, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
@@ -32,9 +42,9 @@ namespace resource {
 
     std::vector<Vertex> vertices;
     std::vector<ObjShape> shapes;
-    std::vector<rapidobj::Material> materials;
+    std::vector<ObjMaterial> materials;
 
-    ObjAsset(std::vector<Vertex> vertices, std::vector<ObjShape> shapes, std::vector<rapidobj::Material> materials)
+    ObjAsset(std::vector<Vertex> vertices, std::vector<ObjShape> shapes, std::vector<ObjMaterial> materials)
         : vertices(std::move(vertices)), shapes(std::move(shapes)), materials(std::move(materials)) {
     }
   };
