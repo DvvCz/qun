@@ -27,6 +27,7 @@ add_executable(trender
     ./src/render/window.cpp
     ./src/render/renderer.cpp
     ./src/render/model.cpp
+    ./src/render/uniform.cpp
     ./src/render/sampler.cpp
     ./src/shader/shader.cpp
     ./src/shader/program.cpp

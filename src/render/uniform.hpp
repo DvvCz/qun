@@ -41,3 +41,12 @@ public:
 
   GLint location;
 };
+
+template <typename T> class UniformBlock {
+public:
+  UniformBlock(const GLint location);
+  void set(const T& value) const;
+
+  GLint location;
+  GLuint bufferIdx;
+};

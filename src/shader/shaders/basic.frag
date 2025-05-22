@@ -1,15 +1,27 @@
 #version 330 core
 
+struct Light {
+    vec3 position;
+    vec3 color;
+}
+
 in vec3 fragPos;
 in vec3 fragNormal;
 in vec2 fragUV;
 
-uniform mat4x4 projMatrix;
-uniform mat4x4 viewMatrix;
-uniform mat4x4 modelMatrix;
+layout(location = 0) uniform mat4x4 projMatrix;
+layout(location = 1) uniform mat4x4 viewMatrix;
+layout(location = 2) uniform mat4x4 modelMatrix;
 
-uniform sampler2DArray textureList;
-uniform int textureIdx;
+layout(location = 3) uniform sampler2DArray textureList;
+layout(location = 4) uniform int textureIdx;
+
+#define MAX_LIGHTS 20
+
+layout(std140, location = 0) uniform LightBlock {
+    uint lightCount;
+    Light lights[MAX_LIGHTS];
+}
 
 out vec4 outColor;
 

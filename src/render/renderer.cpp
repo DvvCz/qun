@@ -9,7 +9,7 @@
 
 Renderer::Renderer(const std::shared_ptr<Window>& window)
     : window(window), uniformProjMatrix(0), uniformViewMatrix(1), uniformModelMatrix(2), uniformTextureArray(3),
-      uniformTextureIdx(4) {
+      uniformTextureIdx(4), uniformLightBlock(0) {
   auto fragShader =
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.frag"), shader::ShaderType::Fragment);
 
@@ -47,6 +47,18 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
   shaderProgram->link();
 
   textureManager = std::make_shared<TextureManager>(uniformTextureArray, uniformTextureIdx);
+
+  lightBlock = {/* clang-format off */
+      .lightCount = 1,
+      .lights = {
+          { // White light at (0, 0, 0)
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(1.0f, 1.0f, 1.0f)
+          },
+      }
+  };/* clang-format on */
+
+  uniformLightBlock.set(lightBlock);
 }
 
 void Renderer::drawFrame() const {
