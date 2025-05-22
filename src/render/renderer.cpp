@@ -14,12 +14,9 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   uniformModelMatrix(2),
   uniformTextureArray(3),
   uniformTextureIdx(4),
-  uniformAmbience(5),
-  uniformDiffuse(6),
-  uniformSpecular(7),
-  uniformShininess(8),
-  uniformCameraPos(9),
-  uniformLightBlock(0)
+  uniformCameraPos(5),
+  uniformLightBlock(0),
+  uniformMaterialBlock(1)
 { /* clang-format on */
   auto fragShader =
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.frag"), shader::ShaderType::Fragment);
@@ -88,10 +85,12 @@ void Renderer::drawFrame() const {
   uniformViewMatrix.set(viewMatrix);
   uniformModelMatrix.set(modelMatrix);
 
-  uniformAmbience.set(glm::vec3(0.2f, 0.2f, 0.2f));
-  uniformDiffuse.set(glm::vec3(0.8f, 0.8f, 0.8f));
-  uniformSpecular.set(glm::vec3(1.0f, 1.0f, 1.0f));
-  uniformShininess.set(32.0f);
+  uniformMaterialBlock.set({/* clang-format off */
+    .ambient = glm::vec3(0.2f, 0.2f, 0.2f),
+    .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
+    .specular = glm::vec3(1.0f, 1.0f, 1.0f),
+    .shininess = 32.0f
+  });/* clang-format on */
 
   textureManager->bindTexture(0);
 

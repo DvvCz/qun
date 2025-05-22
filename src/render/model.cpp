@@ -62,6 +62,9 @@ AssetModel::AssetModel(const resource::ObjAsset& asset, std::shared_ptr<TextureM
     allIndices.insert(allIndices.end(), shape.indices.begin(), shape.indices.end());
   }
 
+  for (const auto& material : asset.materials) {
+  }
+
   glNamedBufferData(glBufferIdx, sizeof(Vertex) * asset.vertices.size(), asset.vertices.data(), GL_STATIC_DRAW);
   glNamedBufferData(glIndexBufferIdx, sizeof(GLuint) * allIndices.size(), allIndices.data(), GL_STATIC_DRAW);
 }

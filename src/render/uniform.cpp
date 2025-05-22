@@ -12,3 +12,4 @@ template <typename T> void UniformBlock<T>::set(const T& value) const {
 }
 
 template class UniformBlock<LightBlock>;
+template class UniformBlock<MaterialBlock>;

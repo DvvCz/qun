@@ -16,18 +16,20 @@ layout(location = 2) uniform mat4x4 modelMatrix;
 layout(location = 3) uniform sampler2DArray textureList;
 layout(location = 4) uniform int textureIdx;
 
-layout(location = 5) uniform vec3 materialAmbient;
-layout(location = 6) uniform vec3 materialDiffuse;
-layout(location = 7) uniform vec3 materialSpecular;
-layout(location = 8) uniform float materialShininess;
-
-layout(location = 9) uniform float cameraPos;
+layout(location = 5) uniform float cameraPos;
 
 #define MAX_LIGHTS 20
 
 layout(std140, binding = 0) uniform LightBlock {
     uint lightCount;
     Light lights[MAX_LIGHTS];
+};
+
+layout(std140, binding = 1) uniform MaterialBlock {
+    vec3 materialAmbient;
+    vec3 materialDiffuse;
+    vec3 materialSpecular;
+    float materialShininess;
 };
 
 out vec4 outColor;

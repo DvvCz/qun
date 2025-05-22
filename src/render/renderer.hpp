@@ -24,6 +24,13 @@ struct LightBlock {
   Light lights[MAX_LIGHTS];
 };
 
+struct MaterialBlock {
+  alignas(16) glm::vec3 ambient;
+  alignas(16) glm::vec3 diffuse;
+  alignas(16) glm::vec3 specular;
+  float shininess;
+};
+
 class Renderer final {
 public:
   Renderer(const std::shared_ptr<Window>& window);
@@ -43,14 +50,10 @@ private:
   Uniform<GLuint> uniformTextureArray;
   Uniform<GLint> uniformTextureIdx;
 
-  Uniform<glm::vec3> uniformAmbience;
-  Uniform<glm::vec3> uniformDiffuse;
-  Uniform<glm::vec3> uniformSpecular;
-  Uniform<float> uniformShininess;
-
   Uniform<glm::vec3> uniformCameraPos;
 
   UniformBlock<LightBlock> uniformLightBlock;
+  UniformBlock<MaterialBlock> uniformMaterialBlock;
 
   glm::mat4x4 projMatrix;
   glm::mat4x4 viewMatrix;
