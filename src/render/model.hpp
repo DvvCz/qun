@@ -8,6 +8,7 @@
 #include "../resource/asset.hpp"
 #include "../resource/obj/obj.hpp"
 #include "vertex.hpp"
+#include "sampler.hpp"
 
 class Model {
 public:
@@ -28,11 +29,12 @@ private:
 
 class AssetModel : public Model {
 public:
-  AssetModel(const resource::ObjAsset& asset);
+  AssetModel(const resource::ObjAsset& asset, std::shared_ptr<TextureManager> texMan);
   ~AssetModel();
   void draw() const;
 
 private:
+  std::shared_ptr<TextureManager> textureManager;
   resource::ObjAsset inner;
   std::vector<GLuint> allIndices;
   GLuint glAttributesIdx;

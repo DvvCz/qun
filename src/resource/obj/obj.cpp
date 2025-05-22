@@ -23,6 +23,11 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
     return std::unexpected{errMsg};
   }
 
+  std::vector<rapidobj::Material> materials;
+  for (const auto& material : obj.materials) {
+    materials.push_back(material);
+  }
+
   std::vector<Vertex> vertices;
   std::vector<ObjShape> shapes;
 
@@ -69,11 +74,17 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
       shapeIndices.push_back(vertexIndex);
     }
 
-    shapes.push_back(ObjShape{
+    std::vector<int> materialIds;
+    for (const auto& materialId : shape.mesh.material_ids) {
+      materialIds.push_back(materialId);
+    }
+
+    shapes.push_back(ObjShape{/* clang-format off */
         .name = shape.name,
         .indices = std::move(shapeIndices),
-    });
+        .materialIds = materialIds
+    });/* clang-format on */
   }
 
-  return ObjAsset{std::move(vertices), std::move(shapes)};
+  return ObjAsset{std::move(vertices), std::move(shapes), std::move(materials)};
 }

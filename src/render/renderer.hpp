@@ -21,7 +21,7 @@ public:
   void addTexture(const resource::ImgAsset& texture) noexcept;
 
 private:
-  std::unique_ptr<TextureManager> textureManager;
+  std::shared_ptr<TextureManager> textureManager;
   std::vector<std::unique_ptr<AssetModel>> assetModels;
 
   Uniform<glm::mat4x4> uniformProjMatrix;

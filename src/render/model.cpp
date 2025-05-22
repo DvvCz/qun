@@ -1,4 +1,5 @@
 #include "model.hpp"
+#include "sampler.hpp"
 #include <print>
 
 TriangleModel::TriangleModel(Vertex v1, Vertex v2, Vertex v3) {
@@ -32,7 +33,8 @@ void TriangleModel::draw() const {
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-AssetModel::AssetModel(const resource::ObjAsset& asset) : inner(asset) {
+AssetModel::AssetModel(const resource::ObjAsset& asset, std::shared_ptr<TextureManager> texMan)
+    : inner(asset), textureManager(texMan) {
   glCreateVertexArrays(1, &glAttributesIdx);
   glCreateBuffers(1, &glBufferIdx);
   glCreateBuffers(1, &glIndexBufferIdx);

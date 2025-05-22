@@ -17,6 +17,9 @@ namespace resource {
   public:
     std::string name;
     std::vector<int> indices;
+
+    /// Material ids corresponding to each tri
+    std::vector<int> materialIds;
   };
 
   class ObjAsset : public Asset {
@@ -29,9 +32,10 @@ namespace resource {
 
     std::vector<Vertex> vertices;
     std::vector<ObjShape> shapes;
+    std::vector<rapidobj::Material> materials;
 
-    ObjAsset(std::vector<Vertex> vertices, std::vector<ObjShape> shapes)
-        : vertices(std::move(vertices)), shapes(std::move(shapes)) {
+    ObjAsset(std::vector<Vertex> vertices, std::vector<ObjShape> shapes, std::vector<rapidobj::Material> materials)
+        : vertices(std::move(vertices)), shapes(std::move(shapes)), materials(std::move(materials)) {
     }
   };
 }

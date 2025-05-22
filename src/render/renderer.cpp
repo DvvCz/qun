@@ -46,7 +46,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
   shaderProgram->addShader(std::move(fragShader));
   shaderProgram->link();
 
-  textureManager = std::make_unique<TextureManager>(uniformTextureArray, uniformTextureIdx);
+  textureManager = std::make_shared<TextureManager>(uniformTextureArray, uniformTextureIdx);
 }
 
 void Renderer::drawFrame() const {
@@ -75,5 +75,5 @@ void Renderer::addTexture(const resource::ImgAsset& texture) noexcept {
 }
 
 void Renderer::addModel(const resource::ObjAsset& asset) noexcept {
-  assetModels.push_back(std::make_unique<AssetModel>(asset));
+  assetModels.push_back(std::make_unique<AssetModel>(asset, this->textureManager));
 }
