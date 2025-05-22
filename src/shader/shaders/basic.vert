@@ -8,6 +8,9 @@ uniform mat4x4 projMatrix;
 uniform mat4x4 viewMatrix;
 uniform mat4x4 modelMatrix;
 
+uniform sampler2DArray textureList;
+uniform int textureIdx;
+
 out vec3 fragPos;
 out vec3 fragNormal;
 out vec2 fragUV;

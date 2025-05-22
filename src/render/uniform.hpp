@@ -15,6 +15,29 @@ public:
     glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
   }
 
-private:
+  GLint location;
+};
+
+template <> class Uniform<GLuint> {
+public:
+  Uniform(const GLint location) : location(location) {
+  }
+
+  void set(const GLuint value) const {
+    glUniform1ui(location, value);
+  }
+
+  GLint location;
+};
+
+template <> class Uniform<GLint> {
+public:
+  Uniform(const GLint location) : location(location) {
+  }
+
+  void set(const GLint value) const {
+    glUniform1i(location, value);
+  }
+
   GLint location;
 };

@@ -8,11 +8,8 @@
 #include <print>
 
 Renderer::Renderer(const std::shared_ptr<Window>& window)
-    : window(window), triangleModel(TriangleModel(/* clang-format off */
-      Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f)},
-      Vertex{glm::vec3(0.5f, 0.0f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f)},
-      Vertex{glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f)}
-  )), uniformProjMatrix(0), uniformViewMatrix(1), uniformModelMatrix(2) {
+    : window(window), uniformProjMatrix(0), uniformViewMatrix(1), uniformModelMatrix(2), uniformTextureArray(3),
+      uniformTextureIdx(4) {
   auto fragShader =
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.frag"), shader::ShaderType::Fragment);
 
@@ -48,6 +45,8 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
   shaderProgram->addShader(std::move(vertShader));
   shaderProgram->addShader(std::move(fragShader));
   shaderProgram->link();
+
+  textureManager = std::make_unique<TextureManager>(uniformTextureArray, uniformTextureIdx);
 }
 
 void Renderer::drawFrame() const {
@@ -65,6 +64,14 @@ void Renderer::drawFrame() const {
   }
 }
 
-void Renderer::addModel(const resource::ObjAsset& asset) {
+void Renderer::addTexture(const resource::ImgAsset& texture) noexcept {
+  auto textureId = textureManager->addTexture(texture);
+  if (!textureId.has_value()) {
+    std::println("Failed to add texture: {}", textureId.error());
+    return;
+  }
+}
+
+void Renderer::addModel(const resource::ObjAsset& asset) noexcept {
   assetModels.push_back(std::make_unique<AssetModel>(asset));
 }

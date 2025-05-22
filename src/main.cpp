@@ -10,6 +10,7 @@
 #include "render/window.hpp"
 
 #include "resource/obj/obj.hpp"
+#include "resource/img/img.hpp"
 
 int main() {
   if (!glfwInit()) {
@@ -33,6 +34,16 @@ int main() {
     renderer->addModel(out.value());
   } else {
     std::println("Failed to load OBJ file: {}", out.error());
+    return EXIT_FAILURE;
+  }
+
+  auto out2 = resource::ImgAsset::tryFromFile("../resources/NumernSchildAudiR8.png");
+  if (out2.has_value()) {
+    std::println("Successfully loaded img file {}, {}, {}", out2.value().getWidth(), out2.value().getHeight(),
+                 out2.value().getChannels());
+
+  } else {
+    std::println("Failed to load img file: {}", out2.error());
     return EXIT_FAILURE;
   }
 

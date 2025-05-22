@@ -15,6 +15,10 @@ target_include_directories(glad PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
 add_library(rapidobj INTERFACE)
 target_include_directories(rapidobj INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidobj/include)
 
+# stb_image
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
+
 # TRender
 add_executable(trender
     ./src/main.cpp
@@ -23,10 +27,11 @@ add_executable(trender
     ./src/render/window.cpp
     ./src/render/renderer.cpp
     ./src/render/model.cpp
+    ./src/render/sampler.cpp
     ./src/shader/shader.cpp
     ./src/shader/program.cpp
-    ./src/resource/asset.cpp
     ./src/resource/obj/obj.cpp
+    ./src/resource/img/img.cpp
 )
 
 target_include_directories(trender
