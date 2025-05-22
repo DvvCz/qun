@@ -7,9 +7,20 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <print>
 
-Renderer::Renderer(const std::shared_ptr<Window>& window)
-    : window(window), uniformProjMatrix(0), uniformViewMatrix(1), uniformModelMatrix(2), uniformTextureArray(3),
-      uniformTextureIdx(4), uniformLightBlock(0) {
+Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
+  : window(window),
+  uniformProjMatrix(0),
+  uniformViewMatrix(1),
+  uniformModelMatrix(2),
+  uniformTextureArray(3),
+  uniformTextureIdx(4),
+  uniformAmbience(5),
+  uniformDiffuse(6),
+  uniformSpecular(7),
+  uniformShininess(8),
+  uniformCameraPos(9),
+  uniformLightBlock(0)
+{ /* clang-format on */
   auto fragShader =
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.frag"), shader::ShaderType::Fragment);
 
@@ -17,8 +28,8 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.vert"), shader::ShaderType::Vertex);
 
   glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
-  glm::vec3 cameraPos = glm::vec3(00.0f, 5.0f, 10.0f);
   glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+  cameraPos = glm::vec3(00.0f, 5.0f, 10.0f);
 
   float aspectRatio = (float)window->getWidth() / (float)window->getHeight();
 
@@ -63,6 +74,8 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
   };/* clang-format on */
 
   uniformLightBlock.set(lightBlock);
+
+  uniformCameraPos.set(cameraPos);
 }
 
 void Renderer::drawFrame() const {
@@ -74,6 +87,11 @@ void Renderer::drawFrame() const {
   uniformProjMatrix.set(projMatrix);
   uniformViewMatrix.set(viewMatrix);
   uniformModelMatrix.set(modelMatrix);
+
+  uniformAmbience.set(glm::vec3(0.2f, 0.2f, 0.2f));
+  uniformDiffuse.set(glm::vec3(0.8f, 0.8f, 0.8f));
+  uniformSpecular.set(glm::vec3(1.0f, 1.0f, 1.0f));
+  uniformShininess.set(32.0f);
 
   textureManager->bindTexture(0);
 

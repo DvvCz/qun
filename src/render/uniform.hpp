@@ -18,6 +18,18 @@ public:
   GLint location;
 };
 
+template <> class Uniform<float> {
+public:
+  Uniform(const GLint location) : location(location) {
+  }
+
+  void set(const float value) const {
+    glUniform1f(location, value);
+  }
+
+  GLint location;
+};
+
 template <> class Uniform<GLuint> {
 public:
   Uniform(const GLint location) : location(location) {
@@ -37,6 +49,42 @@ public:
 
   void set(const GLint value) const {
     glUniform1i(location, value);
+  }
+
+  GLint location;
+};
+
+template <> class Uniform<glm::vec3> {
+public:
+  Uniform(const GLint location) : location(location) {
+  }
+
+  void set(const glm::vec3& value) const {
+    glUniform3fv(location, 1, &value[0]);
+  }
+
+  GLint location;
+};
+
+template <> class Uniform<glm::vec4> {
+public:
+  Uniform(const GLint location) : location(location) {
+  }
+
+  void set(const glm::vec4& value) const {
+    glUniform4fv(location, 1, &value[0]);
+  }
+
+  GLint location;
+};
+
+template <> class Uniform<glm::vec2> {
+public:
+  Uniform(const GLint location) : location(location) {
+  }
+
+  void set(const glm::vec2& value) const {
+    glUniform2fv(location, 1, &value[0]);
   }
 
   GLint location;

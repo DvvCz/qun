@@ -16,6 +16,13 @@ layout(location = 2) uniform mat4x4 modelMatrix;
 layout(location = 3) uniform sampler2DArray textureList;
 layout(location = 4) uniform int textureIdx;
 
+layout(location = 5) uniform vec3 materialAmbient;
+layout(location = 6) uniform vec3 materialDiffuse;
+layout(location = 7) uniform vec3 materialSpecular;
+layout(location = 8) uniform float materialShininess;
+
+layout(location = 9) uniform float cameraPos;
+
 #define MAX_LIGHTS 20
 
 layout(std140, binding = 0) uniform LightBlock {
@@ -26,10 +33,11 @@ layout(std140, binding = 0) uniform LightBlock {
 out vec4 outColor;
 
 void main() {
+    vec3 fragToCameraDir = normalize(cameraPos - fragPos);
     vec3 normal = normalize(fragNormal);
 
     vec3 ambientColor = texture(textureList, vec3(fragUV, float(textureIdx))).rgb;
-    vec3 ambient = 0.2 * ambientColor;
+    vec3 ambient = ambientColor;
 
     vec3 diffuse = vec3(0.0);
     for (uint i = 0; i < lightCount; i++) {
@@ -39,7 +47,15 @@ void main() {
         diffuse += intensity * lights[i].color;
     }
 
-    vec3 resultColor = ambient + diffuse;
+    vec3 specular = vec3(0.0);
+    for (uint i = 0; i < lightCount; i++) {
+        vec3 lightDir = normalize(lights[i].position - fragPos);
+        vec3 reflectDir = reflect(-lightDir, normal);
+        float spec = pow(max(dot(fragToCameraDir, reflectDir), 0.0), materialShininess);
 
+        specular += spec * lights[i].color;
+    }
+
+    vec3 resultColor = materialAmbient * ambient + materialDiffuse * diffuse + materialSpecular * specular;
     outColor = vec4(resultColor, 1.0);
 }

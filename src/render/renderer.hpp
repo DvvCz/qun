@@ -42,6 +42,14 @@ private:
 
   Uniform<GLuint> uniformTextureArray;
   Uniform<GLint> uniformTextureIdx;
+
+  Uniform<glm::vec3> uniformAmbience;
+  Uniform<glm::vec3> uniformDiffuse;
+  Uniform<glm::vec3> uniformSpecular;
+  Uniform<float> uniformShininess;
+
+  Uniform<glm::vec3> uniformCameraPos;
+
   UniformBlock<LightBlock> uniformLightBlock;
 
   glm::mat4x4 projMatrix;
@@ -49,6 +57,8 @@ private:
   glm::mat4x4 modelMatrix;
 
   LightBlock lightBlock;
+
+  glm::vec3 cameraPos;
 
   std::shared_ptr<Window> window;
   std::unique_ptr<shader::Program> shaderProgram;
