@@ -26,13 +26,20 @@ layout(std140, binding = 0) uniform LightBlock {
 out vec4 outColor;
 
 void main() {
-    // Sample from texture array using fragUV and the texture index
-    outColor = texture(textureList, vec3(fragUV, float(textureIdx)));
+    vec3 normal = normalize(fragNormal);
+
+    vec3 ambientColor = texture(textureList, vec3(fragUV, float(textureIdx))).rgb;
+    vec3 ambient = 0.2 * ambientColor;
+
+    vec3 diffuse = vec3(0.0);
+    for (uint i = 0; i < lightCount; i++) {
+        vec3 lightDir = normalize(lights[i].position - fragPos);
+        float intensity = max(dot(normal, lightDir), 0.0);
+
+        diffuse += intensity * lights[i].color;
+    }
+
+    vec3 resultColor = ambient + diffuse;
+
+    outColor = vec4(resultColor, 1.0);
 }
-
-// void main() {
-//     vec3 positionColor = fragPos * 0.5 + 0.5;
-//     vec3 normalColor = fragNormal * 0.5 + 0.5;
-
-//     outColor = vec4(positionColor * 0.5 + normalColor * 0.5, 1.0);
-// }

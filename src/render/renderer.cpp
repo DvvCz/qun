@@ -49,11 +49,15 @@ Renderer::Renderer(const std::shared_ptr<Window>& window)
   textureManager = std::make_shared<TextureManager>(uniformTextureArray, uniformTextureIdx);
 
   lightBlock = {/* clang-format off */
-      .lightCount = 1,
+      .lightCount = 2,
       .lights = {
           { // White light at (0, 0, 0)
-            glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(1.0f, 1.0f, 1.0f)
+            glm::vec3(0.0f, 0.0f, 5.0f),
+            glm::vec3(1.0f, 0.0f, 0.0f)
+          },
+          { // White light at (0, 0, 0)
+            glm::vec3(0.0f, 5.0f, 5.0f),
+            glm::vec3(0.0f, 0.0f, 1.0f)
           },
       }
   };/* clang-format on */
