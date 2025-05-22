@@ -62,7 +62,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   textureManager = std::make_shared<TextureManager>(uniformTextureArray, uniformTextureIdx);
 
   // todo: probably only store the uniform in the material manager itself
-  materialManager = std::make_shared<MaterialManager>(uniformLightBlock);
+  materialManager = std::make_shared<MaterialManager>(uniformMaterialBlock);
 
   lightBlock = {/* clang-format off */
       .lightCount = 2,
