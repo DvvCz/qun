@@ -1,9 +1,9 @@
-#version 330 core
+#version 450 core
 
 struct Light {
     vec3 position;
     vec3 color;
-}
+};
 
 in vec3 fragPos;
 in vec3 fragNormal;
@@ -18,10 +18,10 @@ layout(location = 4) uniform int textureIdx;
 
 #define MAX_LIGHTS 20
 
-layout(std140, location = 0) uniform LightBlock {
+layout(std140, binding = 0) uniform LightBlock {
     uint lightCount;
     Light lights[MAX_LIGHTS];
-}
+};
 
 out vec4 outColor;
 
