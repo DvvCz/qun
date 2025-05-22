@@ -8,7 +8,7 @@ std::expected<resource::ImgAsset, std::string> resource::ImgAsset::tryFromFile(c
   unsigned char* data = stbi_load(path.string().c_str(), &width, &height, &channels, 0);
 
   if (!data) {
-    return std::unexpected{stbi_failure_reason()};
+    return std::unexpected{std::format("{}: {}", stbi_failure_reason(), path.string())};
   }
 
   std::vector<unsigned char> imageData(data, data + (width * height * channels));
@@ -19,6 +19,7 @@ std::expected<resource::ImgAsset, std::string> resource::ImgAsset::tryFromFile(c
     width,
     height,
     channels,
-    std::move(imageData)
+    std::move(imageData),
+    path
   );/* clang-format on */
 }

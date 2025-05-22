@@ -1,8 +1,10 @@
 #include "texture.hpp"
 
-#define MAX_WIDTH 1024
-#define MAX_HEIGHT 1024
-#define MAX_TEXTURES 128
+#include <print>
+
+#define MAX_WIDTH 2048
+#define MAX_HEIGHT 2048
+#define MAX_TEXTURES 64
 
 TextureManager::TextureManager(Uniform<GLuint> sampler2DUniform, Uniform<GLint> textureIdxUniform)
     : sampler2DArray(sampler2DUniform), textureIdx(textureIdxUniform) {
@@ -87,4 +89,16 @@ void TextureManager::bindTexture(GLuint textureId) noexcept {
 void TextureManager::unbindTexture() noexcept {
   glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
   textureIdx.set(-1);
+}
+
+std::optional<GLuint> TextureManager::getTextureByPath(const std::filesystem::path& path) const noexcept {
+  for (size_t i = 0; i < textures.size(); ++i) {
+    // todo: i think this should enforce that the path is resolved.
+    // because any textures with matching names will be considered the same here.
+    if (textures[i].getPath().filename() == path) {
+      return static_cast<GLuint>(i);
+    }
+  }
+
+  return std::nullopt;
 }

@@ -35,6 +35,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   modelMatrix = glm::mat4(1.0f);
 
   // modelMatrix = glm::scale(modelMatrix, glm::vec3(20, 20, 20));
+  modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1, 0.1, 0.1));
 
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEPTH_TEST);

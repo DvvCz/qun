@@ -109,5 +109,10 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
     });/* clang-format on */
   }
 
-  return ObjAsset{std::move(vertices), std::move(shapes), std::move(materials)};
+  return ObjAsset{/* clang-format off */
+    std::move(vertices),
+    std::move(shapes),
+    std::move(materials),
+    std::move(path)
+  };/* clang-format on */
 }

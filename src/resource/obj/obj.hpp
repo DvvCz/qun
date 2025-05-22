@@ -40,18 +40,26 @@ namespace resource {
 
   class ObjAsset : public Asset {
   public:
-    [[nodiscard]] static std::expected<ObjAsset, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
-
     [[nodiscard]] std::optional<std::string> getName() const noexcept {
       return "OBJ Asset";
+    }
+
+    [[nodiscard]] static std::expected<ObjAsset, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
+
+    [[nodiscard]] std::filesystem::path getPath() const noexcept {
+      return path;
     }
 
     std::vector<Vertex> vertices;
     std::vector<ObjShape> shapes;
     std::vector<ObjMaterial> materials;
 
-    ObjAsset(std::vector<Vertex> vertices, std::vector<ObjShape> shapes, std::vector<ObjMaterial> materials)
-        : vertices(std::move(vertices)), shapes(std::move(shapes)), materials(std::move(materials)) {
+    ObjAsset(std::vector<Vertex> vertices, std::vector<ObjShape> shapes, std::vector<ObjMaterial> materials,
+             std::filesystem::path path)
+        : vertices(std::move(vertices)), shapes(std::move(shapes)), materials(std::move(materials)), path(std::move(path)) {
     }
+
+  private:
+    std::filesystem::path path;
   };
 }

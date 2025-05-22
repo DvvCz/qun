@@ -21,8 +21,14 @@ void MaterialManager::setMaterial(const resource::ObjMaterial& material) noexcep
   };/* clang-format on */
 
   if (material.diffuseTexture.has_value()) {
-    textureManager->bindTexture(0);
-    // std::println("Theres a texture: {}", material.diffuseTexture.value());
+    // textureManager->bindTexture(0);
+    auto out = textureManager->getTextureByPath(material.diffuseTexture.value());
+    if (out.has_value()) {
+      textureManager->bindTexture(out.value());
+    } else {
+      std::println(stderr, "Failed to get texture by path: {}", material.diffuseTexture.value());
+      textureManager->unbindTexture();
+    }
   } else {
     textureManager->unbindTexture();
   }

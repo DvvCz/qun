@@ -13,6 +13,8 @@ public:
   ~TextureManager();
 
   std::expected<GLuint, std::string> addTexture(const resource::ImgAsset& texture) noexcept;
+  std::optional<GLuint> getTextureByPath(const std::filesystem::path& path) const noexcept;
+
   void bindTexture(GLuint textureId) noexcept;
   void unbindTexture() noexcept;
 

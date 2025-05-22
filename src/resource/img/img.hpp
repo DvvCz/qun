@@ -20,8 +20,12 @@ namespace resource {
 
     [[nodiscard]] static std::expected<ImgAsset, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
 
-    ImgAsset(int width, int height, int channels, std::vector<unsigned char> data)
-        : width(width), height(height), channels(channels), data(std::move(data)) {
+    std::filesystem::path getPath() const noexcept {
+      return path;
+    }
+
+    ImgAsset(int width, int height, int channels, std::vector<unsigned char> data, std::filesystem::path path)
+        : width(width), height(height), channels(channels), data(std::move(data)), path(std::move(path)) {
     }
 
     [[nodiscard]] int getWidth() const noexcept {
@@ -45,5 +49,6 @@ namespace resource {
     int height;
     int channels;
     std::vector<unsigned char> data;
+    std::filesystem::path path;
   };
 }
