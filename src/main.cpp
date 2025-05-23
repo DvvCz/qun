@@ -30,7 +30,6 @@ int main() {
 
   auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
   if (out.has_value()) {
-    std::println("Successfully loaded OBJ file");
     renderer->addModel(out.value());
   } else {
     std::println("Failed to load OBJ file: {}", out.error());
