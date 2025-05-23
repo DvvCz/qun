@@ -20,6 +20,7 @@ int main() {
 
   auto window = std::make_shared<Window>(800, 600, "OpenGL Window");
   Input::Keyboard::bindGlfwCallbacks(window->getGlfwWindow());
+  Input::Mouse::bindGlfwCallbacks(window->getGlfwWindow());
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::println("Failed to initialize GLAD");
@@ -46,7 +47,13 @@ int main() {
         break;
       }
 
+      if (Input::Mouse::wasJustPressed(Input::MouseButton::Left)) {
+        auto mousePos = Input::Mouse::getPosition();
+        std::println("Mouse Position: ({}, {})", mousePos.x, mousePos.y);
+      }
+
       Input::Keyboard::resetCurrentKeyMaps();
+      Input::Mouse::resetCurrentMouseMaps();
     }
 
     // Draw
