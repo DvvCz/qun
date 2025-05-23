@@ -24,14 +24,12 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   auto vertShader =
       std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.vert"), shader::ShaderType::Vertex);
 
-  glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
-  glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
   cameraPos = glm::vec3(0.0f, 5.0f, 10.0f);
 
   float aspectRatio = (float)window->getWidth() / (float)window->getHeight();
 
   projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
-  viewMatrix = glm::lookAt(cameraPos, cameraTarget, upDir);
+  viewMatrix = glm::lookAt(cameraPos, glm::vec3(0.0f, 0.0f, 0.0f), upDir);
   modelMatrix = glm::mat4(1.0f);
 
   modelMatrix = glm::scale(modelMatrix, glm::vec3(20, 20, 20));
@@ -122,4 +120,45 @@ void Renderer::addTexture(const resource::ImgAsset& texture) noexcept {
 void Renderer::addModel(const resource::ObjAsset& asset) noexcept {
   auto model = std::make_unique<AssetModel>(asset, this->textureManager, this->materialManager);
   assetModels.push_back(std::move(model));
+}
+
+void Renderer::setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept {
+  this->projMatrix = projMatrix;
+  uniformProjMatrix.set(projMatrix);
+}
+
+void Renderer::setViewMatrix(const glm::mat4x4& viewMatrix) noexcept {
+  this->viewMatrix = viewMatrix;
+  uniformViewMatrix.set(viewMatrix);
+}
+
+void Renderer::setModelMatrix(const glm::mat4x4& modelMatrix) noexcept {
+  this->modelMatrix = modelMatrix;
+  uniformModelMatrix.set(modelMatrix);
+}
+
+void Renderer::setCameraPos(const glm::vec3& cameraPos) noexcept {
+  this->cameraPos = cameraPos;
+  uniformCameraPos.set(cameraPos);
+}
+
+void Renderer::setLookAt(const glm::vec3& target) noexcept {
+  viewMatrix = glm::lookAt(cameraPos, target, glm::vec3(0.0f, 0.0f, 1.0f));
+  uniformViewMatrix.set(viewMatrix);
+}
+
+const glm::mat4x4& Renderer::getProjectionMatrix() const noexcept {
+  return projMatrix;
+}
+
+const glm::mat4x4& Renderer::getViewMatrix() const noexcept {
+  return viewMatrix;
+}
+
+const glm::mat4x4& Renderer::getModelMatrix() const noexcept {
+  return modelMatrix;
+}
+
+const glm::vec3& Renderer::getCameraPos() const noexcept {
+  return cameraPos;
 }

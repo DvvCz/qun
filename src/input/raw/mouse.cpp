@@ -1,11 +1,12 @@
 #include "mouse.hpp"
 
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include <cstdint>
 #include <algorithm>
 #include <array>
-#include <glm/glm.hpp>
+#include <ranges>
 
 namespace Input {
   Mouse::MouseButtonMap Mouse::mouseButtonsJustPressed = {false};
@@ -13,6 +14,7 @@ namespace Input {
   Mouse::MouseButtonMap Mouse::mouseButtonsCurrentlyHeld = {false};
 
   glm::vec2 Mouse::mousePosition = {0.0f, 0.0f};
+  glm::vec2 Mouse::mousePositionLastFrame = {0.0f, 0.0f};
 
   void Mouse::bindGlfwCallbacks(GLFWwindow* const glfwWindow) {
     glfwSetMouseButtonCallback(glfwWindow, onGlfwMouseButtonCallback);
@@ -39,7 +41,13 @@ namespace Input {
     return mousePosition;
   }
 
+  glm::vec2 Mouse::getPositionDelta() {
+    return mousePosition - mousePositionLastFrame;
+  }
+
   void Mouse::onGlfwMouseMoveCallback(GLFWwindow* window, double xpos, double ypos) {
+    mousePositionLastFrame = mousePosition;
+
     mousePosition.x = static_cast<float>(xpos);
     mousePosition.y = static_cast<float>(ypos);
   }
@@ -67,7 +75,7 @@ namespace Input {
   }
 
   void Mouse::resetCurrentMouseMaps() {
-    std::fill(mouseButtonsJustPressed.begin(), mouseButtonsJustPressed.end(), false);
-    std::fill(mouseButtonsJustReleased.begin(), mouseButtonsJustReleased.end(), false);
+    std::ranges::fill(mouseButtonsJustPressed, false);
+    std::ranges::fill(mouseButtonsJustReleased, false);
   }
 }

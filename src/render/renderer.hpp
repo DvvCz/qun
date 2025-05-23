@@ -29,9 +29,25 @@ class Renderer final {
 public:
   Renderer(const std::shared_ptr<Window>& window);
 
+  const glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
+
   void drawFrame() const;
+
   void addModel(const resource::ObjAsset& asset) noexcept;
   void addTexture(const resource::ImgAsset& texture) noexcept;
+
+  void setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept;
+  void setViewMatrix(const glm::mat4x4& viewMatrix) noexcept;
+  void setModelMatrix(const glm::mat4x4& modelMatrix) noexcept;
+
+  void setCameraPos(const glm::vec3& cameraPos) noexcept;
+  void setLookAt(const glm::vec3& target) noexcept;
+
+  [[nodiscard]] const glm::mat4x4& getProjectionMatrix() const noexcept;
+  [[nodiscard]] const glm::mat4x4& getViewMatrix() const noexcept;
+  [[nodiscard]] const glm::mat4x4& getModelMatrix() const noexcept;
+
+  [[nodiscard]] const glm::vec3& getCameraPos() const noexcept;
 
 private:
   std::shared_ptr<TextureManager> textureManager;

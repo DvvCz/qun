@@ -30,6 +30,7 @@ namespace Input {
     [[nodiscard]] static bool isCurrentlyHeld(const MouseButton button);
 
     [[nodiscard]] static glm::vec2 getPosition();
+    [[nodiscard]] static glm::vec2 getPositionDelta();
 
     static void resetCurrentMouseMaps();
 
@@ -41,6 +42,7 @@ namespace Input {
     static MouseButtonMap mouseButtonsCurrentlyHeld;
 
     static glm::vec2 mousePosition;
+    static glm::vec2 mousePositionLastFrame;
 
     static void onMouseButtonPressed(const MouseButton button);
     static void onMouseButtonReleased(const MouseButton button);

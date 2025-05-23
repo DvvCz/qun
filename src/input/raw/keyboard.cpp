@@ -1,6 +1,7 @@
 #include "keyboard.hpp"
 
 #include <print>
+#include <ranges>
 
 namespace Input {
   Keyboard::KeyMap Keyboard::keysJustPressed = {false};
@@ -13,8 +14,6 @@ namespace Input {
 
   void Keyboard::onKeyPressed(const Key key) {
     auto keyIndex = static_cast<size_t>(key);
-
-    std::println("Key Pressed: {}", static_cast<int>(key));
 
     keysJustPressed.at(keyIndex) = true;
     keysJustReleased.at(keyIndex) = false;
@@ -52,7 +51,7 @@ namespace Input {
   }
 
   void Keyboard::resetCurrentKeyMaps() {
-    std::fill(keysJustPressed.begin(), keysJustPressed.end(), false);
-    std::fill(keysJustReleased.begin(), keysJustReleased.end(), false);
+    std::ranges::fill(keysJustPressed, false);
+    std::ranges::fill(keysJustReleased, false);
   }
 }

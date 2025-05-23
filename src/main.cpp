@@ -37,6 +37,9 @@ int main() {
     return EXIT_FAILURE;
   }
 
+  float deltaTime = 0.0f;
+  float lastTime = glfwGetTime();
+
   while (!window->shouldClose()) {
     // Update
     {
@@ -47,10 +50,28 @@ int main() {
         break;
       }
 
-      if (Input::Mouse::wasJustPressed(Input::MouseButton::Left)) {
-        auto mousePos = Input::Mouse::getPosition();
-        std::println("Mouse Position: ({}, {})", mousePos.x, mousePos.y);
+      float curTime = glfwGetTime();
+      deltaTime = curTime - lastTime;
+      lastTime = curTime;
+
+      if (Input::Keyboard::isCurrentlyHeld(Input::Key::W)) {
+        renderer->setCameraPos(renderer->getCameraPos() + glm::vec3(0.0f, 0.0f, -1.0f) * deltaTime);
       }
+
+      if (Input::Keyboard::isCurrentlyHeld(Input::Key::S)) {
+        renderer->setCameraPos(renderer->getCameraPos() + glm::vec3(0.0f, 0.0f, 1.0f) * deltaTime);
+      }
+
+      if (Input::Keyboard::isCurrentlyHeld(Input::Key::A)) {
+        renderer->setCameraPos(renderer->getCameraPos() + glm::vec3(-1.0f, 0.0f, 0.0f) * deltaTime);
+      }
+
+      if (Input::Keyboard::isCurrentlyHeld(Input::Key::D)) {
+        renderer->setCameraPos(renderer->getCameraPos() + glm::vec3(1.0, 0.0f, 0.0f) * deltaTime);
+      }
+
+      // auto lookTarget = renderer->getCameraPos() + glm::vec3(sin(mouseDelta.x), cos(-mouseDelta.y), 0.0f);
+      // renderer->setLookAt(lookTarget);
 
       Input::Keyboard::resetCurrentKeyMaps();
       Input::Mouse::resetCurrentMouseMaps();

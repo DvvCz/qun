@@ -10,6 +10,7 @@ Window::Window(uint16_t width, uint16_t height, std::string title)
   glfwWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
   glfwSetWindowUserPointer(glfwWindow, this);
   glfwMakeContextCurrent(glfwWindow);
+  glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   glfwSetFramebufferSizeCallback(glfwWindow, onResize); /* clang-format on */
 }
