@@ -23,6 +23,8 @@ void Window::onResize(GLFWwindow* window, int width, int height) {
   auto* wrappedWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
   wrappedWindow->currentWidth = static_cast<uint16_t>(width);
   wrappedWindow->currentHeight = static_cast<uint16_t>(height);
+
+  glViewport(0, 0, width, height);
 }
 
 bool Window::shouldClose() const {

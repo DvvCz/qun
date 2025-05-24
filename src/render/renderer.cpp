@@ -79,8 +79,10 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
       }
   };/* clang-format on */
 
-  uniformLightBlock.set(lightBlock);
+  // Need to activate shader program before setting uniforms
+  shaderProgram->use();
 
+  uniformLightBlock.set(lightBlock);
   uniformCameraPos.set(cameraPos);
 }
 
