@@ -37,6 +37,11 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   modelMatrix = glm::scale(modelMatrix, glm::vec3(20, 20, 20));
   modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
+  // Set initial viewport size
+  int framebufferWidth, framebufferHeight;
+  glfwGetFramebufferSize(window->getGlfwWindow(), &framebufferWidth, &framebufferHeight);
+  glViewport(0, 0, framebufferWidth, framebufferHeight);
+
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEPTH_TEST);
 
