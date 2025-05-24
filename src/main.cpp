@@ -3,6 +3,7 @@
 #include <memory>
 #include <print>
 #include <fstream>
+#include <algorithm>
 
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"
@@ -40,6 +41,18 @@ int main() {
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();
 
+  // Camera control variables
+  float yaw = 0.0f;                // Horizontal rotation
+  float pitch = 0.0f;              // Vertical rotation
+  float mouseSensitivity = 0.002f; // Mouse sensitivity
+  float cameraSpeed = 3.0f;        // Movement speed
+
+  // Hide cursor for first-person camera
+  glfwSetInputMode(window->getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+  // Initialize camera position to a reasonable distance from the bunny
+  renderer->setCameraPos(glm::vec3(-5.0f, 0.0f, 0.0f));
+
   while (!window->shouldClose()) {
     // Update
     {
@@ -54,24 +67,45 @@ int main() {
       deltaTime = curTime - lastTime;
       lastTime = curTime;
 
+      // Mouse look
+      auto mouseDelta = Input::Mouse::getPositionDelta();
+      yaw -= mouseDelta.x * mouseSensitivity;
+      pitch -= mouseDelta.y * mouseSensitivity; // Invert Y axis for natural camera movement
+
+      // Clamp pitch to prevent camera flipping
+      pitch = std::clamp(pitch, -1.5f, 1.5f); // About ±85 degrees in radians
+
+      // Calculate camera direction from yaw and pitch
+      glm::vec3 cameraFront;
+      cameraFront.x = cos(yaw) * cos(pitch);
+      cameraFront.y = sin(yaw) * cos(pitch);
+      cameraFront.z = sin(pitch);
+      cameraFront = glm::normalize(cameraFront);
+
+      // Calculate right and up vectors for movement
+      glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, glm::vec3(0.0f, 0.0f, 1.0f)));
+      glm::vec3 cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
+
+      // Movement relative to camera direction
+      glm::vec3 cameraPos = renderer->getCameraPos();
+      float velocity = cameraSpeed * deltaTime;
+
       if (Input::Keyboard::isCurrentlyHeld(Input::Key::W)) {
-        renderer->setCameraPos(renderer->getCameraPos() + glm::vec3(0.0f, 0.0f, -1.0f) * deltaTime);
+        cameraPos += cameraFront * velocity;
       }
-
       if (Input::Keyboard::isCurrentlyHeld(Input::Key::S)) {
-        renderer->setCameraPos(renderer->getCameraPos() + glm::vec3(0.0f, 0.0f, 1.0f) * deltaTime);
+        cameraPos -= cameraFront * velocity;
       }
-
       if (Input::Keyboard::isCurrentlyHeld(Input::Key::A)) {
-        renderer->setCameraPos(renderer->getCameraPos() + glm::vec3(-1.0f, 0.0f, 0.0f) * deltaTime);
+        cameraPos -= cameraRight * velocity;
       }
-
       if (Input::Keyboard::isCurrentlyHeld(Input::Key::D)) {
-        renderer->setCameraPos(renderer->getCameraPos() + glm::vec3(1.0, 0.0f, 0.0f) * deltaTime);
+        cameraPos += cameraRight * velocity;
       }
 
-      // auto lookTarget = renderer->getCameraPos() + glm::vec3(sin(mouseDelta.x), cos(-mouseDelta.y), 0.0f);
-      // renderer->setLookAt(lookTarget);
+      // Update camera position and direction
+      renderer->setCameraPos(cameraPos);
+      renderer->setCameraDir(cameraFront);
 
       Input::Keyboard::resetCurrentKeyMaps();
       Input::Mouse::resetCurrentMouseMaps();

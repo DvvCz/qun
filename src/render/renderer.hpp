@@ -41,7 +41,7 @@ public:
   void setModelMatrix(const glm::mat4x4& modelMatrix) noexcept;
 
   void setCameraPos(const glm::vec3& cameraPos) noexcept;
-  void setLookAt(const glm::vec3& target) noexcept;
+  void setCameraDir(const glm::vec3& cameraDir) noexcept;
 
   [[nodiscard]] const glm::mat4x4& getProjectionMatrix() const noexcept;
   [[nodiscard]] const glm::mat4x4& getViewMatrix() const noexcept;
@@ -74,6 +74,7 @@ private:
   LightBlock lightBlock;
 
   glm::vec3 cameraPos;
+  glm::vec3 cameraFront;
 
   std::shared_ptr<Window> window;
   std::unique_ptr<shader::Program> shaderProgram;
