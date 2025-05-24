@@ -12,7 +12,7 @@ public:
 
   [[nodiscard]] GLFWwindow* getGlfwWindow() const;
   [[nodiscard]] uint16_t getWidth() const;
-  [[nodiscard]] int getHeight() const;
+  [[nodiscard]] uint16_t getHeight() const;
   [[nodiscard]] std::string& getTitle() const;
 
   [[nodiscard]] bool shouldClose() const;

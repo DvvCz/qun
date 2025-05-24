@@ -39,6 +39,6 @@ uint16_t Window::getWidth() const {
   return currentWidth;
 }
 
-int Window::getHeight() const {
+uint16_t Window::getHeight() const {
   return currentHeight;
 }
