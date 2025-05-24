@@ -27,9 +27,8 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
   cameraFront = glm::vec3(1.0f, 0.0f, 0.0f);
 
-  float aspectRatio = (float)window->getWidth() / (float)window->getHeight();
-
-  projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+  // Use the fixed 16:9 aspect ratio instead of calculating from window size
+  projMatrix = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.1f, 100.0f);
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, upDir);
 
   modelMatrix = glm::mat4(1.0f);
@@ -37,10 +36,30 @@ Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
   modelMatrix = glm::scale(modelMatrix, glm::vec3(20, 20, 20));
   modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-  // Set initial viewport size
+  // Set initial viewport size with 16:9 aspect ratio
   int framebufferWidth, framebufferHeight;
   glfwGetFramebufferSize(window->getGlfwWindow(), &framebufferWidth, &framebufferHeight);
-  glViewport(0, 0, framebufferWidth, framebufferHeight);
+
+  // Calculate viewport dimensions to maintain 16:9 aspect ratio
+  float currentAspectRatio = static_cast<float>(framebufferWidth) / static_cast<float>(framebufferHeight);
+
+  int viewportX = 0;
+  int viewportY = 0;
+  int viewportWidth = framebufferWidth;
+  int viewportHeight = framebufferHeight;
+
+  // If current aspect ratio is wider than target, apply pillarboxing
+  if (currentAspectRatio > ASPECT_RATIO) {
+    viewportWidth = static_cast<int>(framebufferHeight * ASPECT_RATIO);
+    viewportX = (framebufferWidth - viewportWidth) / 2;
+  }
+  // If current aspect ratio is taller than target, apply letterboxing
+  else if (currentAspectRatio < ASPECT_RATIO) {
+    viewportHeight = static_cast<int>(framebufferWidth / ASPECT_RATIO);
+    viewportY = (framebufferHeight - viewportHeight) / 2;
+  }
+
+  glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
 
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEPTH_TEST);

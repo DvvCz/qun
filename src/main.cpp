@@ -19,7 +19,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto window = std::make_shared<Window>(800, 600, "OpenGL Window");
+  auto window = std::make_shared<Window>(1280, 720, "OpenGL Window");
   Input::Keyboard::bindGlfwCallbacks(window->getGlfwWindow());
   Input::Mouse::bindGlfwCallbacks(window->getGlfwWindow());
 

@@ -24,7 +24,29 @@ void Window::onResize(GLFWwindow* window, int width, int height) {
   wrappedWindow->currentWidth = static_cast<uint16_t>(width);
   wrappedWindow->currentHeight = static_cast<uint16_t>(height);
 
-  glViewport(0, 0, width, height);
+  // Calculate viewport to maintain 16:9 aspect ratio
+  // Using the same constant as defined in Renderer
+  constexpr float targetAspectRatio = 16.0f / 9.0f;
+
+  float currentAspectRatio = static_cast<float>(width) / static_cast<float>(height);
+
+  int viewportX = 0;
+  int viewportY = 0;
+  int viewportWidth = width;
+  int viewportHeight = height;
+
+  // If current aspect ratio is wider than target, apply pillarboxing (black bars on sides)
+  if (currentAspectRatio > targetAspectRatio) {
+    viewportWidth = static_cast<int>(height * targetAspectRatio);
+    viewportX = (width - viewportWidth) / 2;
+  }
+  // If current aspect ratio is taller than target, apply letterboxing (black bars on top/bottom)
+  else if (currentAspectRatio < targetAspectRatio) {
+    viewportHeight = static_cast<int>(width / targetAspectRatio);
+    viewportY = (height - viewportHeight) / 2;
+  }
+
+  glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
 }
 
 bool Window::shouldClose() const {
