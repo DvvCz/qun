@@ -89,18 +89,19 @@ int main() {
       // Movement relative to camera direction
       glm::vec3 cameraPos = renderer->getCameraPos();
       float velocity = cameraSpeed * deltaTime;
+      float shiftMul = Input::Keyboard::isCurrentlyHeld(Input::Key::LeftShift) ? 2.0f : 1.0f;
 
       if (Input::Keyboard::isCurrentlyHeld(Input::Key::W)) {
-        cameraPos += cameraFront * velocity;
+        cameraPos += cameraFront * velocity * shiftMul;
       }
       if (Input::Keyboard::isCurrentlyHeld(Input::Key::S)) {
-        cameraPos -= cameraFront * velocity;
+        cameraPos -= cameraFront * velocity * shiftMul;
       }
       if (Input::Keyboard::isCurrentlyHeld(Input::Key::A)) {
-        cameraPos -= cameraRight * velocity;
+        cameraPos -= cameraRight * velocity * shiftMul;
       }
       if (Input::Keyboard::isCurrentlyHeld(Input::Key::D)) {
-        cameraPos += cameraRight * velocity;
+        cameraPos += cameraRight * velocity * shiftMul;
       }
 
       // Update camera position and direction

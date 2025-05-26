@@ -45,22 +45,33 @@ void main() {
     }
 
     vec3 diffuse = vec3(0.0);
-    for (uint i = 0; i < lightCount; i++) {
-        vec3 lightDir = normalize(lights[i].position - fragPos);
-        float intensity = max(dot(normal, lightDir), 0.0);
-
-        diffuse += intensity * lights[i].color;
-    }
-
     vec3 specular = vec3(0.0);
+
     for (uint i = 0; i < lightCount; i++) {
-        vec3 lightDir = normalize(lights[i].position - fragPos);
+        // Calculate light direction and distance
+        vec3 lightToFrag = fragPos - lights[i].position;
+        vec3 lightDir = -normalize(lightToFrag);
+
+        // Diffuse calculation
+        float diff = max(dot(normal, lightDir), 0.0);
+
+        // Specular calculation
         vec3 reflectDir = reflect(-lightDir, normal);
         float spec = pow(max(dot(fragToCameraDir, reflectDir), 0.0), materialShininess);
 
-        specular += spec * lights[i].color;
+        // Avoid extreme light at very close distances
+        float distToLight = length(lightToFrag);
+        float distAttenuation = 1.0 / (1.0 + 0.09 * distToLight + 0.032 * distToLight * distToLight);
+
+        diffuse += diff * lights[i].color * distAttenuation;
+        specular += spec * lights[i].color * distAttenuation;
     }
 
-    vec3 resultColor = 0.5 * materialAmbient * ambient + materialDiffuse * diffuse + materialSpecular * specular;
+    // Balance the different lighting components
+    vec3 ambientPart = materialAmbient * ambient;
+    vec3 diffusePart = materialDiffuse * diffuse;
+    vec3 specularPart = materialSpecular * specular;
+
+    vec3 resultColor = ambientPart + diffusePart + specularPart;
     outColor = vec4(resultColor, materialDissolve);
 }
