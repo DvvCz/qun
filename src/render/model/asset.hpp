@@ -1,32 +1,9 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-
-#include <array>
-
-#include "../resource/asset.hpp"
-#include "../resource/obj/obj.hpp"
-#include "vertex.hpp"
-#include "texture.hpp"
-#include "material.hpp"
-
-class Model {
-public:
-  virtual void draw() const = 0;
-};
-
-class TriangleModel : public Model {
-public:
-  TriangleModel(Vertex v1, Vertex v2, Vertex v3);
-  ~TriangleModel();
-  void draw() const;
-
-private:
-  std::array<Vertex, 3> vertices;
-  GLuint glAttributesIdx;
-  GLuint glBufferIdx;
-};
+#include "model.hpp"
+#include "../material.hpp"
+#include "../texture.hpp"
+#include "../../resource/obj/obj.hpp"
 
 class AssetModel : public Model {
 public:

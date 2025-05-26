@@ -2,11 +2,10 @@
 
 #include "window.hpp"
 #include "../shader/program.hpp"
-#include "../resource/asset.hpp"
 #include "uniform.hpp"
-#include "model.hpp"
 #include "texture.hpp"
 #include "material.hpp"
+#include "model/asset.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

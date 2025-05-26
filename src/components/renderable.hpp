@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../resource/obj/obj.hpp"
-#include "../render/model.hpp"
+#include <memory>
+
+#include "../render/model/model.hpp"
 
 namespace components {
-  using Renderable = std::shared_ptr<AssetModel>;
+  using Renderable = std::shared_ptr<Model>;
 }

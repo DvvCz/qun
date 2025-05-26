@@ -141,11 +141,11 @@ void Renderer::drawFrame() {
   // }
 
   auto renderableEnts = registry->view<components::GlobalTransform, components::Renderable>();
-  for (auto ent : renderableEnts) {
-    auto transform = registry->get<components::GlobalTransform>(ent);
+  for (const auto ent : renderableEnts) {
+    auto globalTransform = registry->get<components::GlobalTransform>(ent);
     auto renderable = registry->get<components::Renderable>(ent);
 
-    modelMatrix = transform;
+    modelMatrix = globalTransform;
     uniformModelMatrix.set(modelMatrix);
 
     renderable->draw();
