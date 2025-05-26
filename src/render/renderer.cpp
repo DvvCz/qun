@@ -136,10 +136,7 @@ material::Block2D defaultMaterial2D = {/* clang-format off */
   .color = glm::vec3(1.0f, 1.0f, 1.0f)
 };/* clang-format on */
 
-void Renderer::drawFrame() {
-  glClearColor(0.3f, 0.3f, 0.6f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
-
+void Renderer::draw2D() {
   shader2D->use();
 #ifdef SHADER_HOTRELOADING
   shader2D->checkForHotReload();
@@ -160,7 +157,9 @@ void Renderer::drawFrame() {
 
     model->draw();
   }
+}
 
+void Renderer::draw3D() {
   shader3D->use();
 #ifdef SHADER_HOTRELOADING
   shader3D->checkForHotReload();
@@ -209,6 +208,14 @@ void Renderer::drawFrame() {
 
     model->draw();
   }
+}
+
+void Renderer::drawFrame() {
+  glClearColor(0.3f, 0.3f, 0.6f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
+
+  draw3D();
+  draw2D();
 }
 
 void Renderer::setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept {

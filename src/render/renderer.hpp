@@ -53,7 +53,12 @@ public:
 
   [[nodiscard]] std::shared_ptr<model::Asset> createAsset3D(const resource::ObjAsset& asset) const;
 
-private: // todo: this is a mess, separate 2d and 3d into structs
+private:
+  void draw3D();
+  void draw2D();
+
+  // todo: this is a mess, separate 2d and 3d into structs
+
   std::shared_ptr<TextureManager> textureManager2D;
   std::shared_ptr<TextureManager> textureManager3D;
 
