@@ -9,7 +9,7 @@
 #include "../shader/program.hpp"
 #include "../resource/obj/obj.hpp"
 #include "../components/transform.hpp"
-#include "../components/renderable.hpp"
+#include "../components/model.hpp"
 
 Renderer::Renderer(const std::shared_ptr<Window>& window,
                    const std::shared_ptr<entt::registry>& registry) /* clang-format off */
@@ -133,22 +133,24 @@ void Renderer::drawFrame() {
     .shininess = 32.0f,
     .dissolve = 1.0f
   };/* clang-format on */
-  materialManager->setMaterial(defaultMaterial);
 
-  // // Draw all models - each will set its own materials as needed
-  // for (const auto& assetModel : assetModels) {
-  //   assetModel->draw();
-  // }
-
-  auto renderableEnts = registry->view<components::GlobalTransform, components::Renderable>();
+  auto renderableEnts = registry->view<components::GlobalTransform, components::Model>();
   for (const auto ent : renderableEnts) {
     auto globalTransform = registry->get<components::GlobalTransform>(ent);
-    auto renderable = registry->get<components::Renderable>(ent);
+    auto model = registry->get<components::Model>(ent);
+
+    if (registry->all_of<components::Material>(ent)) {
+      auto material = registry->get<components::Material>(ent);
+      materialManager->setMaterial(*material);
+    } else {
+      // Use the default material if no specific material is set
+      materialManager->setMaterial(defaultMaterial);
+    }
 
     modelMatrix = globalTransform;
     uniformModelMatrix.set(modelMatrix);
 
-    renderable->draw();
+    model->draw();
   }
 }
 

@@ -19,7 +19,9 @@ private:
   glm::vec3 size;
   glm::quat rot;
 
-  std::array<Vertex, 8> vertices;
+  std::array<Vertex, 24> vertices; // 4 vertices per face, 6 faces
+  std::array<GLuint, 36> indices;  // 2 triangles per face, 3 indices per triangle, 6 faces
   GLuint glAttributesIdx;
   GLuint glBufferIdx;
+  GLuint glElementBufferIdx;
 };

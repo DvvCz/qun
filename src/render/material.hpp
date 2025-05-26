@@ -19,7 +19,7 @@ public:
   ~MaterialManager();
 
   void setMaterial(const resource::ObjMaterial& material) noexcept;
-  void setMaterial(const MaterialBlock material) noexcept;
+  void setMaterial(const MaterialBlock& material) noexcept;
   [[nodiscard]] MaterialBlock getMaterial() const noexcept;
 
 private:

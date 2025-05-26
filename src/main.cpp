@@ -12,7 +12,7 @@
 #include "render/window.hpp"
 #include "render/model/cube.hpp"
 
-#include "components/renderable.hpp"
+#include "components/model.hpp"
 #include "components/transform.hpp"
 
 int main() {
@@ -33,6 +33,13 @@ int main() {
   auto registry = std::make_shared<entt::registry>();
   auto renderer = std::make_unique<Renderer>(window, registry);
 
+  auto redMaterial = std::make_shared<MaterialBlock>();
+  redMaterial->ambient = glm::vec3(1.0f, 0.0f, 0.0f);
+  redMaterial->diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
+  redMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+  redMaterial->shininess = 32.0f;
+  redMaterial->dissolve = 1.0f;
+
   auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
   if (out.has_value()) {
     auto assetModel = renderer->createAssetModel(out.value());
@@ -43,14 +50,16 @@ int main() {
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, modelMatrix);
-    registry->emplace<components::Renderable>(ent, assetModel);
+    registry->emplace<components::Model>(ent, assetModel);
   }
 
   // add a cube to draw
-  auto cubeModel = std::make_shared<CubeModel>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), glm::quat(glm::vec3(0.0f)));
+  auto cubeModel =
+      std::make_shared<CubeModel>(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(1000.0f, 1000.0f, 0.1f), glm::quat(glm::vec3(0.0f)));
   auto cubeEnt = registry->create();
   registry->emplace<components::GlobalTransform>(cubeEnt, glm::mat4(1.0f));
-  registry->emplace<components::Renderable>(cubeEnt, cubeModel);
+  registry->emplace<components::Model>(cubeEnt, cubeModel);
+  registry->emplace<components::Material>(cubeEnt, redMaterial);
 
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();

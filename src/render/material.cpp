@@ -37,7 +37,7 @@ void MaterialManager::setMaterial(const resource::ObjMaterial& material) noexcep
   currentMaterial = newMaterial;
 }
 
-void MaterialManager::setMaterial(const MaterialBlock material) noexcept {
+void MaterialManager::setMaterial(const MaterialBlock& material) noexcept {
   uniformMaterialBlock.set(material);
   currentMaterial = material;
 }
