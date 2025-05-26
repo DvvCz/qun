@@ -120,7 +120,6 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   // Need to activate shader program before setting uniforms
   shader3D->use();
 
-  uniformLightBlock3D.set({.lightCount = 0});
   uniformCameraPos3D.set(cameraPos);
 }
 
@@ -182,7 +181,8 @@ void Renderer::draw3D() {
 
     lightBlock.lights[lightBlock.lightCount++] = {/* clang-format off */
       .position = glm::vec3(globalTransform[3]),
-      .color = light.color * light.intensity
+      .color = light.color * light.intensity,
+      .radius = light.radius
     }; /* clang-format on */
   }
 
