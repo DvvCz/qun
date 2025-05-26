@@ -26,10 +26,10 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformMaterialBlock(1)
 { /* clang-format on */
   auto fragShader =
-      std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.frag"), shader::ShaderType::Fragment);
+      std::make_unique<shader::Shader>(std::filesystem::path("../../src/shader/shaders/basic.frag"), shader::Type::Fragment);
 
   auto vertShader =
-      std::make_unique<shader::Shader>(std::filesystem::path("../src/shader/shaders/basic.vert"), shader::ShaderType::Vertex);
+      std::make_unique<shader::Shader>(std::filesystem::path("../../src/shader/shaders/basic.vert"), shader::Type::Vertex);
 
   cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
   cameraFront = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -116,6 +116,9 @@ void Renderer::drawFrame() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
   shaderProgram->use();
+#ifdef SHADER_HOTRELOADING
+  shaderProgram->checkForHotReload();
+#endif
 
   uniformProjMatrix.set(projMatrix);
   uniformViewMatrix.set(viewMatrix);

@@ -82,16 +82,14 @@ int main() {
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();
 
-  // Camera control variables
-  float yaw = 0.0f;                // Horizontal rotation
-  float pitch = 0.0f;              // Vertical rotation
-  float mouseSensitivity = 0.002f; // Mouse sensitivity
-  float cameraSpeed = 3.0f;        // Movement speed
+  float yaw = 0.0f;
+  float pitch = 0.0f;
+  float mouseSensitivity = 0.002f;
+  float cameraSpeed = 3.0f;
 
   // Hide cursor for first-person camera
   glfwSetInputMode(window->getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-  // Initialize camera position to a reasonable distance from the bunny
   renderer->setCameraPos(glm::vec3(-5.0f, 0.0f, 0.0f));
 
   while (!window->shouldClose()) {

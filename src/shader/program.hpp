@@ -3,13 +3,18 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
-#include <string>
 #include <glm/glm.hpp>
 
 #include "shader.hpp"
-#include "../render/uniform.hpp"
 
 namespace shader {
+  struct ShaderProgramSlot {
+#ifdef SHADER_HOTRELOADING
+    uint64_t fsLastChanged;
+#endif
+    std::unique_ptr<Shader> shader;
+  };
+
   class Program {
   public:
     Program();
@@ -22,8 +27,13 @@ namespace shader {
     void use() const;
     [[nodiscard]] uint32_t getProgramIdx() const;
 
+    void checkForHotReload();
+
   private:
     uint32_t programIdx;
-    std::vector<std::unique_ptr<Shader>> shaders;
+    std::vector<ShaderProgramSlot> shaders;
+#ifdef SHADER_HOTRELOADING
+    uint64_t lastCheckedForHotReload = 0;
+#endif
   };
 }

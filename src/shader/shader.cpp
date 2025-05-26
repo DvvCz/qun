@@ -7,19 +7,39 @@
 #include <utility>
 #include <print>
 #include <vector>
+#include <thread>
 
-uint32_t shader::shaderTypeToGLType(const ShaderType type) {
+uint32_t shader::shaderTypeToGLType(const shader::Type type) {
   switch (type) {
-  case ShaderType::Vertex:
+  case shader::Type::Vertex:
     return GL_VERTEX_SHADER;
-  case ShaderType::Fragment:
+  case shader::Type::Fragment:
     return GL_FRAGMENT_SHADER;
   }
 
   std::unreachable();
 }
 
-shader::Shader::Shader(std::filesystem::path path, const ShaderType type) {
+void watchForHotreloading(const std::filesystem::path& path, shader::Shader& shader, std::atomic<bool>& isWatching) {
+  auto lastWriteTime = std::filesystem::last_write_time(path);
+
+  while (true) {
+    auto currentWriteTime = std::filesystem::last_write_time(path);
+    if (currentWriteTime != lastWriteTime) {
+      lastWriteTime = currentWriteTime;
+
+      auto result = shader.recompile();
+      if (!result.has_value()) {
+        std::println(stderr, "Failed to recompile shader {}: {}", path.string(), result.error());
+        continue;
+      }
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  }
+}
+
+shader::Shader::Shader(std::filesystem::path path, const shader::Type type) {
   shaderType = type;
   shaderIdx = glCreateShader(shaderTypeToGLType(type));
   shaderPath = path;
@@ -66,6 +86,24 @@ std::expected<bool, std::string> shader::Shader::tryCompile(uint32_t shaderIdx, 
 
     auto errorMessage = std::string(errorBuf.begin(), errorBuf.end());
     return std::unexpected(errorMessage);
+  }
+
+  return true;
+}
+
+std::expected<bool, std::string> shader::Shader::recompile() {
+  auto fileHandle = std::ifstream(shaderPath);
+  if (!fileHandle.is_open()) {
+    throw std::runtime_error("Failed to open shader file for recompilation: " + shaderPath.string());
+  }
+
+  std::ostringstream buffer;
+  buffer << fileHandle.rdbuf();
+  std::string shaderSource = buffer.str();
+
+  auto compileResult = tryCompile(shaderIdx, shaderSource);
+  if (!compileResult.has_value()) {
+    return compileResult;
   }
 
   return true;
