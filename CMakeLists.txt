@@ -31,6 +31,8 @@ add_executable(trender
     ./src/render/window.cpp
     ./src/render/renderer.cpp
     ./src/render/model/triangle.cpp
+    ./src/render/model/quad.cpp
+    ./src/render/model/cube.cpp
     ./src/render/model/asset.cpp
     ./src/render/uniform.cpp
     ./src/render/texture.cpp

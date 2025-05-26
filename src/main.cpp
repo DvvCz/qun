@@ -10,6 +10,7 @@
 #include "input/raw/mouse.hpp"
 #include "render/renderer.hpp"
 #include "render/window.hpp"
+#include "render/model/cube.hpp"
 
 #include "components/renderable.hpp"
 #include "components/transform.hpp"
@@ -44,6 +45,12 @@ int main() {
     registry->emplace<components::GlobalTransform>(ent, modelMatrix);
     registry->emplace<components::Renderable>(ent, assetModel);
   }
+
+  // add a cube to draw
+  auto cubeModel = std::make_shared<CubeModel>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f), glm::quat(glm::vec3(0.0f)));
+  auto cubeEnt = registry->create();
+  registry->emplace<components::GlobalTransform>(cubeEnt, glm::mat4(1.0f));
+  registry->emplace<components::Renderable>(cubeEnt, cubeModel);
 
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();
