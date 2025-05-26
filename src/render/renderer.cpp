@@ -218,25 +218,11 @@ void Renderer::drawFrame() {
   draw2D();
 }
 
-void Renderer::setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept {
-  this->projMatrix = projMatrix;
-  uniformProjMatrix3D.set(projMatrix);
-}
-
-void Renderer::setViewMatrix(const glm::mat4x4& viewMatrix) noexcept {
-  this->viewMatrix = viewMatrix;
-  uniformViewMatrix3D.set(viewMatrix);
-}
-
-void Renderer::setModelMatrix(const glm::mat4x4& modelMatrix) noexcept {
-  this->modelMatrix = modelMatrix;
-  uniformModelMatrix3D.set(modelMatrix);
-}
-
 void Renderer::setCameraPos(const glm::vec3& cameraPos) noexcept {
   this->cameraPos = cameraPos;
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, upDir);
 
+  shader3D->use();
   uniformViewMatrix3D.set(viewMatrix);
   uniformCameraPos3D.set(cameraPos);
 }
@@ -244,21 +230,9 @@ void Renderer::setCameraPos(const glm::vec3& cameraPos) noexcept {
 void Renderer::setCameraDir(const glm::vec3& cameraDir) noexcept {
   cameraFront = cameraDir;
 
+  shader3D->use();
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, upDir);
-
   uniformViewMatrix3D.set(viewMatrix);
-}
-
-const glm::mat4x4& Renderer::getProjectionMatrix() const noexcept {
-  return projMatrix;
-}
-
-const glm::mat4x4& Renderer::getViewMatrix() const noexcept {
-  return viewMatrix;
-}
-
-const glm::mat4x4& Renderer::getModelMatrix() const noexcept {
-  return modelMatrix;
 }
 
 const glm::vec3& Renderer::getCameraPos() const noexcept {

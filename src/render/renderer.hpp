@@ -38,16 +38,8 @@ public:
 
   void drawFrame();
 
-  void setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept;
-  void setViewMatrix(const glm::mat4x4& viewMatrix) noexcept;
-  void setModelMatrix(const glm::mat4x4& modelMatrix) noexcept;
-
   void setCameraPos(const glm::vec3& cameraPos) noexcept;
   void setCameraDir(const glm::vec3& cameraDir) noexcept;
-
-  [[nodiscard]] const glm::mat4x4& getProjectionMatrix() const noexcept;
-  [[nodiscard]] const glm::mat4x4& getViewMatrix() const noexcept;
-  [[nodiscard]] const glm::mat4x4& getModelMatrix() const noexcept;
 
   [[nodiscard]] const glm::vec3& getCameraPos() const noexcept;
 
