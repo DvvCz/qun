@@ -28,13 +28,13 @@ struct LightBlock {
 
 class Renderer final {
 public:
-  Renderer(const std::shared_ptr<Window>& window, const std::shared_ptr<entt::registry> registry);
+  Renderer(const std::shared_ptr<Window>& window, const std::shared_ptr<entt::registry>& registry);
 
   // 16:9 aspect ratio constant
   static constexpr float ASPECT_RATIO = 16.0f / 9.0f;
   const glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
 
-  void drawFrame() const;
+  void drawFrame();
 
   void setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept;
   void setViewMatrix(const glm::mat4x4& viewMatrix) noexcept;
@@ -48,6 +48,8 @@ public:
   [[nodiscard]] const glm::mat4x4& getModelMatrix() const noexcept;
 
   [[nodiscard]] const glm::vec3& getCameraPos() const noexcept;
+
+  [[nodiscard]] AssetModel createAssetModel(const resource::ObjAsset& asset) const;
 
 private:
   std::shared_ptr<TextureManager> textureManager;

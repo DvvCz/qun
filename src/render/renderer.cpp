@@ -1,13 +1,18 @@
 #include "renderer.hpp"
 
-#include "../shader/shader.hpp"
-#include "../shader/program.hpp"
-#include "../resource/obj/obj.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <print>
+#include <entt/entt.hpp>
 
-Renderer::Renderer(const std::shared_ptr<Window>& window, const std::shared_ptr<Registry> registry) /* clang-format off */
+#include "../shader/shader.hpp"
+#include "../shader/program.hpp"
+#include "../resource/obj/obj.hpp"
+#include "../components/transform.hpp"
+#include "../components/renderable.hpp"
+
+Renderer::Renderer(const std::shared_ptr<Window>& window,
+                   const std::shared_ptr<entt::registry>& registry) /* clang-format off */
   : window(window), registry(registry),
   uniformProjMatrix(0),
   uniformViewMatrix(1),
@@ -110,7 +115,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window, const std::shared_ptr<
   uniformCameraPos.set(cameraPos);
 }
 
-void Renderer::drawFrame() const {
+void Renderer::drawFrame() {
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
@@ -134,6 +139,17 @@ void Renderer::drawFrame() const {
   // for (const auto& assetModel : assetModels) {
   //   assetModel->draw();
   // }
+
+  auto renderableEnts = registry->view<components::GlobalTransform, components::Renderable>();
+  for (auto ent : renderableEnts) {
+    auto& transform = registry->get<components::GlobalTransform>(ent);
+    auto& renderable = registry->get<components::Renderable>(ent);
+
+    modelMatrix = transform;
+    uniformModelMatrix.set(modelMatrix);
+
+    renderable.draw();
+  }
 }
 
 void Renderer::setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept {
@@ -181,4 +197,8 @@ const glm::mat4x4& Renderer::getModelMatrix() const noexcept {
 
 const glm::vec3& Renderer::getCameraPos() const noexcept {
   return cameraPos;
+}
+
+AssetModel Renderer::createAssetModel(const resource::ObjAsset& asset) const {
+  return AssetModel(asset, textureManager, materialManager);
 }

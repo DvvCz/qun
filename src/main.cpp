@@ -2,7 +2,6 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <print>
-#include <fstream>
 #include <algorithm>
 #include <entt/entt.hpp>
 
@@ -11,8 +10,8 @@
 #include "render/renderer.hpp"
 #include "render/window.hpp"
 
-#include "resource/obj/obj.hpp"
-#include "resource/img/img.hpp"
+#include "components/renderable.hpp"
+#include "components/transform.hpp"
 
 int main() {
   if (!glfwInit()) {
@@ -32,7 +31,15 @@ int main() {
   auto registry = std::make_shared<entt::registry>();
   auto renderer = std::make_unique<Renderer>(window, registry);
 
-  // auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
+  auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
+  if (out.has_value()) {
+    AssetModel assetModel = renderer->createAssetModel(out.value());
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, glm::mat4(1.0f));
+    registry->emplace<components::Renderable>(ent, assetModel);
+  }
+
   // if (out.has_value()) {
   //   renderer->addModel(out.value());
   // } else {
