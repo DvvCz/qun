@@ -142,13 +142,13 @@ void Renderer::drawFrame() {
 
   auto renderableEnts = registry->view<components::GlobalTransform, components::Renderable>();
   for (auto ent : renderableEnts) {
-    auto& transform = registry->get<components::GlobalTransform>(ent);
-    auto& renderable = registry->get<components::Renderable>(ent);
+    auto transform = registry->get<components::GlobalTransform>(ent);
+    auto renderable = registry->get<components::Renderable>(ent);
 
     modelMatrix = transform;
     uniformModelMatrix.set(modelMatrix);
 
-    renderable.draw();
+    renderable->draw();
   }
 }
 
@@ -199,6 +199,6 @@ const glm::vec3& Renderer::getCameraPos() const noexcept {
   return cameraPos;
 }
 
-AssetModel Renderer::createAssetModel(const resource::ObjAsset& asset) const {
-  return AssetModel(asset, textureManager, materialManager);
+std::shared_ptr<AssetModel> Renderer::createAssetModel(const resource::ObjAsset& asset) const {
+  return std::make_shared<AssetModel>(asset, textureManager, materialManager);
 }

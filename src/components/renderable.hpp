@@ -4,5 +4,5 @@
 #include "../render/model.hpp"
 
 namespace components {
-  using Renderable = AssetModel;
+  using Renderable = std::shared_ptr<AssetModel>;
 }

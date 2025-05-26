@@ -4,6 +4,7 @@
 #include <print>
 #include <algorithm>
 #include <entt/entt.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"
@@ -33,19 +34,16 @@ int main() {
 
   auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
   if (out.has_value()) {
-    AssetModel assetModel = renderer->createAssetModel(out.value());
+    auto assetModel = renderer->createAssetModel(out.value());
+
+    auto modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(10));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     auto ent = registry->create();
-    registry->emplace<components::GlobalTransform>(ent, glm::mat4(1.0f));
+    registry->emplace<components::GlobalTransform>(ent, modelMatrix);
     registry->emplace<components::Renderable>(ent, assetModel);
   }
-
-  // if (out.has_value()) {
-  //   renderer->addModel(out.value());
-  // } else {
-  //   std::println("Failed to load OBJ file: {}", out.error());
-  //   return EXIT_FAILURE;
-  // }
 
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();

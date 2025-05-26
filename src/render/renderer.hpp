@@ -49,7 +49,7 @@ public:
 
   [[nodiscard]] const glm::vec3& getCameraPos() const noexcept;
 
-  [[nodiscard]] AssetModel createAssetModel(const resource::ObjAsset& asset) const;
+  [[nodiscard]] std::shared_ptr<AssetModel> createAssetModel(const resource::ObjAsset& asset) const;
 
 private:
   std::shared_ptr<TextureManager> textureManager;
