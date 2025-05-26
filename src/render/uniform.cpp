@@ -1,5 +1,9 @@
 #include "uniform.hpp"
+
 #include "renderer.hpp"
+
+#include "render/material/material2d.hpp"
+#include "render/material/material3d.hpp"
 
 template <typename T> UniformBlock<T>::UniformBlock(const GLint location) : location(location) {
   glCreateBuffers(1, &bufferIdx);
@@ -12,4 +16,6 @@ template <typename T> void UniformBlock<T>::set(const T& value) const {
 }
 
 template class UniformBlock<LightBlock>;
-template class UniformBlock<MaterialBlock>;
+
+template class UniformBlock<material::Block2D>;
+template class UniformBlock<material::Block3D>;

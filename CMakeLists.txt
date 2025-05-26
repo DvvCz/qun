@@ -30,11 +30,13 @@ add_executable(trender
     ./src/input/raw/mouse.cpp
     ./src/render/window.cpp
     ./src/render/renderer.cpp
+    ./src/render/model/2d/quad.cpp
     ./src/render/model/3d/cube.cpp
     ./src/render/model/3d/asset.cpp
+    ./src/render/material/material2d.cpp
+    ./src/render/material/material3d.cpp
     ./src/render/uniform.cpp
     ./src/render/texture.cpp
-    ./src/render/material.cpp
     ./src/shader/shader.cpp
     ./src/shader/program.cpp
     ./src/resource/obj/obj.cpp

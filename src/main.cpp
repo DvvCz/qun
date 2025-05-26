@@ -8,13 +8,19 @@
 
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"
+
 #include "render/renderer.hpp"
 #include "render/window.hpp"
 #include "render/model/3d/cube.hpp"
+#include "render/model/2d/quad.hpp"
+#include "render/material/material2d.hpp"
+#include "render/material/material3d.hpp"
+#include "render/vertex.hpp"
 
 #include "components/model.hpp"
 #include "components/transform.hpp"
 #include "components/light.hpp"
+#include "components/material.hpp"
 
 int main() {
   if (!glfwInit()) {
@@ -34,7 +40,7 @@ int main() {
   auto registry = std::make_shared<entt::registry>();
   auto renderer = std::make_unique<Renderer>(window, registry);
 
-  auto redMaterial = std::make_shared<MaterialBlock>();
+  auto redMaterial = std::make_shared<material::Block3D>();
   redMaterial->ambient = glm::vec3(0.2f, 0.05f, 0.05f);
   redMaterial->diffuse = glm::vec3(0.8f, 0.2f, 0.2f);
   redMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -42,7 +48,7 @@ int main() {
   redMaterial->dissolve = 1.0f;
 
   // Create a shiny material for the bunny
-  auto bunnyMaterial = std::make_shared<MaterialBlock>();
+  auto bunnyMaterial = std::make_shared<material::Block3D>();
   bunnyMaterial->ambient = glm::vec3(0.2f, 0.2f, 0.2f);
   bunnyMaterial->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
   bunnyMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -51,7 +57,7 @@ int main() {
 
   auto out = resource::ObjAsset::tryFromFile("resources/bunny.obj");
   if (out.has_value()) {
-    auto assetModel = renderer->createAssetModel(out.value());
+    auto assetModel = renderer->createAsset3D(out.value());
 
     auto modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::scale(modelMatrix, glm::vec3(1));
@@ -61,7 +67,7 @@ int main() {
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, modelMatrix);
     registry->emplace<components::Model3D>(ent, assetModel);
-    registry->emplace<components::Material>(ent, bunnyMaterial);
+    registry->emplace<components::Material3D>(ent, bunnyMaterial);
   }
 
   auto mainLight = registry->create();
@@ -77,7 +83,7 @@ int main() {
   topCubeMatrix = glm::rotate(topCubeMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
   registry->emplace<components::GlobalTransform>(topCubeEnt, topCubeMatrix);
   registry->emplace<components::Model3D>(topCubeEnt, topCubeModel);
-  registry->emplace<components::Material>(topCubeEnt, redMaterial);
+  registry->emplace<components::Material3D>(topCubeEnt, redMaterial);
 
   // add a cube to draw
   auto baseModel = std::make_shared<model::Cube>(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(1000.0f, 1000.0f, 0.1f),
@@ -85,7 +91,19 @@ int main() {
   auto baseEnt = registry->create();
   registry->emplace<components::GlobalTransform>(baseEnt, glm::mat4(1.0f));
   registry->emplace<components::Model3D>(baseEnt, baseModel);
-  registry->emplace<components::Material>(baseEnt, redMaterial);
+  registry->emplace<components::Material3D>(baseEnt, redMaterial);
+
+  /* clang-format off */
+  auto basequad = std::make_shared<model::Quad>(
+      Vertex2D{glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+      Vertex2D{glm::vec3(1.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+      Vertex2D{glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+      Vertex2D{glm::vec3(-1.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)}
+  ); /* clang-format on */
+  auto quadEnt = registry->create();
+  registry->emplace<components::GlobalTransform>(quadEnt, glm::mat4(1.0f));
+  registry->emplace<components::Model2D>(quadEnt, basequad);
+  registry->emplace<components::Material2D>(quadEnt, glm::vec3(0.0f, 0.0f, 1.0f));
 
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();

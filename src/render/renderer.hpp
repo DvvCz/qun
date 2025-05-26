@@ -5,7 +5,8 @@
 
 #include "render/uniform.hpp"
 #include "render/texture.hpp"
-#include "render/material.hpp"
+#include "render/material/material2d.hpp"
+#include "render/material/material3d.hpp"
 #include "render/model/3d/asset.hpp"
 
 #include <glad/glad.h>
@@ -50,24 +51,31 @@ public:
 
   [[nodiscard]] const glm::vec3& getCameraPos() const noexcept;
 
-  [[nodiscard]] std::shared_ptr<model::Asset> createAssetModel(const resource::ObjAsset& asset) const;
+  [[nodiscard]] std::shared_ptr<model::Asset> createAsset3D(const resource::ObjAsset& asset) const;
 
-private:
-  std::shared_ptr<TextureManager> textureManager;
-  std::shared_ptr<MaterialManager> materialManager;
+private: // todo: this is a mess, separate 2d and 3d into structs
+  std::shared_ptr<TextureManager> textureManager2D;
+  std::shared_ptr<TextureManager> textureManager3D;
+
+  std::shared_ptr<material::Manager2D> materialManager2D;
+  std::shared_ptr<material::Manager3D> materialManager3D;
+
   std::shared_ptr<entt::registry> registry;
 
-  Uniform<glm::mat4x4> uniformProjMatrix;
-  Uniform<glm::mat4x4> uniformViewMatrix;
-  Uniform<glm::mat4x4> uniformModelMatrix;
+  // 3d uniforms
+  Uniform<glm::mat4x4> uniformProjMatrix3D;
+  Uniform<glm::mat4x4> uniformViewMatrix3D;
+  Uniform<glm::mat4x4> uniformModelMatrix3D;
+  Uniform<GLuint> uniformTextureArray3D;
+  Uniform<GLint> uniformTextureIdx3D;
+  Uniform<glm::vec3> uniformCameraPos3D;
+  UniformBlock<LightBlock> uniformLightBlock3D;
+  UniformBlock<material::Block3D> uniformMaterialBlock3D;
 
-  Uniform<GLuint> uniformTextureArray;
-  Uniform<GLint> uniformTextureIdx;
-
-  Uniform<glm::vec3> uniformCameraPos;
-
-  UniformBlock<LightBlock> uniformLightBlock;
-  UniformBlock<MaterialBlock> uniformMaterialBlock;
+  // 2d uniforms
+  Uniform<GLuint> uniformTextureArray2D;
+  Uniform<GLint> uniformTextureIdx2D;
+  UniformBlock<material::Block2D> uniformMaterialBlock2D;
 
   glm::mat4x4 projMatrix;
   glm::mat4x4 viewMatrix;

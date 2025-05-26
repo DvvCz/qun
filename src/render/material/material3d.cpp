@@ -1,18 +1,19 @@
-#include "material.hpp"
-#include "texture.hpp"
+#include "material3d.hpp"
+
+#include "render/texture.hpp"
 
 #include <print>
 
-MaterialManager::MaterialManager(UniformBlock<MaterialBlock> uniformMaterialBlock, std::shared_ptr<TextureManager> texMan)
+material::Manager3D::Manager3D(UniformBlock<material::Block3D> uniformMaterialBlock, std::shared_ptr<TextureManager> texMan)
     : uniformMaterialBlock(uniformMaterialBlock), textureManager(texMan) {
 }
 
-MaterialManager::~MaterialManager() {
+material::Manager3D::~Manager3D() {
 }
 
-void MaterialManager::setMaterial(const resource::ObjMaterial& material) noexcept {
+void material::Manager3D::setMaterial(const resource::ObjMaterial& material) noexcept {
   /* clang-format off */
-  MaterialBlock newMaterial = {
+  material::Block3D newMaterial = {
     .ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]),
     .diffuse = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]),
     .specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]),
@@ -36,11 +37,11 @@ void MaterialManager::setMaterial(const resource::ObjMaterial& material) noexcep
   currentMaterial = newMaterial;
 }
 
-void MaterialManager::setMaterial(const MaterialBlock& material) noexcept {
+void material::Manager3D::setMaterial(const material::Block3D& material) noexcept {
   uniformMaterialBlock.set(material);
   currentMaterial = material;
 }
 
-MaterialBlock MaterialManager::getMaterial() const noexcept {
+material::Block3D material::Manager3D::getMaterial() const noexcept {
   return currentMaterial;
 }

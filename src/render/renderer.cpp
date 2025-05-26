@@ -5,25 +5,35 @@
 #include <print>
 #include <entt/entt.hpp>
 
-#include "../shader/shader.hpp"
-#include "../shader/program.hpp"
-#include "../resource/obj/obj.hpp"
+#include "render/material/material2d.hpp"
+#include "shader/shader.hpp"
+#include "shader/program.hpp"
+#include "resource/obj/obj.hpp"
 
-#include "../components/transform.hpp"
-#include "../components/model.hpp"
-#include "../components/light.hpp"
+#include "components/transform.hpp"
+#include "components/material.hpp"
+#include "components/model.hpp"
+#include "components/light.hpp"
 
 Renderer::Renderer(const std::shared_ptr<Window>& window,
                    const std::shared_ptr<entt::registry>& registry) /* clang-format off */
   : window(window), registry(registry),
-  uniformProjMatrix(0),
-  uniformViewMatrix(1),
-  uniformModelMatrix(2),
-  uniformTextureArray(3),
-  uniformTextureIdx(4),
-  uniformCameraPos(5),
-  uniformLightBlock(0),
-  uniformMaterialBlock(1)
+  // 3d
+  uniformProjMatrix3D(0),
+  uniformViewMatrix3D(1),
+  uniformModelMatrix3D(2),
+  uniformTextureArray3D(3),
+  uniformTextureIdx3D(4),
+  uniformCameraPos3D(5),
+  // 3d - blocks
+  uniformLightBlock3D(0),
+  uniformMaterialBlock3D(1),
+
+  // 2d
+  uniformTextureArray2D(0),
+  uniformTextureIdx2D(1),
+  // 2d - blocks
+  uniformMaterialBlock2D(0)
 { /* clang-format on */
   cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
   cameraFront = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -100,24 +110,30 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
     shader2D->link();
   }
 
-  textureManager = std::make_shared<TextureManager>(uniformTextureArray, uniformTextureIdx);
+  textureManager2D = std::make_shared<TextureManager>(uniformTextureArray2D, uniformTextureIdx2D);
+  textureManager3D = std::make_shared<TextureManager>(uniformTextureArray3D, uniformTextureIdx3D);
 
   // todo: probably only store the uniform in the material manager itself
-  materialManager = std::make_shared<MaterialManager>(uniformMaterialBlock, textureManager);
+  materialManager2D = std::make_shared<material::Manager2D>(uniformMaterialBlock2D, textureManager2D);
+  materialManager3D = std::make_shared<material::Manager3D>(uniformMaterialBlock3D, textureManager3D);
 
   // Need to activate shader program before setting uniforms
   shader3D->use();
 
-  uniformLightBlock.set({.lightCount = 0});
-  uniformCameraPos.set(cameraPos);
+  uniformLightBlock3D.set({.lightCount = 0});
+  uniformCameraPos3D.set(cameraPos);
 }
 
-MaterialBlock defaultMaterial = {/* clang-format off */
+material::Block3D defaultMaterial3D = {/* clang-format off */
   .ambient = glm::vec3(0.2f, 0.2f, 0.2f),
   .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
   .specular = glm::vec3(1.0f, 1.0f, 1.0f),
   .shininess = 32.0f,
   .dissolve = 1.0f
+};/* clang-format on */
+
+material::Block2D defaultMaterial2D = {/* clang-format off */
+  .color = glm::vec3(1.0f, 1.0f, 1.0f)
 };/* clang-format on */
 
 void Renderer::drawFrame() {
@@ -131,7 +147,17 @@ void Renderer::drawFrame() {
 
   auto ents2d = registry->view<components::GlobalTransform, components::Model2D>();
   for (const auto ent : ents2d) {
+    auto globalTransform = registry->get<components::GlobalTransform>(ent);
     auto model = registry->get<components::Model2D>(ent);
+
+    if (registry->all_of<components::Material2D>(ent)) {
+      auto material = registry->get<components::Material2D>(ent);
+      materialManager2D->setMaterial(*material);
+    } else {
+      // Use the default material if no specific material is set
+      materialManager2D->setMaterial(defaultMaterial2D);
+    }
+
     model->draw();
   }
 
@@ -140,8 +166,8 @@ void Renderer::drawFrame() {
   shader3D->checkForHotReload();
 #endif
 
-  uniformProjMatrix.set(projMatrix);
-  uniformViewMatrix.set(viewMatrix);
+  uniformProjMatrix3D.set(projMatrix);
+  uniformViewMatrix3D.set(viewMatrix);
 
   auto lightEnts = registry->view<components::GlobalTransform, components::Light>();
   lightBlock.lightCount = 0;
@@ -161,25 +187,25 @@ void Renderer::drawFrame() {
     }; /* clang-format on */
   }
 
-  uniformLightBlock.set(lightBlock);
+  uniformLightBlock3D.set(lightBlock);
 
   auto ents3d = registry->view<components::GlobalTransform, components::Model3D>();
   for (const auto ent : ents3d) {
     auto globalTransform = registry->get<components::GlobalTransform>(ent);
     auto model = registry->get<components::Model3D>(ent);
 
-    if (registry->all_of<components::Material>(ent)) {
-      auto material = registry->get<components::Material>(ent);
-      materialManager->setMaterial(*material);
+    if (registry->all_of<components::Material3D>(ent)) {
+      auto material = registry->get<components::Material3D>(ent);
+      materialManager3D->setMaterial(*material);
     } else {
       // Use the default material if no specific material is set
-      materialManager->setMaterial(defaultMaterial);
+      materialManager3D->setMaterial(defaultMaterial3D);
     }
 
-    textureManager->unbindTexture();
+    textureManager3D->unbindTexture();
 
     modelMatrix = globalTransform;
-    uniformModelMatrix.set(modelMatrix);
+    uniformModelMatrix3D.set(modelMatrix);
 
     model->draw();
   }
@@ -187,25 +213,25 @@ void Renderer::drawFrame() {
 
 void Renderer::setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept {
   this->projMatrix = projMatrix;
-  uniformProjMatrix.set(projMatrix);
+  uniformProjMatrix3D.set(projMatrix);
 }
 
 void Renderer::setViewMatrix(const glm::mat4x4& viewMatrix) noexcept {
   this->viewMatrix = viewMatrix;
-  uniformViewMatrix.set(viewMatrix);
+  uniformViewMatrix3D.set(viewMatrix);
 }
 
 void Renderer::setModelMatrix(const glm::mat4x4& modelMatrix) noexcept {
   this->modelMatrix = modelMatrix;
-  uniformModelMatrix.set(modelMatrix);
+  uniformModelMatrix3D.set(modelMatrix);
 }
 
 void Renderer::setCameraPos(const glm::vec3& cameraPos) noexcept {
   this->cameraPos = cameraPos;
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, upDir);
 
-  uniformViewMatrix.set(viewMatrix);
-  uniformCameraPos.set(cameraPos);
+  uniformViewMatrix3D.set(viewMatrix);
+  uniformCameraPos3D.set(cameraPos);
 }
 
 void Renderer::setCameraDir(const glm::vec3& cameraDir) noexcept {
@@ -213,7 +239,7 @@ void Renderer::setCameraDir(const glm::vec3& cameraDir) noexcept {
 
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, upDir);
 
-  uniformViewMatrix.set(viewMatrix);
+  uniformViewMatrix3D.set(viewMatrix);
 }
 
 const glm::mat4x4& Renderer::getProjectionMatrix() const noexcept {
@@ -232,6 +258,6 @@ const glm::vec3& Renderer::getCameraPos() const noexcept {
   return cameraPos;
 }
 
-std::shared_ptr<model::Asset> Renderer::createAssetModel(const resource::ObjAsset& asset) const {
-  return std::make_shared<model::Asset>(asset, textureManager, materialManager);
+std::shared_ptr<model::Asset> Renderer::createAsset3D(const resource::ObjAsset& asset) const {
+  return std::make_shared<model::Asset>(asset, textureManager3D, materialManager3D);
 }

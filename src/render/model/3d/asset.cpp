@@ -1,12 +1,14 @@
 #include "asset.hpp"
+
 #include "render/vertex.hpp"
+#include "render/material/material3d.hpp"
 
 #include <print>
 
 model::Asset::Asset(/* clang-format off */
   const resource::ObjAsset& asset,
   std::shared_ptr<TextureManager> texMan,
-  std::shared_ptr<MaterialManager> matMan
+  std::shared_ptr<material::Manager3D> matMan
 ):
   inner(asset),
   textureManager(texMan),
