@@ -24,6 +24,8 @@ add_executable(trender
     ./src/main.cpp
     ./src/input/raw/keyboard.cpp
     ./src/input/raw/mouse.cpp
+    ./src/registry/registry.cpp
+    ./src/registry/entity.cpp
     ./src/render/window.cpp
     ./src/render/renderer.cpp
     ./src/render/model.cpp

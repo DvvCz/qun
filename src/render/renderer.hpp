@@ -7,6 +7,7 @@
 #include "model.hpp"
 #include "texture.hpp"
 #include "material.hpp"
+#include "../registry/registry.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -27,16 +28,13 @@ struct LightBlock {
 
 class Renderer final {
 public:
-  Renderer(const std::shared_ptr<Window>& window);
+  Renderer(const std::shared_ptr<Window>& window, const std::shared_ptr<Registry> registry);
 
   // 16:9 aspect ratio constant
   static constexpr float ASPECT_RATIO = 16.0f / 9.0f;
   const glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
 
   void drawFrame() const;
-
-  void addModel(const resource::ObjAsset& asset) noexcept;
-  void addTexture(const resource::ImgAsset& texture) noexcept;
 
   void setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept;
   void setViewMatrix(const glm::mat4x4& viewMatrix) noexcept;
@@ -54,8 +52,7 @@ public:
 private:
   std::shared_ptr<TextureManager> textureManager;
   std::shared_ptr<MaterialManager> materialManager;
-
-  std::vector<std::unique_ptr<AssetModel>> assetModels;
+  std::shared_ptr<Registry> registry;
 
   Uniform<glm::mat4x4> uniformProjMatrix;
   Uniform<glm::mat4x4> uniformViewMatrix;

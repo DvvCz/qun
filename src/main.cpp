@@ -13,6 +13,8 @@
 #include "resource/obj/obj.hpp"
 #include "resource/img/img.hpp"
 
+#include "registry/registry.hpp"
+
 int main() {
   if (!glfwInit()) {
     std::println("Failed to initialize GLFW");
@@ -28,15 +30,16 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto renderer = std::make_unique<Renderer>(window);
+  auto registry = std::make_shared<Registry>();
+  auto renderer = std::make_unique<Renderer>(window, registry);
 
-  auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
-  if (out.has_value()) {
-    renderer->addModel(out.value());
-  } else {
-    std::println("Failed to load OBJ file: {}", out.error());
-    return EXIT_FAILURE;
-  }
+  // auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
+  // if (out.has_value()) {
+  //   renderer->addModel(out.value());
+  // } else {
+  //   std::println("Failed to load OBJ file: {}", out.error());
+  //   return EXIT_FAILURE;
+  // }
 
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();

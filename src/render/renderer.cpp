@@ -7,8 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <print>
 
-Renderer::Renderer(const std::shared_ptr<Window>& window) /* clang-format off */
-  : window(window),
+Renderer::Renderer(const std::shared_ptr<Window>& window, const std::shared_ptr<Registry> registry) /* clang-format off */
+  : window(window), registry(registry),
   uniformProjMatrix(0),
   uniformViewMatrix(1),
   uniformModelMatrix(2),
@@ -130,23 +130,10 @@ void Renderer::drawFrame() const {
   };/* clang-format on */
   materialManager->setMaterial(defaultMaterial);
 
-  // Draw all models - each will set its own materials as needed
-  for (const auto& assetModel : assetModels) {
-    assetModel->draw();
-  }
-}
-
-void Renderer::addTexture(const resource::ImgAsset& texture) noexcept {
-  if (auto result = textureManager->addTexture(texture); result.has_value()) {
-    std::println("Added texture with ID {}", result.value());
-  } else {
-    std::println(stderr, "Failed to add texture: {}", result.error());
-  }
-}
-
-void Renderer::addModel(const resource::ObjAsset& asset) noexcept {
-  auto model = std::make_unique<AssetModel>(asset, this->textureManager, this->materialManager);
-  assetModels.push_back(std::move(model));
+  // // Draw all models - each will set its own materials as needed
+  // for (const auto& assetModel : assetModels) {
+  //   assetModel->draw();
+  // }
 }
 
 void Renderer::setProjectionMatrix(const glm::mat4x4& projMatrix) noexcept {
