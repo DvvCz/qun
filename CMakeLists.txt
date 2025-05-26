@@ -19,13 +19,15 @@ target_include_directories(rapidobj INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdp
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 
+# entt
+add_library(entt INTERFACE)
+target_include_directories(entt INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/entt/src/entt)
+
 # TRender
 add_executable(trender
     ./src/main.cpp
     ./src/input/raw/keyboard.cpp
     ./src/input/raw/mouse.cpp
-    ./src/registry/registry.cpp
-    ./src/registry/entity.cpp
     ./src/render/window.cpp
     ./src/render/renderer.cpp
     ./src/render/model.cpp

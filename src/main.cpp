@@ -4,6 +4,7 @@
 #include <print>
 #include <fstream>
 #include <algorithm>
+#include <entt/entt.hpp>
 
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"
@@ -12,8 +13,6 @@
 
 #include "resource/obj/obj.hpp"
 #include "resource/img/img.hpp"
-
-#include "registry/registry.hpp"
 
 int main() {
   if (!glfwInit()) {
@@ -30,7 +29,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto registry = std::make_shared<Registry>();
+  auto registry = std::make_shared<entt::registry>();
   auto renderer = std::make_unique<Renderer>(window, registry);
 
   // auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");

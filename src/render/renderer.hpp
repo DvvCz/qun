@@ -7,12 +7,12 @@
 #include "model.hpp"
 #include "texture.hpp"
 #include "material.hpp"
-#include "../registry/registry.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <glm/glm.hpp>
+#include <entt/entt.hpp>
 
 #define MAX_LIGHTS 20
 
@@ -28,7 +28,7 @@ struct LightBlock {
 
 class Renderer final {
 public:
-  Renderer(const std::shared_ptr<Window>& window, const std::shared_ptr<Registry> registry);
+  Renderer(const std::shared_ptr<Window>& window, const std::shared_ptr<entt::registry> registry);
 
   // 16:9 aspect ratio constant
   static constexpr float ASPECT_RATIO = 16.0f / 9.0f;
@@ -52,7 +52,7 @@ public:
 private:
   std::shared_ptr<TextureManager> textureManager;
   std::shared_ptr<MaterialManager> materialManager;
-  std::shared_ptr<Registry> registry;
+  std::shared_ptr<entt::registry> registry;
 
   Uniform<glm::mat4x4> uniformProjMatrix;
   Uniform<glm::mat4x4> uniformViewMatrix;
