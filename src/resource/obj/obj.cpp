@@ -41,7 +41,7 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
     materials.push_back(mat);
   }
 
-  std::vector<Vertex> vertices;
+  std::vector<Vertex3D> vertices;
   std::vector<ObjShape> shapes;
 
   for (const auto& shape : obj.shapes) {
@@ -80,7 +80,7 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
         ); /* clang-format on */
       }
 
-      vertices.push_back(Vertex{
+      vertices.push_back(Vertex3D{
           .pos = position,
           .normal = normal,
           .uv = uv,

@@ -1,11 +1,12 @@
 #pragma once
 
 #include "window.hpp"
-#include "../shader/program.hpp"
-#include "uniform.hpp"
-#include "texture.hpp"
-#include "material.hpp"
-#include "model/asset.hpp"
+#include "shader/program.hpp"
+
+#include "render/uniform.hpp"
+#include "render/texture.hpp"
+#include "render/material.hpp"
+#include "render/model/3d/asset.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -49,7 +50,7 @@ public:
 
   [[nodiscard]] const glm::vec3& getCameraPos() const noexcept;
 
-  [[nodiscard]] std::shared_ptr<AssetModel> createAssetModel(const resource::ObjAsset& asset) const;
+  [[nodiscard]] std::shared_ptr<model::Asset> createAssetModel(const resource::ObjAsset& asset) const;
 
 private:
   std::shared_ptr<TextureManager> textureManager;
@@ -78,5 +79,6 @@ private:
   glm::vec3 cameraFront;
 
   std::shared_ptr<Window> window;
-  std::unique_ptr<shader::Program> shaderProgram;
+  std::unique_ptr<shader::Program> shader3D;
+  std::unique_ptr<shader::Program> shader2D;
 };

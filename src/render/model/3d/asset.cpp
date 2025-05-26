@@ -1,8 +1,9 @@
 #include "asset.hpp"
+#include "render/vertex.hpp"
 
 #include <print>
 
-AssetModel::AssetModel(/* clang-format off */
+model::Asset::Asset(/* clang-format off */
   const resource::ObjAsset& asset,
   std::shared_ptr<TextureManager> texMan,
   std::shared_ptr<MaterialManager> matMan
@@ -22,15 +23,15 @@ AssetModel::AssetModel(/* clang-format off */
     glEnableVertexArrayAttrib(glAttributesIdx, 0);
     glVertexArrayAttribBinding(glAttributesIdx, 0, glAttrSlot1);
 
-    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal) - offsetof(Vertex, pos));
+    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, normal) - offsetof(Vertex3D, pos));
     glEnableVertexArrayAttrib(glAttributesIdx, 1);
     glVertexArrayAttribBinding(glAttributesIdx, 1, glAttrSlot1);
 
-    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv) - offsetof(Vertex, normal));
+    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, uv) - offsetof(Vertex3D, normal));
     glEnableVertexArrayAttrib(glAttributesIdx, 2);
     glVertexArrayAttribBinding(glAttributesIdx, 2, glAttrSlot1);
 
-    glVertexArrayVertexBuffer(glAttributesIdx, glAttrSlot1, glBufferIdx, 0, sizeof(Vertex));
+    glVertexArrayVertexBuffer(glAttributesIdx, glAttrSlot1, glBufferIdx, 0, sizeof(Vertex3D));
     glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx); // Bind index buffer to VAO
   }
 
@@ -66,17 +67,17 @@ AssetModel::AssetModel(/* clang-format off */
     }
   }
 
-  glNamedBufferData(glBufferIdx, sizeof(Vertex) * asset.vertices.size(), asset.vertices.data(), GL_STATIC_DRAW);
+  glNamedBufferData(glBufferIdx, sizeof(Vertex3D) * asset.vertices.size(), asset.vertices.data(), GL_STATIC_DRAW);
   glNamedBufferData(glIndexBufferIdx, sizeof(GLuint) * allIndices.size(), allIndices.data(), GL_STATIC_DRAW);
 }
 
-AssetModel::~AssetModel() {
+model::Asset::~Asset() {
   glDeleteVertexArrays(1, &glAttributesIdx);
   glDeleteBuffers(1, &glBufferIdx);
   glDeleteBuffers(1, &glIndexBufferIdx);
 }
 
-void AssetModel::draw() const {
+void model::Asset::draw() const {
   glBindVertexArray(glAttributesIdx);
 
   size_t currentOffset = 0;

@@ -10,7 +10,7 @@
 #include "input/raw/mouse.hpp"
 #include "render/renderer.hpp"
 #include "render/window.hpp"
-#include "render/model/cube.hpp"
+#include "render/model/3d/cube.hpp"
 
 #include "components/model.hpp"
 #include "components/transform.hpp"
@@ -60,7 +60,7 @@ int main() {
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, modelMatrix);
-    registry->emplace<components::Model>(ent, assetModel);
+    registry->emplace<components::Model3D>(ent, assetModel);
     registry->emplace<components::Material>(ent, bunnyMaterial);
   }
 
@@ -71,20 +71,20 @@ int main() {
   registry->emplace<components::GlobalTransform>(mainLight, mainLightMatrix);
 
   auto topCubeModel =
-      std::make_shared<CubeModel>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::quat(glm::vec3(0.0f)));
+      std::make_shared<model::Cube>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::quat(glm::vec3(0.0f)));
   auto topCubeEnt = registry->create();
   auto topCubeMatrix = glm::mat4(1.0f);
   topCubeMatrix = glm::rotate(topCubeMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
   registry->emplace<components::GlobalTransform>(topCubeEnt, topCubeMatrix);
-  registry->emplace<components::Model>(topCubeEnt, topCubeModel);
+  registry->emplace<components::Model3D>(topCubeEnt, topCubeModel);
   registry->emplace<components::Material>(topCubeEnt, redMaterial);
 
   // add a cube to draw
-  auto baseModel =
-      std::make_shared<CubeModel>(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(1000.0f, 1000.0f, 0.1f), glm::quat(glm::vec3(0.0f)));
+  auto baseModel = std::make_shared<model::Cube>(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(1000.0f, 1000.0f, 0.1f),
+                                                 glm::quat(glm::vec3(0.0f)));
   auto baseEnt = registry->create();
   registry->emplace<components::GlobalTransform>(baseEnt, glm::mat4(1.0f));
-  registry->emplace<components::Model>(baseEnt, baseModel);
+  registry->emplace<components::Model3D>(baseEnt, baseModel);
   registry->emplace<components::Material>(baseEnt, redMaterial);
 
   float deltaTime = 0.0f;

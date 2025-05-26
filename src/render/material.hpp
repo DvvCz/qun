@@ -1,9 +1,11 @@
 #pragma once
 
 #include <rapidobj/rapidobj.hpp>
-#include "uniform.hpp"
-#include "../resource/obj/obj.hpp"
-#include "texture.hpp"
+
+#include "render/uniform.hpp"
+#include "render/texture.hpp"
+
+#include "resource/obj/obj.hpp"
 
 struct MaterialBlock {
   alignas(16) glm::vec3 ambient;

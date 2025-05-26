@@ -30,10 +30,8 @@ add_executable(trender
     ./src/input/raw/mouse.cpp
     ./src/render/window.cpp
     ./src/render/renderer.cpp
-    ./src/render/model/triangle.cpp
-    ./src/render/model/quad.cpp
-    ./src/render/model/cube.cpp
-    ./src/render/model/asset.cpp
+    ./src/render/model/3d/cube.cpp
+    ./src/render/model/3d/asset.cpp
     ./src/render/uniform.cpp
     ./src/render/texture.cpp
     ./src/render/material.cpp
@@ -46,6 +44,7 @@ add_executable(trender
 target_include_directories(trender
     PRIVATE
     ./thirdparty
+    ./src
 )
 
 target_link_libraries(trender

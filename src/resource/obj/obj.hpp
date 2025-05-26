@@ -8,9 +8,10 @@
 #include <optional>
 
 #include <rapidobj/rapidobj.hpp>
+#include <glm/glm.hpp>
 
-#include "../asset.hpp"
-#include "../../render/vertex.hpp"
+#include "resource/asset.hpp"
+#include "render/vertex.hpp"
 
 namespace resource {
   struct ObjMaterialGroup {
@@ -50,11 +51,11 @@ namespace resource {
       return path;
     }
 
-    std::vector<Vertex> vertices;
+    std::vector<Vertex3D> vertices;
     std::vector<ObjShape> shapes;
     std::vector<ObjMaterial> materials;
 
-    ObjAsset(std::vector<Vertex> vertices, std::vector<ObjShape> shapes, std::vector<ObjMaterial> materials,
+    ObjAsset(std::vector<Vertex3D> vertices, std::vector<ObjShape> shapes, std::vector<ObjMaterial> materials,
              std::filesystem::path path)
         : vertices(std::move(vertices)), shapes(std::move(shapes)), materials(std::move(materials)), path(std::move(path)) {
     }

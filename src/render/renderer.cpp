@@ -25,9 +25,6 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformLightBlock(0),
   uniformMaterialBlock(1)
 { /* clang-format on */
-  auto fragShader = std::make_unique<shader::Shader>(std::filesystem::path("shaders/main.frag"), shader::Type::Fragment);
-  auto vertShader = std::make_unique<shader::Shader>(std::filesystem::path("shaders/main.vert"), shader::Type::Vertex);
-
   cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
   cameraFront = glm::vec3(1.0f, 0.0f, 0.0f);
 
@@ -83,10 +80,25 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
     std::println(stderr, "OpenGL Error: {}", message);
   }, nullptr); /* clang-format on */
 
-  shaderProgram = std::make_unique<shader::Program>();
-  shaderProgram->addShader(std::move(vertShader));
-  shaderProgram->addShader(std::move(fragShader));
-  shaderProgram->link();
+  {
+    auto fragShader = std::make_unique<shader::Shader>(std::filesystem::path("shaders/main.frag"), shader::Type::Fragment);
+    auto vertShader = std::make_unique<shader::Shader>(std::filesystem::path("shaders/main.vert"), shader::Type::Vertex);
+
+    shader3D = std::make_unique<shader::Program>();
+    shader3D->addShader(std::move(vertShader));
+    shader3D->addShader(std::move(fragShader));
+    shader3D->link();
+  }
+
+  {
+    auto fragShader = std::make_unique<shader::Shader>(std::filesystem::path("shaders/main2d.frag"), shader::Type::Fragment);
+    auto vertShader = std::make_unique<shader::Shader>(std::filesystem::path("shaders/main2d.vert"), shader::Type::Vertex);
+
+    shader2D = std::make_unique<shader::Program>();
+    shader2D->addShader(std::move(vertShader));
+    shader2D->addShader(std::move(fragShader));
+    shader2D->link();
+  }
 
   textureManager = std::make_shared<TextureManager>(uniformTextureArray, uniformTextureIdx);
 
@@ -94,7 +106,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   materialManager = std::make_shared<MaterialManager>(uniformMaterialBlock, textureManager);
 
   // Need to activate shader program before setting uniforms
-  shaderProgram->use();
+  shader3D->use();
 
   uniformLightBlock.set({.lightCount = 0});
   uniformCameraPos.set(cameraPos);
@@ -112,9 +124,20 @@ void Renderer::drawFrame() {
   glClearColor(0.3f, 0.3f, 0.6f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
-  shaderProgram->use();
+  shader2D->use();
 #ifdef SHADER_HOTRELOADING
-  shaderProgram->checkForHotReload();
+  shader2D->checkForHotReload();
+#endif
+
+  auto ents2d = registry->view<components::GlobalTransform, components::Model2D>();
+  for (const auto ent : ents2d) {
+    auto model = registry->get<components::Model2D>(ent);
+    model->draw();
+  }
+
+  shader3D->use();
+#ifdef SHADER_HOTRELOADING
+  shader3D->checkForHotReload();
 #endif
 
   uniformProjMatrix.set(projMatrix);
@@ -140,10 +163,10 @@ void Renderer::drawFrame() {
 
   uniformLightBlock.set(lightBlock);
 
-  auto renderableEnts = registry->view<components::GlobalTransform, components::Model>();
-  for (const auto ent : renderableEnts) {
+  auto ents3d = registry->view<components::GlobalTransform, components::Model3D>();
+  for (const auto ent : ents3d) {
     auto globalTransform = registry->get<components::GlobalTransform>(ent);
-    auto model = registry->get<components::Model>(ent);
+    auto model = registry->get<components::Model3D>(ent);
 
     if (registry->all_of<components::Material>(ent)) {
       auto material = registry->get<components::Material>(ent);
@@ -209,6 +232,6 @@ const glm::vec3& Renderer::getCameraPos() const noexcept {
   return cameraPos;
 }
 
-std::shared_ptr<AssetModel> Renderer::createAssetModel(const resource::ObjAsset& asset) const {
-  return std::make_shared<AssetModel>(asset, textureManager, materialManager);
+std::shared_ptr<model::Asset> Renderer::createAssetModel(const resource::ObjAsset& asset) const {
+  return std::make_shared<model::Asset>(asset, textureManager, materialManager);
 }
