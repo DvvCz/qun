@@ -21,7 +21,6 @@ void MaterialManager::setMaterial(const resource::ObjMaterial& material) noexcep
   };/* clang-format on */
 
   if (material.diffuseTexture.has_value()) {
-    // textureManager->bindTexture(0);
     auto out = textureManager->getTextureByPath(material.diffuseTexture.value());
     if (out.has_value()) {
       textureManager->bindTexture(out.value());

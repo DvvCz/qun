@@ -14,6 +14,7 @@
 
 #include "components/model.hpp"
 #include "components/transform.hpp"
+#include "components/light.hpp"
 
 int main() {
   if (!glfwInit()) {
@@ -34,32 +35,49 @@ int main() {
   auto renderer = std::make_unique<Renderer>(window, registry);
 
   auto redMaterial = std::make_shared<MaterialBlock>();
-  redMaterial->ambient = glm::vec3(0.1f, 0.0f, 0.0f);
-  redMaterial->diffuse = glm::vec3(0.7f, 0.7f, 0.7f);
-  redMaterial->specular = glm::vec3(0.8f, 0.8f, 0.8f);
-  redMaterial->shininess = 32.0f;
+  redMaterial->ambient = glm::vec3(0.2f, 0.05f, 0.05f);
+  redMaterial->diffuse = glm::vec3(0.8f, 0.2f, 0.2f);
+  redMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+  redMaterial->shininess = 64.0f;
   redMaterial->dissolve = 1.0f;
 
-  auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
-  if (out.has_value()) {
-    auto assetModel = renderer->createAssetModel(out.value());
+  // Create a shiny material for the bunny
+  auto bunnyMaterial = std::make_shared<MaterialBlock>();
+  bunnyMaterial->ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+  bunnyMaterial->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+  bunnyMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+  bunnyMaterial->shininess = 128.0f;
+  bunnyMaterial->dissolve = 1.0f;
 
-    auto modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::scale(modelMatrix, glm::vec3(10));
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+  // auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
+  // if (out.has_value()) {
+  //   auto assetModel = renderer->createAssetModel(out.value());
 
-    auto ent = registry->create();
-    registry->emplace<components::GlobalTransform>(ent, modelMatrix);
-    registry->emplace<components::Model>(ent, assetModel);
-  }
+  //   auto modelMatrix = glm::mat4(1.0f);
+  //   modelMatrix = glm::scale(modelMatrix, glm::vec3(10));
+  //   modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+  //   auto ent = registry->create();
+  //   registry->emplace<components::GlobalTransform>(ent, modelMatrix);
+  //   registry->emplace<components::Model>(ent, assetModel);
+  //   registry->emplace<components::Material>(ent, bunnyMaterial);
+  // }
+
+  auto mainLight = registry->create();
+
+  auto mainLightMatrix = glm::mat4(1.0f);
+  mainLightMatrix = glm::translate(mainLightMatrix, glm::vec3(0.0f, 0.0f, 5.0f));
+
+  registry->emplace<components::Light>(mainLight, glm::vec3(1.0f, 1.0f, 1.0f));
+  registry->emplace<components::GlobalTransform>(mainLight, mainLightMatrix);
 
   // add a cube to draw
-  auto cubeModel =
+  auto baseModel =
       std::make_shared<CubeModel>(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(1000.0f, 1000.0f, 0.1f), glm::quat(glm::vec3(0.0f)));
-  auto cubeEnt = registry->create();
-  registry->emplace<components::GlobalTransform>(cubeEnt, glm::mat4(1.0f));
-  registry->emplace<components::Model>(cubeEnt, cubeModel);
-  registry->emplace<components::Material>(cubeEnt, redMaterial);
+  auto baseEnt = registry->create();
+  registry->emplace<components::GlobalTransform>(baseEnt, glm::mat4(1.0f));
+  registry->emplace<components::Model>(baseEnt, baseModel);
+  registry->emplace<components::Material>(baseEnt, redMaterial);
 
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();

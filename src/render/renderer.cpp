@@ -8,8 +8,10 @@
 #include "../shader/shader.hpp"
 #include "../shader/program.hpp"
 #include "../resource/obj/obj.hpp"
+
 #include "../components/transform.hpp"
 #include "../components/model.hpp"
+#include "../components/light.hpp"
 
 Renderer::Renderer(const std::shared_ptr<Window>& window,
                    const std::shared_ptr<entt::registry>& registry) /* clang-format off */
@@ -94,24 +96,10 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   // todo: probably only store the uniform in the material manager itself
   materialManager = std::make_shared<MaterialManager>(uniformMaterialBlock, textureManager);
 
-  lightBlock = {/* clang-format off */
-      .lightCount = 2,
-      .lights = {
-          { // Red light at (0, 0, 5)
-            glm::vec3(0.0f, 0.0f, 5.0f),
-            glm::vec3(1.0f, 0.0f, 0.0f)
-          },
-          { // Blue light at (0, 5, 5)
-            glm::vec3(0.0f, 5.0f, 5.0f),
-            glm::vec3(0.0f, 0.0f, 1.0f)
-          },
-      }
-  };/* clang-format on */
-
   // Need to activate shader program before setting uniforms
   shaderProgram->use();
 
-  uniformLightBlock.set(lightBlock);
+  uniformLightBlock.set({.lightCount = 0});
   uniformCameraPos.set(cameraPos);
 }
 
@@ -131,6 +119,26 @@ void Renderer::drawFrame() {
 
   uniformProjMatrix.set(projMatrix);
   uniformViewMatrix.set(viewMatrix);
+
+  auto lightEnts = registry->view<components::GlobalTransform, components::Light>();
+  lightBlock.lightCount = 0;
+
+  for (const auto ent : lightEnts) {
+    if (lightBlock.lightCount >= MAX_LIGHTS) {
+      std::println(stderr, "Maximum number of lights exceeded: {}", MAX_LIGHTS);
+      break; // Prevent overflow
+    }
+
+    auto light = registry->get<components::Light>(ent);
+    auto globalTransform = registry->get<components::GlobalTransform>(ent);
+
+    lightBlock.lights[lightBlock.lightCount++] = {/* clang-format off */
+      .position = glm::vec3(globalTransform[3]),
+      .color = light.color
+    }; /* clang-format on */
+  }
+
+  uniformLightBlock.set(lightBlock);
 
   auto renderableEnts = registry->view<components::GlobalTransform, components::Model>();
   for (const auto ent : renderableEnts) {

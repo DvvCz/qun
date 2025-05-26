@@ -108,7 +108,7 @@ std::optional<GLuint> TextureManager::getTextureByPath(const std::filesystem::pa
   for (size_t i = 0; i < textures.size(); ++i) {
     // todo: i think this should enforce that the path is resolved.
     // because any textures with matching names will be considered the same here.
-    if (textures[i].getPath().filename() == path) {
+    if (textures[i].getPath().filename().string().find(path.string())) {
       return static_cast<GLuint>(i);
     }
   }
