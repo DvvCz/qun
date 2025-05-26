@@ -63,7 +63,6 @@ CubeModel::CubeModel(glm::vec3 pos, glm::vec3 size, glm::quat rot) : pos(pos), s
       Vertex{glm::vec3( .5f, -.5f,  .5f), glm::vec3(0, 0, 1), glm::vec2(0, 1)}
       }; /* clang-format on */
 
-  // Define indices for the cube (2 triangles per face)
   indices = {/* clang-format off */
       // Front face
       0, 1, 2,   2, 3, 0,
@@ -79,7 +78,6 @@ CubeModel::CubeModel(glm::vec3 pos, glm::vec3 size, glm::quat rot) : pos(pos), s
       20, 21, 22, 22, 23, 20
   }; /* clang-format on */
 
-  // Apply transformations (scale, rotate, translate)
   glm::mat4 transform = glm::mat4(1.0f);
   transform = glm::translate(transform, pos);
   transform = transform * glm::mat4_cast(rot);
