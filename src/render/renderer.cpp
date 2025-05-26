@@ -115,6 +115,14 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformCameraPos.set(cameraPos);
 }
 
+MaterialBlock defaultMaterial = {/* clang-format off */
+  .ambient = glm::vec3(0.2f, 0.2f, 0.2f),
+  .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
+  .specular = glm::vec3(1.0f, 1.0f, 1.0f),
+  .shininess = 32.0f,
+  .dissolve = 1.0f
+};/* clang-format on */
+
 void Renderer::drawFrame() {
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
@@ -123,16 +131,6 @@ void Renderer::drawFrame() {
 
   uniformProjMatrix.set(projMatrix);
   uniformViewMatrix.set(viewMatrix);
-  uniformModelMatrix.set(modelMatrix);
-
-  // Set a default material for models without materials
-  MaterialBlock defaultMaterial = {/* clang-format off */
-    .ambient = glm::vec3(0.2f, 0.2f, 0.2f),
-    .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
-    .specular = glm::vec3(1.0f, 1.0f, 1.0f),
-    .shininess = 32.0f,
-    .dissolve = 1.0f
-  };/* clang-format on */
 
   auto renderableEnts = registry->view<components::GlobalTransform, components::Model>();
   for (const auto ent : renderableEnts) {
@@ -146,6 +144,8 @@ void Renderer::drawFrame() {
       // Use the default material if no specific material is set
       materialManager->setMaterial(defaultMaterial);
     }
+
+    textureManager->unbindTexture();
 
     modelMatrix = globalTransform;
     uniformModelMatrix.set(modelMatrix);

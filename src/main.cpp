@@ -34,9 +34,9 @@ int main() {
   auto renderer = std::make_unique<Renderer>(window, registry);
 
   auto redMaterial = std::make_shared<MaterialBlock>();
-  redMaterial->ambient = glm::vec3(1.0f, 0.0f, 0.0f);
-  redMaterial->diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
-  redMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+  redMaterial->ambient = glm::vec3(0.1f, 0.0f, 0.0f);
+  redMaterial->diffuse = glm::vec3(0.7f, 0.7f, 0.7f);
+  redMaterial->specular = glm::vec3(0.8f, 0.8f, 0.8f);
   redMaterial->shininess = 32.0f;
   redMaterial->dissolve = 1.0f;
 
