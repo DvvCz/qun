@@ -95,15 +95,18 @@ int main() {
 
   /* clang-format off */
   auto basequad = std::make_shared<model::Quad>(
-      Vertex2D{glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
-      Vertex2D{glm::vec3(1.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
-      Vertex2D{glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-      Vertex2D{glm::vec3(-1.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)}
+      Vertex2D{glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f)},
+      Vertex2D{glm::vec3(0.0f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f)},
+      Vertex2D{glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+      Vertex2D{glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)}
   ); /* clang-format on */
   auto quadEnt = registry->create();
   registry->emplace<components::GlobalTransform>(quadEnt, glm::mat4(1.0f));
   registry->emplace<components::Model2D>(quadEnt, basequad);
-  registry->emplace<components::Material2D>(quadEnt, glm::vec3(0.0f, 0.0f, 1.0f));
+
+  auto blueMaterial = std::make_shared<material::Block2D>();
+  blueMaterial->color = glm::vec3(0.0f, 0.0f, 1.0f);
+  registry->emplace<components::Material2D>(quadEnt, blueMaterial);
 
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();
