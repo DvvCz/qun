@@ -3,20 +3,25 @@
 CubeModel::CubeModel(glm::vec3 pos, glm::vec3 size, glm::quat rot) : pos(pos), size(size), rot(rot) {
   glCreateVertexArrays(1, &glAttributesIdx);
   glCreateBuffers(1, &glBufferIdx);
-  glCreateBuffers(1, &glElementBufferIdx);
+  glCreateBuffers(1, &glIndexBufferIdx);
 
   {
-    glVertexArrayAttribFormat(glAttributesIdx, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, pos));
+    GLuint glAttrSlot1 = 0;
+
+    glVertexArrayAttribFormat(glAttributesIdx, 0, 3, GL_FLOAT, GL_FALSE, 0);
     glEnableVertexArrayAttrib(glAttributesIdx, 0);
+    glVertexArrayAttribBinding(glAttributesIdx, 0, glAttrSlot1);
 
-    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
+    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal) - offsetof(Vertex, pos));
     glEnableVertexArrayAttrib(glAttributesIdx, 1);
+    glVertexArrayAttribBinding(glAttributesIdx, 1, glAttrSlot1);
 
-    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv) - offsetof(Vertex, normal));
     glEnableVertexArrayAttrib(glAttributesIdx, 2);
+    glVertexArrayAttribBinding(glAttributesIdx, 2, glAttrSlot1);
 
-    glVertexArrayVertexBuffer(glAttributesIdx, 0, glBufferIdx, 0, sizeof(Vertex));
-    glVertexArrayElementBuffer(glAttributesIdx, glElementBufferIdx);
+    glVertexArrayVertexBuffer(glAttributesIdx, glAttrSlot1, glBufferIdx, 0, sizeof(Vertex));
+    glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx);
   }
 
   // Each face has its own vertices to allow for proper normals and UVs
@@ -90,13 +95,13 @@ CubeModel::CubeModel(glm::vec3 pos, glm::vec3 size, glm::quat rot) : pos(pos), s
   }
 
   glNamedBufferData(glBufferIdx, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
-  glNamedBufferData(glElementBufferIdx, sizeof(indices), indices.data(), GL_STATIC_DRAW);
+  glNamedBufferData(glIndexBufferIdx, sizeof(indices), indices.data(), GL_STATIC_DRAW);
 }
 
 CubeModel::~CubeModel() {
   glDeleteVertexArrays(1, &glAttributesIdx);
   glDeleteBuffers(1, &glBufferIdx);
-  glDeleteBuffers(1, &glElementBufferIdx);
+  glDeleteBuffers(1, &glIndexBufferIdx);
 }
 
 void CubeModel::draw() const {

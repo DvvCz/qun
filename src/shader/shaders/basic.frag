@@ -3,6 +3,7 @@
 struct Light {
     vec3 position;
     vec3 color;
+    float radius;
 };
 
 in vec3 fragPos;

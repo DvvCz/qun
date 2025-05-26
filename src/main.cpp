@@ -49,27 +49,32 @@ int main() {
   bunnyMaterial->shininess = 128.0f;
   bunnyMaterial->dissolve = 1.0f;
 
-  // auto out = resource::ObjAsset::tryFromFile("../resources/bunnyNoNorm.obj");
-  // if (out.has_value()) {
-  //   auto assetModel = renderer->createAssetModel(out.value());
+  auto out = resource::ObjAsset::tryFromFile("../../resources/bunnyNoNorm.obj");
+  if (out.has_value()) {
+    auto assetModel = renderer->createAssetModel(out.value());
 
-  //   auto modelMatrix = glm::mat4(1.0f);
-  //   modelMatrix = glm::scale(modelMatrix, glm::vec3(10));
-  //   modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    auto modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(10));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-  //   auto ent = registry->create();
-  //   registry->emplace<components::GlobalTransform>(ent, modelMatrix);
-  //   registry->emplace<components::Model>(ent, assetModel);
-  //   registry->emplace<components::Material>(ent, bunnyMaterial);
-  // }
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, modelMatrix);
+    registry->emplace<components::Model>(ent, assetModel);
+    registry->emplace<components::Material>(ent, bunnyMaterial);
+  }
 
   auto mainLight = registry->create();
-
   auto mainLightMatrix = glm::mat4(1.0f);
   mainLightMatrix = glm::translate(mainLightMatrix, glm::vec3(0.0f, 0.0f, 5.0f));
-
-  registry->emplace<components::Light>(mainLight, glm::vec3(1.0f, 1.0f, 1.0f));
+  registry->emplace<components::Light>(mainLight, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 100000.0f);
   registry->emplace<components::GlobalTransform>(mainLight, mainLightMatrix);
+
+  auto topCubeModel =
+      std::make_shared<CubeModel>(glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::quat(glm::vec3(0.0f)));
+  auto topCubeEnt = registry->create();
+  registry->emplace<components::GlobalTransform>(topCubeEnt, glm::mat4(1.0f));
+  registry->emplace<components::Model>(topCubeEnt, topCubeModel);
+  registry->emplace<components::Material>(topCubeEnt, redMaterial);
 
   // add a cube to draw
   auto baseModel =

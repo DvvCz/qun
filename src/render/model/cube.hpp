@@ -23,5 +23,5 @@ private:
   std::array<GLuint, 36> indices;  // 2 triangles per face, 3 indices per triangle, 6 faces
   GLuint glAttributesIdx;
   GLuint glBufferIdx;
-  GLuint glElementBufferIdx;
+  GLuint glIndexBufferIdx;
 };

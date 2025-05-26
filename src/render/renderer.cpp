@@ -137,7 +137,7 @@ void Renderer::drawFrame() {
 
     lightBlock.lights[lightBlock.lightCount++] = {/* clang-format off */
       .position = glm::vec3(globalTransform[3]),
-      .color = light.color
+      .color = light.color * light.intensity
     }; /* clang-format on */
   }
 

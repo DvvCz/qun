@@ -2,7 +2,10 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#ifdef SHADER_HOTRELOADING
 #include <print>
+#endif
 
 namespace shader {
   Program::Program() : programIdx(glCreateProgram()) {
