@@ -49,7 +49,7 @@ int main() {
   bunnyMaterial->shininess = 128.0f;
   bunnyMaterial->dissolve = 1.0f;
 
-  auto out = resource::ObjAsset::tryFromFile("../../resources/bunnyNoNorm.obj");
+  auto out = resource::ObjAsset::tryFromFile("resources/bunnyNoNorm.obj");
   if (out.has_value()) {
     auto assetModel = renderer->createAssetModel(out.value());
 
