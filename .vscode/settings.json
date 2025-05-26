@@ -1,4 +1,7 @@
 {
     "cmake.sourceDirectory": "${workspaceFolder}",
+    "clangd.arguments": [
+      "--compile-commands-dir=${workspaceFolder}/release",
+    ],
     "C_Cpp.autoAddFileAssociations": false,
 }

@@ -4,7 +4,7 @@
     {
       "name": "release",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/release",
+      "binaryDir": "${sourceDir}/release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "YES"
@@ -13,7 +13,7 @@
     {
       "name": "debug",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/debug",
+      "binaryDir": "${sourceDir}/release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "YES"
@@ -33,7 +33,7 @@
     },
     {
       "name": "debug",
-      "description": "",
+      "description": "Builds with support for shader hot-reloading.",
       "displayName": "Debug",
       "configurePreset": "debug"
     }

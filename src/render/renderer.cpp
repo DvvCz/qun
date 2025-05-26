@@ -25,11 +25,8 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformLightBlock(0),
   uniformMaterialBlock(1)
 { /* clang-format on */
-  auto fragShader =
-      std::make_unique<shader::Shader>(std::filesystem::path("../../src/shader/shaders/basic.frag"), shader::Type::Fragment);
-
-  auto vertShader =
-      std::make_unique<shader::Shader>(std::filesystem::path("../../src/shader/shaders/basic.vert"), shader::Type::Vertex);
+  auto fragShader = std::make_unique<shader::Shader>(std::filesystem::path("shaders/main.frag"), shader::Type::Fragment);
+  auto vertShader = std::make_unique<shader::Shader>(std::filesystem::path("shaders/main.vert"), shader::Type::Vertex);
 
   cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
   cameraFront = glm::vec3(1.0f, 0.0f, 0.0f);

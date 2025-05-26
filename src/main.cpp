@@ -66,7 +66,7 @@ int main() {
   auto mainLight = registry->create();
   auto mainLightMatrix = glm::mat4(1.0f);
   mainLightMatrix = glm::translate(mainLightMatrix, glm::vec3(0.0f, 0.0f, 5.0f));
-  registry->emplace<components::Light>(mainLight, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 100000.0f);
+  registry->emplace<components::Light>(mainLight, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 1000.0f);
   registry->emplace<components::GlobalTransform>(mainLight, mainLightMatrix);
 
   auto topCubeModel =
