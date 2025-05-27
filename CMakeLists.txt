@@ -44,6 +44,7 @@ add_executable(trender
     ./src/shader/program.cpp
     ./src/asset/obj/obj.cpp
     ./src/asset/img/img.cpp
+    ./src/asset/gltf/gltf.cpp
 )
 
 target_include_directories(trender

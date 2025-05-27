@@ -3,7 +3,6 @@
 #include <expected>
 #include <string>
 #include <filesystem>
-#include <optional>
 
 #include <fastgltf/core.hpp>
 #include <fastgltf/types.hpp>
@@ -13,19 +12,8 @@
 #include "asset/asset.hpp"
 
 namespace asset {
-  class Gltf : public Asset {
+  class Gltf {
   public:
-    [[nodiscard]] std::optional<std::string> getName() const noexcept {
-      return "GLTF Asset";
-    }
-
-    [[nodiscard]] static std::expected<Gltf, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
-
-    [[nodiscard]] std::filesystem::path getPath() const noexcept {
-      return path;
-    }
-
-  private:
-    std::filesystem::path path;
+    [[nodiscard]] static std::expected<asset::Asset3D, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
   };
 }

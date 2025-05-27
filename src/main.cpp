@@ -23,6 +23,7 @@
 #include "components/material.hpp"
 
 #include "asset/img/img.hpp"
+#include "asset/gltf/gltf.hpp"
 
 int main() {
   if (!glfwInit()) {
@@ -41,6 +42,23 @@ int main() {
 
   auto registry = std::make_shared<entt::registry>();
   auto renderer = std::make_unique<Renderer>(window, registry);
+
+  auto boxAsset = asset::Gltf::tryFromFile("resources/BarramundiFish.glb");
+  if (!boxAsset.has_value()) {
+    std::println(stderr, "Failed to load GLTF asset: {}", boxAsset.error());
+    return EXIT_FAILURE;
+  }
+
+  std::println("Loaded GLTF asset with {} vertices and {} shapes", boxAsset.value().vertices.size(),
+               boxAsset.value().shapes.size());
+
+  auto boxModel = renderer->createAsset3D(boxAsset.value());
+  auto boxEnt = registry->create();
+  auto boxMatrix = glm::mat4(1.0f);
+  boxMatrix = glm::scale(boxMatrix, glm::vec3(0.1f));
+  boxMatrix = glm::translate(boxMatrix, glm::vec3(0.0f, -1.0f, 0.0f));
+  registry->emplace<components::GlobalTransform>(boxEnt, boxMatrix);
+  registry->emplace<components::Model3D>(boxEnt, boxModel);
 
   auto plateTexture = asset::Img::tryFromFile("resources/NumernSchildAudiR8.png");
   if (!plateTexture.has_value()) {
