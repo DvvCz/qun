@@ -8,6 +8,8 @@
 #include <print>
 #include <variant>
 
+#include "asset/img/img.hpp"
+
 #include "render/texture.hpp"
 
 /* clang-format off */
@@ -49,7 +51,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
 
   // Convert materials
   for (const auto& gltfMaterial : asset.materials) {
-    std::optional<std::filesystem::path> diffuseTexture = std::nullopt;
+    std::optional<size_t> diffuseTexture = std::nullopt;
 
     // Check if there's a base color texture
     if (gltfMaterial.pbrData.baseColorTexture.has_value()) {
@@ -62,13 +64,54 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
 
           if (std::holds_alternative<fastgltf::sources::URI>(image.data)) {
             auto& uriData = std::get<fastgltf::sources::URI>(image.data);
-            diffuseTexture = path.parent_path() / uriData.uri.path();
+            // diffuseTexture = path.parent_path() / uriData.uri.path();
+            std::println("TODO: uri data for texture: {}", uriData.uri.path());
           } else if (std::holds_alternative<fastgltf::sources::BufferView>(image.data)) {
             auto& bufferData = std::get<fastgltf::sources::BufferView>(image.data);
             auto& bufferView = asset.bufferViews[bufferData.bufferViewIndex];
             auto& buffer = asset.buffers[bufferView.bufferIndex];
 
-            std::println("todo: bufferdata");
+            if (std::holds_alternative<fastgltf::sources::Array>(buffer.data)) {
+              auto& arrayData = std::get<fastgltf::sources::Array>(buffer.data);
+
+              switch (arrayData.mimeType) {
+              case fastgltf::MimeType::PNG:
+              case fastgltf::MimeType::JPEG: {
+                std::vector<std::byte> imageData(arrayData.bytes.begin(), arrayData.bytes.end());
+
+                auto out = asset::loader::Img::tryFromData(imageData, texture::Format::RGBA, texMan);
+                if (!out.has_value()) {
+                  return std::unexpected{out.error()};
+                }
+
+                diffuseTexture = out.value().textureId;
+                break;
+              }
+              case fastgltf::MimeType::WEBP:
+                std::println("TODO: WEBP support for texture");
+                break;
+              case fastgltf::MimeType::KTX2:
+                std::println("TODO: KTX2 support for texture");
+                break;
+              case fastgltf::MimeType::OctetStream:
+                std::println("TODO: OctetStream support for texture");
+                break;
+              case fastgltf::MimeType::None:
+                std::println("No mime type for texture, cannot load");
+                break;
+              case fastgltf::MimeType::DDS:
+                std::println("TODO: DDS support for texture");
+                break;
+              case fastgltf::MimeType::GltfBuffer:
+                std::println("TODO: GltfBuffer support for texture");
+                break;
+              default:
+                std::println("Unsupported buffer data type for texture");
+                break;
+              }
+            } else {
+              std::println("Unknown buffer data type for texture");
+            }
           } else if (std::holds_alternative<fastgltf::sources::Array>(image.data)) {
             std::println("todo: arraydata");
           }
@@ -92,7 +135,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
         .specular = glm::vec3(0.5f),
         .shininess = std::max(1.0f, 1 / std::pow(gltfMaterial.pbrData.roughnessFactor, 2.0f)),
         .dissolve = baseColorAlpha,
-        .diffuseTexture = std::nullopt
+        .diffuseTexture = diffuseTexture
     };/* clang-format on */
 
     materials.push_back(mat);

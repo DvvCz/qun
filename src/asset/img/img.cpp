@@ -47,14 +47,23 @@ std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(
 
 /* clang-format off */
 std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromData(
-  const std::vector<unsigned char>& data,
+  const std::vector<std::byte>& data,
   texture::Format desiredFormat,
   texture::Manager& texMan
 ) noexcept { /* clang-format on */
   int width;
   int height;
   int channels;
-  unsigned char* imageData = stbi_load_from_memory(data.data(), data.size(), &width, &height, &channels, desiredFormat);
+
+  /* clang-format off */
+  unsigned char* imageData = stbi_load_from_memory(
+    reinterpret_cast<const unsigned char*>(data.data()),
+    static_cast<int>(data.size()),
+    &width,
+    &height,
+    &channels,
+    static_cast<int>(desiredFormat)
+  ); /* clang-format on */
 
   if (!imageData) {
     return std::unexpected{std::format("Failed to load image: {}", stbi_failure_reason())};
