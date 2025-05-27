@@ -36,7 +36,7 @@ namespace resource {
     float shininess;
     float dissolve;
 
-    std::optional<std::string> diffuseTexture;
+    std::optional<std::filesystem::path> diffuseTexture;
   };
 
   class ObjAsset : public Asset {

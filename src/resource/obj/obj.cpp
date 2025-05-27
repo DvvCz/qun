@@ -26,6 +26,13 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
 
   std::vector<ObjMaterial> materials;
   for (const auto& material : obj.materials) {
+
+    std::optional<std::filesystem::path> diffuseTexture = std::nullopt;
+    if (!material.diffuse_texname.empty()) {
+      auto unresolvedPath = std::filesystem::path(material.diffuse_texname);
+      diffuseTexture = path.parent_path() / unresolvedPath;
+    }
+
     ObjMaterial mat = {/* clang-format off */
         .name = material.name,
 
@@ -35,7 +42,7 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
         .shininess = material.shininess,
         .dissolve = material.dissolve,
 
-        .diffuseTexture = material.diffuse_texname.empty() ? std::nullopt : std::make_optional(material.diffuse_texname)
+        .diffuseTexture = diffuseTexture
     };/* clang-format on */
 
     materials.push_back(mat);

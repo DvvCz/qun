@@ -49,15 +49,12 @@ model::Asset::Asset(/* clang-format off */
     if (material.diffuseTexture.has_value()) {
       std::filesystem::path diffuseFileName = material.diffuseTexture.value();
 
-      // Paths are relative to the asset itself
-      std::filesystem::path resolvedPath = basePath / diffuseFileName;
-
       if (textureManager->getTextureByPath(diffuseFileName).has_value()) {
-        std::println("Texture already loaded: {}", resolvedPath.string());
+        std::println("Texture already loaded: {}", diffuseFileName.string());
         continue;
       }
 
-      auto texture = resource::ImgAsset::tryFromFile(resolvedPath);
+      auto texture = resource::ImgAsset::tryFromFile(diffuseFileName);
       if (texture.has_value()) {
         auto textureId = textureManager->addTexture(texture.value());
         if (!textureId.has_value()) {

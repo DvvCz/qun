@@ -26,7 +26,7 @@ void material::Manager3D::setMaterial(const resource::ObjMaterial& material) noe
     if (out.has_value()) {
       textureManager->bindTexture(out.value());
     } else {
-      std::println(stderr, "Failed to get texture by path: {}", material.diffuseTexture.value());
+      std::println(stderr, "Failed to get texture by path: {}", material.diffuseTexture.value().generic_string());
       textureManager->unbindTexture();
     }
   } else {
