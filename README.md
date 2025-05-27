@@ -6,7 +6,8 @@ This is an attempt to make a relatively simple renderer using modern OpenGL (4.5
 
 - GLSL Shader Hotreloading
 - Dynamic entity manipulation making use of [EnTT](https://github.com/skypjack/entt)
-- Rendering .obj assets with meshes and multiple materials
+- Support for meshes with multiple materials
+- Obj and glTF file formats for asset imports
 
 ## Sample
 
