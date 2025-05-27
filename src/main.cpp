@@ -43,7 +43,7 @@ int main() {
   auto registry = std::make_shared<entt::registry>();
   auto renderer = std::make_unique<Renderer>(window, registry);
 
-  auto boxAsset = asset::Gltf::tryFromFile("resources/BarramundiFish.glb");
+  auto boxAsset = asset::Gltf::tryFromFile("resources/Box.glb");
   if (!boxAsset.has_value()) {
     std::println(stderr, "Failed to load GLTF asset: {}", boxAsset.error());
     return EXIT_FAILURE;
@@ -55,8 +55,8 @@ int main() {
   auto boxModel = renderer->createAsset3D(boxAsset.value());
   auto boxEnt = registry->create();
   auto boxMatrix = glm::mat4(1.0f);
-  boxMatrix = glm::scale(boxMatrix, glm::vec3(0.1f));
-  boxMatrix = glm::translate(boxMatrix, glm::vec3(0.0f, -1.0f, 0.0f));
+  boxMatrix = glm::scale(boxMatrix, glm::vec3(5.0f));
+  boxMatrix = glm::translate(boxMatrix, glm::vec3(0.0f, -1.0f, 1.0f));
   registry->emplace<components::GlobalTransform>(boxEnt, boxMatrix);
   registry->emplace<components::Model3D>(boxEnt, boxModel);
 

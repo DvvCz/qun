@@ -17,12 +17,15 @@ out vec2 fragUV;
 
 void main() {
     vec4 modelPos = modelMatrix * vec4(vertPos, 1.0);
-    vec4 modelNormal = modelMatrix * vec4(vertNormal, 1.0);
+
+    // Normal matrix is the inverse transpose of the upper-left 3x3 of the model matrix
+    // For uniform scaling or when modelMatrix is orthogonal, we can use mat3(modelMatrix)
+    mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
+    vec3 transformedNormal = normalize(normalMatrix * vertNormal);
 
     vec4 worldPos = projMatrix * viewMatrix * modelPos;
-    vec4 worldNormal = projMatrix * viewMatrix * modelNormal;
 
-    fragNormal = modelNormal.xyz;
+    fragNormal = transformedNormal;
     fragPos = modelPos.xyz;
     fragUV = vertUV;
 

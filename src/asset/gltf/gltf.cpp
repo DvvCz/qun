@@ -106,7 +106,8 @@ std::expected<asset::Asset3D, std::string> asset::Gltf::tryFromFile(const std::f
       // Extract positions
       fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(
           asset, positionAccessor, [&](fastgltf::math::fvec3 pos, std::size_t idx) {
-            primitiveVertices[idx].pos = glm::vec3(pos.x(), pos.y(), pos.z());
+            // Convert from glTF Y-up to renderer Z-up coordinate system
+            primitiveVertices[idx].pos = glm::vec3(pos.x(), pos.z(), -pos.y());
           });
 
       // Extract normals if available
@@ -115,13 +116,16 @@ std::expected<asset::Asset3D, std::string> asset::Gltf::tryFromFile(const std::f
         if (normalAccessor.bufferViewIndex.has_value()) {
           fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(
               asset, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t idx) {
-                primitiveVertices[idx].normal = glm::vec3(normal.x(), normal.y(), normal.z());
+                // Convert from glTF Y-up to renderer Z-up coordinate system
+                glm::vec3 converted_normal = glm::vec3(normal.x(), normal.z(), -normal.y());
+                // Normalize to ensure unit length after coordinate transformation
+                primitiveVertices[idx].normal = glm::normalize(converted_normal);
               });
         }
       } else {
-        // Generate default normals (pointing up)
+        // Generate default normals (pointing up in Z-up coordinate system)
         for (auto& vertex : primitiveVertices) {
-          vertex.normal = glm::vec3(0.0f, 1.0f, 0.0f);
+          vertex.normal = glm::vec3(0.0f, 0.0f, 1.0f);
         }
       }
 
