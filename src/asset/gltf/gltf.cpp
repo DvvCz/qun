@@ -60,17 +60,22 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(cons
       }
     }
 
+    glm::vec3 baseColorFactor = glm::vec3(/* clang-format off */
+      gltfMaterial.pbrData.baseColorFactor[0],
+      gltfMaterial.pbrData.baseColorFactor[1],
+      gltfMaterial.pbrData.baseColorFactor[2]
+    ); /* clang-format on */
+    float baseColorAlpha = gltfMaterial.pbrData.baseColorFactor[3];
+
+    // These were manually picked to try and replicate phong properties
+    // There's likely a better way to do this, but works for now.
     asset::Material mat = {/* clang-format off */
         .name = std::string(gltfMaterial.name),
-        .ambient = glm::vec3(0.1f), // Default ambient since glTF doesn't have ambient
-        .diffuse = glm::vec3(
-            gltfMaterial.pbrData.baseColorFactor[0],
-            gltfMaterial.pbrData.baseColorFactor[1],
-            gltfMaterial.pbrData.baseColorFactor[2]
-        ),
-        .specular = glm::vec3(0.5f), // Default specular
-        .shininess = (1.0f - gltfMaterial.pbrData.roughnessFactor) * 128.0f,
-        .dissolve = gltfMaterial.pbrData.baseColorFactor[3],
+        .ambient = baseColorFactor * 0.2f,
+        .diffuse = baseColorFactor * 0.8f,
+        .specular = glm::vec3(0.5f),
+        .shininess = std::max(1.0f, 1 / std::pow(gltfMaterial.pbrData.roughnessFactor, 2.0f)),
+        .dissolve = baseColorAlpha,
         .diffuseTexture = diffuseTexture
     };/* clang-format on */
 

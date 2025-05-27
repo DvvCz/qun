@@ -55,9 +55,12 @@ void main() {
         // Diffuse calculation
         float diff = max(dot(normal, lightDir), 0.0);
 
-        // Specular calculation
-        vec3 reflectDir = reflect(-lightDir, normal);
-        float spec = pow(max(dot(fragToCameraDir, reflectDir), 0.0), materialShininess);
+        // Specular calculation - only calculate if light is hitting the front face
+        float spec = 0.0;
+        if (diff > 0.0) {
+            vec3 reflectDir = reflect(-lightDir, normal);
+            spec = pow(max(dot(fragToCameraDir, reflectDir), 0.0), materialShininess);
+        }
 
         // Avoid extreme light at very close distances
         float distToLight = length(lightToFrag);
