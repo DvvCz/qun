@@ -5,6 +5,7 @@
 #include <fastgltf/types.hpp>
 #include <map>
 #include <format>
+#include <print>
 
 std::expected<asset::Asset3D, std::string> asset::Gltf::tryFromFile(const std::filesystem::path& path) noexcept {
   static constexpr auto supportedExtensions = /* clang-format off */

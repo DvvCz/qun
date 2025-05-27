@@ -45,8 +45,8 @@ public:
 
   [[nodiscard]] std::shared_ptr<model::Asset> createAsset3D(const asset::Asset3D& asset) const;
 
-  std::shared_ptr<TextureManager> textureManager2D;
-  std::shared_ptr<TextureManager> textureManager3D;
+  std::shared_ptr<texture::Manager> textureManager2D;
+  std::shared_ptr<texture::Manager> textureManager3D;
 
 private:
   void draw3D();

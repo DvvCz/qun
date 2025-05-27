@@ -9,20 +9,24 @@
 #include "uniform.hpp"
 #include "asset/asset.hpp"
 
-class TextureManager {
-public:
-  TextureManager(Uniform<GLuint> sampler2DArrayUniform);
-  ~TextureManager();
+namespace texture {
 
-  std::expected<GLuint, std::string> addTexture(const asset::Asset2D& texture) noexcept;
-  std::optional<GLuint> getTextureByPath(const std::filesystem::path& path) const noexcept;
+  class Manager {
+  public:
+    Manager(Uniform<GLuint> sampler2DArrayUniform);
+    ~Manager();
 
-  void bind();
-  void unbind();
+    std::expected<GLuint, std::string> addTexture(const asset::Asset2D& texture) noexcept;
+    std::optional<GLuint> getTextureByPath(const std::filesystem::path& path) const noexcept;
 
-private:
-  std::vector<asset::Asset2D> textures;
-  GLuint sampler2DArrayIdx;
-  GLuint samplerIdx;
-  Uniform<GLuint> sampler2DArray;
-};
+    void bind();
+    void unbind();
+
+  private:
+    std::vector<asset::Asset2D> textures;
+    GLuint sampler2DArrayIdx;
+    GLuint samplerIdx;
+    Uniform<GLuint> sampler2DArray;
+  };
+
+}

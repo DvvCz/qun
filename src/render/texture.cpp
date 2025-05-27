@@ -6,7 +6,7 @@
 #define MAX_HEIGHT 2048
 #define MAX_TEXTURES 64
 
-TextureManager::TextureManager(Uniform<GLuint> sampler2DUniform) : sampler2DArray(sampler2DUniform) {
+texture::Manager::Manager(Uniform<GLuint> sampler2DUniform) : sampler2DArray(sampler2DUniform) {
   GLint maxLayers;
   glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
 
@@ -25,12 +25,12 @@ TextureManager::TextureManager(Uniform<GLuint> sampler2DUniform) : sampler2DArra
   glSamplerParameteri(samplerIdx, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-TextureManager::~TextureManager() {
+texture::Manager::~Manager() {
   glDeleteTextures(1, &sampler2DArrayIdx);
   glDeleteSamplers(1, &samplerIdx);
 }
 
-std::expected<GLuint, std::string> TextureManager::addTexture(const asset::Asset2D& texture) noexcept {
+std::expected<GLuint, std::string> texture::Manager::addTexture(const asset::Asset2D& texture) noexcept {
   // todo: allow freeing up slots
   if (textures.size() >= MAX_TEXTURES) {
     return std::unexpected("Maximum number of textures reached");
@@ -91,7 +91,7 @@ std::expected<GLuint, std::string> TextureManager::addTexture(const asset::Asset
   return textureId;
 }
 
-std::optional<GLuint> TextureManager::getTextureByPath(const std::filesystem::path& path) const noexcept {
+std::optional<GLuint> texture::Manager::getTextureByPath(const std::filesystem::path& path) const noexcept {
   for (size_t i = 0; i < textures.size(); ++i) {
     // todo: i think this should enforce that the path is resolved.
     // because any textures with matching names will be considered the same here.
@@ -103,12 +103,12 @@ std::optional<GLuint> TextureManager::getTextureByPath(const std::filesystem::pa
   return std::nullopt;
 }
 
-void TextureManager::bind() {
+void texture::Manager::bind() {
   glBindTextureUnit(0, sampler2DArrayIdx);
   glBindSampler(0, samplerIdx);
 }
 
-void TextureManager::unbind() {
+void texture::Manager::unbind() {
   glBindTextureUnit(0, 0);
   glBindSampler(0, 0);
 }

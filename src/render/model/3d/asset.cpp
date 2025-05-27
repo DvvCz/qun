@@ -9,7 +9,7 @@
 
 model::Asset::Asset(/* clang-format off */
   const asset::Asset3D& asset,
-  std::shared_ptr<TextureManager> texMan,
+  std::shared_ptr<texture::Manager> texMan,
   std::shared_ptr<material::Manager3D> matMan
 ):
   inner(asset),

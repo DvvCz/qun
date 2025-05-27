@@ -9,12 +9,12 @@
 namespace model {
   class Asset : public Model3D {
   public:
-    Asset(const asset::Asset3D& asset, std::shared_ptr<TextureManager> texMan, std::shared_ptr<material::Manager3D> matMan);
+    Asset(const asset::Asset3D& asset, std::shared_ptr<texture::Manager> texMan, std::shared_ptr<material::Manager3D> matMan);
     ~Asset();
     void draw() const;
 
   private:
-    std::shared_ptr<TextureManager> textureManager;
+    std::shared_ptr<texture::Manager> textureManager;
     std::shared_ptr<material::Manager3D> materialManager;
 
     std::vector<asset::MaterialGroup> materialGroups;
