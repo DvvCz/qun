@@ -56,7 +56,7 @@ model::Asset::Asset(/* clang-format off */
         continue;
       }
 
-      auto texture = asset::Img::tryFromFile(diffuseFileName);
+      auto texture = asset::loader::Img::tryFromFile(diffuseFileName);
       if (texture.has_value()) {
         auto textureId = textureManager->addTexture(texture.value());
         if (!textureId.has_value()) {

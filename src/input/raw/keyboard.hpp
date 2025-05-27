@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <array>
 
-namespace Input {
+namespace input {
   enum class Key : uint16_t {
     Space = GLFW_KEY_SPACE,
     Apostrophe = GLFW_KEY_APOSTROPHE,

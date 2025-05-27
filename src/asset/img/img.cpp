@@ -3,7 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-std::expected<asset::Asset2D, std::string> asset::Img::tryFromFile(const std::filesystem::path& path) noexcept {
+std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(const std::filesystem::path& path) noexcept {
   int width, height, channels;
   unsigned char* data = stbi_load(path.string().c_str(), &width, &height, &channels, 0);
 

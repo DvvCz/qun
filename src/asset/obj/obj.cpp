@@ -7,7 +7,7 @@
 
 #include <rapidobj/rapidobj.hpp>
 
-std::expected<asset::Asset3D, std::string> asset::Obj::tryFromFile(const std::filesystem::path& path) noexcept {
+std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(const std::filesystem::path& path) noexcept {
   auto obj = rapidobj::ParseFile(path);
 
   if (obj.error) {

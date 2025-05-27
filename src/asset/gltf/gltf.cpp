@@ -7,7 +7,7 @@
 #include <format>
 #include <print>
 
-std::expected<asset::Asset3D, std::string> asset::Gltf::tryFromFile(const std::filesystem::path& path) noexcept {
+std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(const std::filesystem::path& path) noexcept {
   static constexpr auto supportedExtensions = /* clang-format off */
     fastgltf::Extensions::KHR_mesh_quantization |
     fastgltf::Extensions::KHR_texture_transform |

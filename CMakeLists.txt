@@ -29,6 +29,7 @@ add_subdirectory(thirdparty/fastgltf)
 # TRender
 add_executable(trender
     ./src/main.cpp
+    ./src/game.cpp
     ./src/input/raw/keyboard.cpp
     ./src/input/raw/mouse.cpp
     ./src/render/window.cpp

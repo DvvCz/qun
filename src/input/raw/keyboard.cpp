@@ -3,7 +3,7 @@
 #include <print>
 #include <ranges>
 
-namespace Input {
+namespace input {
   Keyboard::KeyMap Keyboard::keysJustPressed = {false};
   Keyboard::KeyMap Keyboard::keysJustReleased = {false};
   Keyboard::KeyMap Keyboard::keysCurrentlyHeld = {false};

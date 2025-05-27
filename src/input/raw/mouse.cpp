@@ -8,7 +8,7 @@
 #include <array>
 #include <ranges>
 
-namespace Input {
+namespace input {
   Mouse::MouseButtonMap Mouse::mouseButtonsJustPressed = {false};
   Mouse::MouseButtonMap Mouse::mouseButtonsJustReleased = {false};
   Mouse::MouseButtonMap Mouse::mouseButtonsCurrentlyHeld = {false};

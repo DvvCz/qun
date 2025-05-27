@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 
-namespace Input {
+namespace input {
   enum class MouseButton : uint16_t {
     Button1 = GLFW_MOUSE_BUTTON_1,
     Button2 = GLFW_MOUSE_BUTTON_2,

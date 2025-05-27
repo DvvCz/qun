@@ -11,7 +11,7 @@
 
 #include "asset/asset.hpp"
 
-namespace asset {
+namespace asset::loader {
   class Gltf {
   public:
     [[nodiscard]] static std::expected<asset::Asset3D, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
