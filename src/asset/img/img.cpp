@@ -48,17 +48,27 @@ std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(
 /* clang-format off */
 std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromData(
   const std::vector<unsigned char>& data,
-  int width,
-  int height,
-  texture::Format format,
+  texture::Format desiredFormat,
   texture::Manager& texMan
 ) noexcept { /* clang-format on */
-  auto textureId = texMan.create(width, height, format, data);
-  if (!textureId.has_value()) {
-    return std::unexpected{textureId.error()};
+  int width;
+  int height;
+  int channels;
+  unsigned char* imageData = stbi_load_from_memory(data.data(), data.size(), &width, &height, &channels, desiredFormat);
+
+  if (!imageData) {
+    return std::unexpected{std::format("Failed to load image: {}", stbi_failure_reason())};
   }
 
-  return asset::Asset2D(/* clang-format off */
-    textureId.value()
-  );/* clang-format on */
+  size_t outputDataSize = width * height * channels;
+  std::vector<unsigned char> outputData(imageData, imageData + outputDataSize);
+
+  stbi_image_free(imageData);
+
+  auto textureId = texMan.create(width, height, desiredFormat, outputData);
+  if (!textureId.has_value()) {
+    return std::unexpected{std::format("Failed to create texture: {}", textureId.error())};
+  }
+
+  return asset::Asset2D(textureId.value());
 }
