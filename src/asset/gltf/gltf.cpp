@@ -17,15 +17,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   const std::filesystem::path& path,
   texture::Manager& texMan
 ) noexcept { /* clang-format on */
-  /* clang-format off */
-  static constexpr auto supportedExtensions =
-    fastgltf::Extensions::KHR_mesh_quantization  |
-    fastgltf::Extensions::KHR_texture_transform  |
-    fastgltf::Extensions::KHR_materials_variants |
-    fastgltf::Extensions::KHR_texture_basisu;
-  /* clang-format on */
-
-  fastgltf::Parser parser(supportedExtensions);
+  fastgltf::Parser parser(fastgltf::Extensions::None);
 
   auto gltfFile = fastgltf::MappedGltfFile::FromPath(path);
   if (!bool(gltfFile)) {
