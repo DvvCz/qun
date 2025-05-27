@@ -24,7 +24,7 @@ namespace material {
     Manager3D(UniformBlock<Block3D> uniformMaterialBlock, std::shared_ptr<TextureManager> texMan);
     ~Manager3D();
 
-    void setMaterial(const asset::ObjMaterial& material) noexcept;
+    void setMaterial(const asset::Material& material) noexcept;
     void setMaterial(const Block3D& material) noexcept;
     [[nodiscard]] Block3D getMaterial() const noexcept;
 

@@ -11,7 +11,7 @@ material::Manager3D::Manager3D(UniformBlock<material::Block3D> uniformMaterialBl
 material::Manager3D::~Manager3D() {
 }
 
-void material::Manager3D::setMaterial(const asset::ObjMaterial& material) noexcept {
+void material::Manager3D::setMaterial(const asset::Material& material) noexcept {
   /* clang-format off */
   material::Block3D newMaterial = {
     .ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]),

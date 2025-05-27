@@ -246,6 +246,6 @@ const glm::vec3& Renderer::getCameraPos() const noexcept {
   return cameraPos;
 }
 
-std::shared_ptr<model::Asset> Renderer::createAsset3D(const asset::Obj& asset) const {
+std::shared_ptr<model::Asset> Renderer::createAsset3D(const asset::Asset3D& asset) const {
   return std::make_shared<model::Asset>(asset, textureManager3D, materialManager3D);
 }

@@ -1,4 +1,5 @@
 #include "obj.hpp"
+#include "asset/asset.hpp"
 
 #include <optional>
 #include <filesystem>
@@ -6,7 +7,7 @@
 
 #include <rapidobj/rapidobj.hpp>
 
-std::expected<asset::Obj, std::string> asset::Obj::tryFromFile(const std::filesystem::path& path) noexcept {
+std::expected<asset::Asset3D, std::string> asset::Obj::tryFromFile(const std::filesystem::path& path) noexcept {
   auto obj = rapidobj::ParseFile(path);
 
   if (obj.error) {
@@ -22,7 +23,7 @@ std::expected<asset::Obj, std::string> asset::Obj::tryFromFile(const std::filesy
     return std::unexpected{errMsg};
   }
 
-  std::vector<ObjMaterial> materials;
+  std::vector<asset::Material> materials;
   for (const auto& material : obj.materials) {
 
     std::optional<std::filesystem::path> diffuseTexture = std::nullopt;
@@ -31,7 +32,7 @@ std::expected<asset::Obj, std::string> asset::Obj::tryFromFile(const std::filesy
       diffuseTexture = path.parent_path() / unresolvedPath;
     }
 
-    ObjMaterial mat = {/* clang-format off */
+    asset::Material mat = {/* clang-format off */
         .name = material.name,
 
         .ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]),
@@ -47,7 +48,7 @@ std::expected<asset::Obj, std::string> asset::Obj::tryFromFile(const std::filesy
   }
 
   std::vector<Vertex3D> vertices;
-  std::vector<ObjShape> shapes;
+  std::vector<asset::Shape> shapes;
 
   for (const auto& shape : obj.shapes) {
     // Create a map of material ID to vector of indices
@@ -102,19 +103,19 @@ std::expected<asset::Obj, std::string> asset::Obj::tryFromFile(const std::filesy
       materialGroups[materialId].push_back(vertexIndex);
     }
 
-    // Convert the map to the vector of ObjMaterialGroup
-    std::vector<ObjMaterialGroup> groups;
+    // Convert the map to the vector of asset::MaterialGroup
+    std::vector<asset::MaterialGroup> groups;
     for (const auto& [materialId, indices] : materialGroups) {
-      groups.push_back(ObjMaterialGroup{.materialId = materialId, .indices = indices});
+      groups.push_back(asset::MaterialGroup{.materialId = materialId, .indices = indices});
     }
 
-    shapes.push_back(ObjShape{/* clang-format off */
+    shapes.push_back(asset::Shape{/* clang-format off */
         .name = shape.name,
         .groups = std::move(groups)
     });/* clang-format on */
   }
 
-  return Obj{/* clang-format off */
+  return asset::Asset3D{/* clang-format off */
     std::move(vertices),
     std::move(shapes),
     std::move(materials),

@@ -3,10 +3,12 @@
 #include "render/vertex.hpp"
 #include "render/material/material3d.hpp"
 
+#include "asset/img/img.hpp"
+
 #include <print>
 
 model::Asset::Asset(/* clang-format off */
-  const asset::Obj& asset,
+  const asset::Asset3D& asset,
   std::shared_ptr<TextureManager> texMan,
   std::shared_ptr<material::Manager3D> matMan
 ):
@@ -44,7 +46,7 @@ model::Asset::Asset(/* clang-format off */
     }
   }
 
-  std::filesystem::path basePath = asset.getPath().parent_path();
+  std::filesystem::path basePath = asset.path.parent_path();
   for (const auto& material : asset.materials) {
     if (material.diffuseTexture.has_value()) {
       std::filesystem::path diffuseFileName = material.diffuseTexture.value();

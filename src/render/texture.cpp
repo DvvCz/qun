@@ -30,18 +30,18 @@ TextureManager::~TextureManager() {
   glDeleteSamplers(1, &samplerIdx);
 }
 
-std::expected<GLuint, std::string> TextureManager::addTexture(const asset::Img& texture) noexcept {
+std::expected<GLuint, std::string> TextureManager::addTexture(const asset::Asset2D& texture) noexcept {
   // todo: allow freeing up slots
   if (textures.size() >= MAX_TEXTURES) {
     return std::unexpected("Maximum number of textures reached");
   }
 
-  if (texture.getWidth() > MAX_WIDTH || texture.getHeight() > MAX_HEIGHT) {
+  if (texture.width > MAX_WIDTH || texture.height > MAX_HEIGHT) {
     return std::unexpected(/* clang-format off */
       std::format(
         "Texture of {}x{} exceeds maximum dimensions of {}x{}",
-        texture.getWidth(),
-        texture.getHeight(),
+        texture.width,
+        texture.height,
         MAX_WIDTH,
         MAX_HEIGHT
       )
@@ -49,9 +49,9 @@ std::expected<GLuint, std::string> TextureManager::addTexture(const asset::Img& 
   }
 
   if (/* clang-format off */
-    texture.getData().empty() ||
-    texture.getWidth() <= 0 ||
-    texture.getHeight() <= 0
+    texture.data.empty() ||
+    texture.width <= 0 ||
+    texture.height <= 0
   ) {/* clang-format on */
     return std::unexpected("Invalid texture data");
   }
@@ -59,7 +59,7 @@ std::expected<GLuint, std::string> TextureManager::addTexture(const asset::Img& 
   GLuint textureId = textures.size();
 
   GLenum textureFormat;
-  switch (texture.getChannels()) {
+  switch (texture.channels) {
   case 2:
     textureFormat = GL_RG;
     break;
@@ -79,12 +79,12 @@ std::expected<GLuint, std::string> TextureManager::addTexture(const asset::Img& 
     0,
     0,
     textureId,
-    texture.getWidth(),
-    texture.getHeight(),
+    texture.width,
+    texture.height,
     1,
     textureFormat,
     GL_UNSIGNED_BYTE,
-    texture.getData().data()
+    texture.data.data()
   ); /* clang-format on */
 
   textures.push_back(texture);
@@ -95,7 +95,7 @@ std::optional<GLuint> TextureManager::getTextureByPath(const std::filesystem::pa
   for (size_t i = 0; i < textures.size(); ++i) {
     // todo: i think this should enforce that the path is resolved.
     // because any textures with matching names will be considered the same here.
-    if (textures[i].getPath().filename().string().find(path.string())) {
+    if (textures[i].path.filename().string().find(path.string())) {
       return static_cast<GLuint>(i);
     }
   }

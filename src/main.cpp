@@ -22,6 +22,8 @@
 #include "components/light.hpp"
 #include "components/material.hpp"
 
+#include "asset/img/img.hpp"
+
 int main() {
   if (!glfwInit()) {
     std::println("Failed to initialize GLFW");
