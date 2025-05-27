@@ -46,27 +46,27 @@ model::Asset::Asset(/* clang-format off */
     }
   }
 
-  std::filesystem::path basePath = asset.path.parent_path();
-  for (const auto& material : asset.materials) {
-    if (material.diffuseTexture.has_value()) {
-      std::filesystem::path diffuseFileName = material.diffuseTexture.value();
+  // std::filesystem::path basePath = asset.path.parent_path();
+  // for (const auto& material : asset.materials) {
+  //   if (material.diffuseTexture.has_value()) {
+  //     std::filesystem::path diffuseFileName = material.diffuseTexture.value();
 
-      if (textureManager->getTextureByPath(diffuseFileName).has_value()) {
-        std::println("Texture already loaded: {}", diffuseFileName.string());
-        continue;
-      }
+  //     if (textureManager->getTextureByPath(diffuseFileName).has_value()) {
+  //       std::println("Texture already loaded: {}", diffuseFileName.string());
+  //       continue;
+  //     }
 
-      auto texture = asset::loader::Img::tryFromFile(diffuseFileName);
-      if (texture.has_value()) {
-        auto textureId = textureManager->addTexture(texture.value());
-        if (!textureId.has_value()) {
-          std::println(stderr, "Failed to add texture: {}", textureId.error());
-        }
-      } else {
-        std::println(stderr, "Failed to load texture: {}", texture.error());
-      }
-    }
-  }
+  //     auto texture = asset::loader::Img::tryFromFile(diffuseFileName);
+  //     if (texture.has_value()) {
+  //       auto textureId = textureManager->addTexture(texture.value());
+  //       if (!textureId.has_value()) {
+  //         std::println(stderr, "Failed to add texture: {}", textureId.error());
+  //       }
+  //     } else {
+  //       std::println(stderr, "Failed to load texture: {}", texture.error());
+  //     }
+  //   }
+  // }
 
   glNamedBufferData(glBufferIdx, sizeof(Vertex3D) * asset.vertices.size(), asset.vertices.data(), GL_STATIC_DRAW);
   glNamedBufferData(glIndexBufferIdx, sizeof(GLuint) * allIndices.size(), allIndices.data(), GL_STATIC_DRAW);

@@ -2,8 +2,6 @@
 
 #include "render/texture.hpp"
 
-#include <print>
-
 material::Manager3D::Manager3D(uniform::Block<material::Block3D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan)
     : uniformMaterialBlock(uniformMaterialBlock), textureManager(texMan) {
 }
@@ -11,25 +9,17 @@ material::Manager3D::Manager3D(uniform::Block<material::Block3D> uniformMaterial
 material::Manager3D::~Manager3D() {
 }
 
+// todo: might be able to combine these in the future.
 void material::Manager3D::setMaterial(const asset::Material& material) noexcept {
   /* clang-format off */
   material::Block3D newMaterial = {
-    .ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]),
-    .diffuse = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]),
-    .specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]),
+    .ambient = material.ambient,
+    .diffuse = material.diffuse,
+    .specular = material.specular,
     .shininess = material.shininess,
     .dissolve = material.dissolve,
-    .diffuseTextureId = -1
+    .diffuseTextureId = material.diffuseTexture.has_value() ? static_cast<int>(material.diffuseTexture.value()) : -1
   };/* clang-format on */
-
-  if (material.diffuseTexture.has_value()) {
-    auto out = textureManager->getTextureByPath(material.diffuseTexture.value());
-    if (out.has_value()) {
-      newMaterial.diffuseTextureId = out.value();
-    } else {
-      std::println(stderr, "Failed to get texture by path: {}", material.diffuseTexture.value().generic_string());
-    }
-  }
 
   uniformMaterialBlock.set(newMaterial);
   currentMaterial = newMaterial;

@@ -20,13 +20,13 @@ namespace asset {
     float shininess;
     float dissolve;
 
-    // todo: just store the texture index
-    std::optional<std::filesystem::path> diffuseTexture;
+    std::optional<size_t> diffuseTexture;
   };
 
   struct MaterialGroup {
   public:
-    int materialId;
+    // Index into the Material[] in Asset3D
+    size_t materialId;
     std::vector<int> indices;
   };
 
@@ -45,11 +45,13 @@ namespace asset {
   };
 
   struct Asset2D {
-    int width;
-    int height;
-    int channels;
-    std::vector<unsigned char> data;
+    // TextureID to whatever texture manager this is linked to.
+    size_t textureId;
+    // int width;
+    // int height;
+    // int channels;
+    // std::vector<unsigned char> data;
 
-    std::filesystem::path path;
+    // std::filesystem::path path;
   };
 }

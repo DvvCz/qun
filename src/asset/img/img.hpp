@@ -5,11 +5,18 @@
 #include <filesystem>
 
 #include <stb/stb_image.h>
-#include "../asset.hpp"
+
+#include "asset/asset.hpp"
+
+#include "render/texture.hpp"
 
 namespace asset::loader {
   class Img {
   public:
-    [[nodiscard]] static std::expected<asset::Asset2D, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
+    /* clang-format off */
+    [[nodiscard]] static std::expected<asset::Asset2D, std::string> tryFromFile(
+      const std::filesystem::path& path,
+      texture::Manager& texMan
+    ) noexcept; /* clang-format on */
   };
 }

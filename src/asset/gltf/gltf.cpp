@@ -8,11 +8,17 @@
 #include <print>
 #include <variant>
 
-std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(const std::filesystem::path& path) noexcept {
+#include "render/texture.hpp"
+
+/* clang-format off */
+std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
+  const std::filesystem::path& path,
+  texture::Manager& texMan
+) noexcept { /* clang-format on */
   static constexpr auto supportedExtensions = /* clang-format off */
     fastgltf::Extensions::KHR_mesh_quantization |
     fastgltf::Extensions::KHR_texture_transform |
-    fastgltf::Extensions::KHR_materials_variants; /* clang-format on */
+    fastgltf::Extensions::KHR_materials_variants;                                                /* clang-format on */
 
   fastgltf::Parser parser(supportedExtensions);
 
@@ -86,7 +92,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(cons
         .specular = glm::vec3(0.5f),
         .shininess = std::max(1.0f, 1 / std::pow(gltfMaterial.pbrData.roughnessFactor, 2.0f)),
         .dissolve = baseColorAlpha,
-        .diffuseTexture = diffuseTexture
+        .diffuseTexture = std::nullopt
     };/* clang-format on */
 
     materials.push_back(mat);
@@ -95,7 +101,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(cons
   // Process meshes
   for (const auto& gltfMesh : asset.meshes) {
     // Create a map of material ID to vector of indices
-    std::map<int, std::vector<int>> materialGroups;
+    std::map<size_t, std::vector<int>> materialGroups;
 
     for (const auto& primitive : gltfMesh.primitives) {
       // Find position attribute

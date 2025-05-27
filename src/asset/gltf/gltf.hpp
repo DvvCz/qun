@@ -11,9 +11,15 @@
 
 #include "asset/asset.hpp"
 
+#include "render/texture.hpp"
+
 namespace asset::loader {
   class Gltf {
   public:
-    [[nodiscard]] static std::expected<asset::Asset3D, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
+    /* clang-format off */
+    [[nodiscard]] static std::expected<asset::Asset3D, std::string> tryFromFile(
+      const std::filesystem::path& path,
+      texture::Manager& texMan
+    ) noexcept; /* clang-format on */
   };
 }

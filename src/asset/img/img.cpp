@@ -3,7 +3,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(const std::filesystem::path& path) noexcept {
+/* clang-format off */
+std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(
+  const std::filesystem::path& path,
+  texture::Manager& texMan
+) noexcept { /* clang-format on */
   int width, height, channels;
   unsigned char* data = stbi_load(path.string().c_str(), &width, &height, &channels, 0);
 
@@ -16,10 +20,5 @@ std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(const
   stbi_image_free(data);
 
   return asset::Asset2D(/* clang-format off */
-    width,
-    height,
-    channels,
-    std::move(imageData),
-    path
   );/* clang-format on */
 }

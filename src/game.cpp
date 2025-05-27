@@ -18,12 +18,11 @@
 #include "render/model/3d/cube.hpp"
 
 Game::Game() {
-  gltfLoader = asset::loader::Gltf();
   registry = std::make_shared<entt::registry>();
 }
 
 std::expected<bool, std::string> Game::setupScene() {
-  auto boxAsset = asset::loader::Gltf::tryFromFile("resources/BarramundiFish.glb");
+  auto boxAsset = asset::loader::Gltf::tryFromFile("resources/BarramundiFish.glb", *renderer->textureManager3D);
   if (!boxAsset.has_value()) {
     return std::unexpected{std::format("Failed to load GLTF asset: {}", boxAsset.error())};
   }
@@ -39,14 +38,9 @@ std::expected<bool, std::string> Game::setupScene() {
   registry->emplace<components::GlobalTransform>(boxEnt, boxMatrix);
   registry->emplace<components::Model3D>(boxEnt, boxModel);
 
-  auto plateTexture = asset::loader::Img::tryFromFile("resources/NumernSchildAudiR8.png");
+  auto plateTexture = asset::loader::Img::tryFromFile("resources/NumernSchildAudiR8.png", *renderer->textureManager3D);
   if (!plateTexture.has_value()) {
     return std::unexpected{std::format("Failed to load texture: {}", plateTexture.error())};
-  }
-
-  auto plateTextureId = renderer->textureManager3D->addTexture(plateTexture.value());
-  if (!plateTextureId.has_value()) {
-    return std::unexpected{std::format("Failed to add texture: {}", plateTextureId.error())};
   }
 
   auto redMaterial = std::make_shared<material::Block3D>();
@@ -66,7 +60,7 @@ std::expected<bool, std::string> Game::setupScene() {
   bunnyMaterial->dissolve = 1.0f;
   bunnyMaterial->diffuseTextureId = -1;
 
-  auto car = asset::loader::Obj::tryFromFile("resources/78717.obj");
+  auto car = asset::loader::Obj::tryFromFile("resources/78717.obj", *renderer->textureManager3D);
   if (car.has_value()) {
     auto assetModel = renderer->createAsset3D(car.value());
 
@@ -80,7 +74,7 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::Material3D>(ent, redMaterial);
   }
 
-  auto out = asset::loader::Obj::tryFromFile("resources/bunny.obj");
+  auto out = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
   if (out.has_value()) {
     auto assetModel = renderer->createAsset3D(out.value());
 

@@ -10,20 +10,32 @@
 #include "asset/asset.hpp"
 
 namespace texture {
+  enum Format {
+    RG = 0,
+    RGB = 1,
+    RGBA = 2
+  };
+
+  using Data = std::vector<unsigned char>;
 
   class Manager {
   public:
     Manager(uniform::Single<GLuint> sampler2DArrayUniform);
     ~Manager();
 
-    std::expected<GLuint, std::string> addTexture(const asset::Asset2D& texture) noexcept;
-    std::optional<GLuint> getTextureByPath(const std::filesystem::path& path) const noexcept;
+    /* clang-format off */
+    std::expected<size_t, std::string> create(
+      int width,
+      int height,
+      texture::Format format,
+      texture::Data data
+    ) noexcept; /* clang-format on */
 
     void bind();
     void unbind();
 
   private:
-    std::vector<asset::Asset2D> textures;
+    std::vector<bool> textureSlots;
     GLuint sampler2DArrayIdx;
     GLuint samplerIdx;
     uniform::Single<GLuint> sampler2DArray;

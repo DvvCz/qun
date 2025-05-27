@@ -1,5 +1,4 @@
 #include "obj.hpp"
-#include "asset/asset.hpp"
 
 #include <optional>
 #include <filesystem>
@@ -7,29 +6,49 @@
 
 #include <rapidobj/rapidobj.hpp>
 
-std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(const std::filesystem::path& path) noexcept {
+#include "asset/asset.hpp"
+#include "asset/img/img.hpp"
+
+/* clang-format off */
+std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
+  const std::filesystem::path& path,
+  texture::Manager& texMan
+) noexcept { /* clang-format on */
   auto obj = rapidobj::ParseFile(path);
 
   if (obj.error) {
-    std::string errMsg = std::format("Error parsing OBJ File: '{}' (at line {})", obj.error.code.message(), obj.error.line_num);
-    return std::unexpected{errMsg};
+    return std::unexpected{std::format(/* clang-format off */
+      "Error parsing OBJ File: '{}' (at line {})",
+      obj.error.code.message(),
+      obj.error.line_num
+    )};/* clang-format on */
   }
 
   rapidobj::Triangulate(obj);
 
   if (obj.error) {
-    std::string errMsg =
-        std::format("Error triangulating OBJ File: '' (at line {})", obj.error.code.message(), obj.error.line_num);
-    return std::unexpected{errMsg};
+    return std::unexpected{std::format(/* clang-format off */
+      "Error triangulating OBJ File: '{}' (at line {})",
+      obj.error.code.message(),
+      obj.error.line_num
+    )};/* clang-format on */
   }
 
   std::vector<asset::Material> materials;
   for (const auto& material : obj.materials) {
 
-    std::optional<std::filesystem::path> diffuseTexture = std::nullopt;
+    std::optional<size_t> diffuseTexture = std::nullopt;
+
     if (!material.diffuse_texname.empty()) {
       auto unresolvedPath = std::filesystem::path(material.diffuse_texname);
-      diffuseTexture = path.parent_path() / unresolvedPath;
+      auto resolvedPath = path.parent_path() / unresolvedPath;
+
+      auto asset = asset::loader::Img::tryFromFile(resolvedPath, texMan);
+      if (!asset.has_value()) {
+        return std::unexpected{std::format("Failed to load texture: {}", asset.error())};
+      }
+
+      diffuseTexture = asset->textureId;
     }
 
     asset::Material mat = {/* clang-format off */
@@ -52,7 +71,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(const
 
   for (const auto& shape : obj.shapes) {
     // Create a map of material ID to vector of indices
-    std::map<int, std::vector<int>> materialGroups;
+    std::map<size_t, std::vector<int>> materialGroups;
 
     for (size_t i = 0; i < shape.mesh.indices.size(); i++) {
       const auto& index = shape.mesh.indices[i];

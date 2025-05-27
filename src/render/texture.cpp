@@ -1,7 +1,5 @@
 #include "texture.hpp"
 
-#include <print>
-
 #define MAX_WIDTH 2048
 #define MAX_HEIGHT 2048
 #define MAX_TEXTURES 64
@@ -30,43 +28,45 @@ texture::Manager::~Manager() {
   glDeleteSamplers(1, &samplerIdx);
 }
 
-std::expected<GLuint, std::string> texture::Manager::addTexture(const asset::Asset2D& texture) noexcept {
+/* clang-format off */
+std::expected<size_t, std::string> texture::Manager::create(
+  int width,
+  int height,
+  texture::Format format,
+  texture::Data data
+) noexcept { /* clang-format on */
   // todo: allow freeing up slots
-  if (textures.size() >= MAX_TEXTURES) {
+  if (textureSlots.size() >= MAX_TEXTURES) {
     return std::unexpected("Maximum number of textures reached");
   }
 
-  if (texture.width > MAX_WIDTH || texture.height > MAX_HEIGHT) {
+  if (width > MAX_WIDTH || height > MAX_HEIGHT) {
     return std::unexpected(/* clang-format off */
       std::format(
         "Texture of {}x{} exceeds maximum dimensions of {}x{}",
-        texture.width,
-        texture.height,
+        width,
+        height,
         MAX_WIDTH,
         MAX_HEIGHT
       )
     );/* clang-format on */
   }
 
-  if (/* clang-format off */
-    texture.data.empty() ||
-    texture.width <= 0 ||
-    texture.height <= 0
-  ) {/* clang-format on */
+  if (data.empty() || width <= 0 || height <= 0) {
     return std::unexpected("Invalid texture data");
   }
 
-  GLuint textureId = textures.size();
+  size_t textureId = textureSlots.size();
 
   GLenum textureFormat;
-  switch (texture.channels) {
-  case 2:
+  switch (format) {
+  case texture::Format::RG:
     textureFormat = GL_RG;
     break;
-  case 3:
+  case texture::Format::RGB:
     textureFormat = GL_RGB;
     break;
-  case 4:
+  case texture::Format::RGBA:
     textureFormat = GL_RGBA;
     break;
   default:
@@ -79,28 +79,15 @@ std::expected<GLuint, std::string> texture::Manager::addTexture(const asset::Ass
     0,
     0,
     textureId,
-    texture.width,
-    texture.height,
+    width,
+    height,
     1,
     textureFormat,
     GL_UNSIGNED_BYTE,
-    texture.data.data()
+    data.data()
   ); /* clang-format on */
 
-  textures.push_back(texture);
   return textureId;
-}
-
-std::optional<GLuint> texture::Manager::getTextureByPath(const std::filesystem::path& path) const noexcept {
-  for (size_t i = 0; i < textures.size(); ++i) {
-    // todo: i think this should enforce that the path is resolved.
-    // because any textures with matching names will be considered the same here.
-    if (textures[i].path.filename().string().find(path.string())) {
-      return static_cast<GLuint>(i);
-    }
-  }
-
-  return std::nullopt;
 }
 
 void texture::Manager::bind() {
