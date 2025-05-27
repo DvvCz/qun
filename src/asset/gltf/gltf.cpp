@@ -6,6 +6,7 @@
 #include <map>
 #include <format>
 #include <print>
+#include <variant>
 
 std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(const std::filesystem::path& path) noexcept {
   static constexpr auto supportedExtensions = /* clang-format off */
@@ -49,12 +50,21 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(cons
       auto& baseColorTexture = gltfMaterial.pbrData.baseColorTexture.value();
       if (baseColorTexture.textureIndex < asset.textures.size()) {
         auto& texture = asset.textures[baseColorTexture.textureIndex];
+
         if (texture.imageIndex.has_value() && texture.imageIndex.value() < asset.images.size()) {
           auto& image = asset.images[texture.imageIndex.value()];
-          // Try to extract image path if it's from a URI
+
           if (std::holds_alternative<fastgltf::sources::URI>(image.data)) {
-            auto& uri = std::get<fastgltf::sources::URI>(image.data);
-            diffuseTexture = path.parent_path() / uri.uri.path();
+            auto& uriData = std::get<fastgltf::sources::URI>(image.data);
+            diffuseTexture = path.parent_path() / uriData.uri.path();
+          } else if (std::holds_alternative<fastgltf::sources::BufferView>(image.data)) {
+            auto& bufferData = std::get<fastgltf::sources::BufferView>(image.data);
+            auto& bufferView = asset.bufferViews[bufferData.bufferViewIndex];
+            auto& buffer = asset.buffers[bufferView.bufferIndex];
+
+            std::println("todo: bufferdata");
+          } else if (std::holds_alternative<fastgltf::sources::Array>(image.data)) {
+            std::println("todo: arraydata");
           }
         }
       }

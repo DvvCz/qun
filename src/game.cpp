@@ -23,7 +23,7 @@ Game::Game() {
 }
 
 std::expected<bool, std::string> Game::setupScene() {
-  auto boxAsset = asset::loader::Gltf::tryFromFile("resources/Box.glb");
+  auto boxAsset = asset::loader::Gltf::tryFromFile("resources/BarramundiFish.glb");
   if (!boxAsset.has_value()) {
     return std::unexpected{std::format("Failed to load GLTF asset: {}", boxAsset.error())};
   }
