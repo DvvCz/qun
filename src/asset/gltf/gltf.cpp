@@ -17,10 +17,13 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   const std::filesystem::path& path,
   texture::Manager& texMan
 ) noexcept { /* clang-format on */
-  static constexpr auto supportedExtensions = /* clang-format off */
-    fastgltf::Extensions::KHR_mesh_quantization |
-    fastgltf::Extensions::KHR_texture_transform |
-    fastgltf::Extensions::KHR_materials_variants;                                                /* clang-format on */
+  /* clang-format off */
+  static constexpr auto supportedExtensions =
+    fastgltf::Extensions::KHR_mesh_quantization  |
+    fastgltf::Extensions::KHR_texture_transform  |
+    fastgltf::Extensions::KHR_materials_variants |
+    fastgltf::Extensions::KHR_texture_basisu;
+  /* clang-format on */
 
   fastgltf::Parser parser(supportedExtensions);
 
@@ -51,74 +54,6 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
 
   // Convert materials
   for (const auto& gltfMaterial : asset.materials) {
-    std::optional<size_t> diffuseTexture = std::nullopt;
-
-    // Check if there's a base color texture
-    if (gltfMaterial.pbrData.baseColorTexture.has_value()) {
-      auto& baseColorTexture = gltfMaterial.pbrData.baseColorTexture.value();
-      if (baseColorTexture.textureIndex < asset.textures.size()) {
-        auto& texture = asset.textures[baseColorTexture.textureIndex];
-
-        if (texture.imageIndex.has_value() && texture.imageIndex.value() < asset.images.size()) {
-          auto& image = asset.images[texture.imageIndex.value()];
-
-          if (std::holds_alternative<fastgltf::sources::URI>(image.data)) {
-            auto& uriData = std::get<fastgltf::sources::URI>(image.data);
-            // diffuseTexture = path.parent_path() / uriData.uri.path();
-            std::println("TODO: uri data for texture: {}", uriData.uri.path());
-          } else if (std::holds_alternative<fastgltf::sources::BufferView>(image.data)) {
-            auto& bufferData = std::get<fastgltf::sources::BufferView>(image.data);
-            auto& bufferView = asset.bufferViews[bufferData.bufferViewIndex];
-            auto& buffer = asset.buffers[bufferView.bufferIndex];
-
-            if (std::holds_alternative<fastgltf::sources::Array>(buffer.data)) {
-              auto& arrayData = std::get<fastgltf::sources::Array>(buffer.data);
-
-              switch (arrayData.mimeType) {
-              case fastgltf::MimeType::PNG:
-              case fastgltf::MimeType::JPEG: {
-                std::vector<std::byte> imageData(arrayData.bytes.begin(), arrayData.bytes.end());
-
-                auto out = asset::loader::Img::tryFromData(imageData, texture::Format::RGBA, texMan);
-                if (!out.has_value()) {
-                  return std::unexpected{out.error()};
-                }
-
-                diffuseTexture = out.value().textureId;
-                break;
-              }
-              case fastgltf::MimeType::WEBP:
-                std::println("TODO: WEBP support for texture");
-                break;
-              case fastgltf::MimeType::KTX2:
-                std::println("TODO: KTX2 support for texture");
-                break;
-              case fastgltf::MimeType::OctetStream:
-                std::println("TODO: OctetStream support for texture");
-                break;
-              case fastgltf::MimeType::None:
-                std::println("No mime type for texture, cannot load");
-                break;
-              case fastgltf::MimeType::DDS:
-                std::println("TODO: DDS support for texture");
-                break;
-              case fastgltf::MimeType::GltfBuffer:
-                std::println("TODO: GltfBuffer support for texture");
-                break;
-              default:
-                std::println("Unsupported buffer data type for texture");
-                break;
-              }
-            } else {
-              std::println("Unknown buffer data type for texture");
-            }
-          } else if (std::holds_alternative<fastgltf::sources::Array>(image.data)) {
-            std::println("todo: arraydata");
-          }
-        }
-      }
-    }
-
     glm::vec3 baseColorFactor = glm::vec3(/* clang-format off */
       gltfMaterial.pbrData.baseColorFactor[0],
       gltfMaterial.pbrData.baseColorFactor[1],
@@ -135,8 +70,63 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
         .specular = glm::vec3(0.5f),
         .shininess = std::max(1.0f, 1 / std::pow(gltfMaterial.pbrData.roughnessFactor, 2.0f)),
         .dissolve = baseColorAlpha,
-        .diffuseTexture = diffuseTexture
+        .diffuseTexture = std::nullopt
     };/* clang-format on */
+
+    if (gltfMaterial.pbrData.baseColorTexture.has_value()) {
+      auto& baseColorTexture = gltfMaterial.pbrData.baseColorTexture.value();
+
+      if (baseColorTexture.textureIndex >= asset.textures.size()) {
+        std::println("Base color texture index out of bounds, skipping texture");
+        continue;
+      }
+
+      auto& texture = asset.textures[baseColorTexture.textureIndex];
+      if (!texture.imageIndex.has_value() || texture.imageIndex.value() >= asset.images.size()) {
+        std::println("Invalid image index for texture, skipping texture");
+        continue;
+      }
+
+      auto& image = asset.images[texture.imageIndex.value()];
+
+      if (std::holds_alternative<fastgltf::sources::URI>(image.data)) {
+        auto& uriData = std::get<fastgltf::sources::URI>(image.data);
+        std::println("TODO: uri data for texture: {}", uriData.uri.path());
+      } else if (std::holds_alternative<fastgltf::sources::BufferView>(image.data)) {
+        auto& bufferData = std::get<fastgltf::sources::BufferView>(image.data);
+        auto& bufferView = asset.bufferViews[bufferData.bufferViewIndex];
+
+        auto& buffer = asset.buffers[bufferView.bufferIndex];
+        if (!std::holds_alternative<fastgltf::sources::Array>(buffer.data)) {
+          std::println("Buffer data is not an array, cannot load texture");
+          continue;
+        }
+
+        auto& arrayData = std::get<fastgltf::sources::Array>(buffer.data);
+
+        switch (bufferData.mimeType) {
+        case fastgltf::MimeType::PNG:
+        case fastgltf::MimeType::JPEG: {
+          std::vector<std::byte> imageData(arrayData.bytes.cbegin(), arrayData.bytes.cend());
+
+          auto out = asset::loader::Img::tryFromData(imageData, texture::Format::RGBA, texMan);
+          if (!out.has_value()) {
+            return std::unexpected{out.error()};
+          }
+
+          std::println("Loaded texture {}", fastgltf::getMimeTypeString(bufferData.mimeType));
+
+          mat.diffuseTexture = out.value().textureId;
+          break;
+        }
+        default:
+          std::println("Unsupported buffer data type for texture {}", fastgltf::getMimeTypeString(bufferData.mimeType));
+          break;
+        }
+      } else {
+        std::println("Unknown buffer data type for texture");
+      }
+    }
 
     materials.push_back(mat);
   }

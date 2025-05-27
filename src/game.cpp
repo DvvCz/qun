@@ -38,11 +38,6 @@ std::expected<bool, std::string> Game::setupScene() {
   registry->emplace<components::GlobalTransform>(boxEnt, boxMatrix);
   registry->emplace<components::Model3D>(boxEnt, boxModel);
 
-  auto plateTexture = asset::loader::Img::tryFromFile("resources/NumernSchildAudiR8.png", *renderer->textureManager3D);
-  if (!plateTexture.has_value()) {
-    return std::unexpected{std::format("Failed to load texture: {}", plateTexture.error())};
-  }
-
   auto redMaterial = std::make_shared<material::Block3D>();
   redMaterial->ambient = glm::vec3(0.2f, 0.05f, 0.05f);
   redMaterial->diffuse = glm::vec3(0.8f, 0.2f, 0.2f);
