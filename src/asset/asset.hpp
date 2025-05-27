@@ -1,9 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <optional>
 #include <string>
-#include <array>
 
 namespace asset {
   class Asset {

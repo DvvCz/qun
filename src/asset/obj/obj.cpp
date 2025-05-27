@@ -1,9 +1,7 @@
 #include "obj.hpp"
 
-#include <variant>
 #include <optional>
 #include <filesystem>
-#include <print>
 #include <map>
 
 #include <rapidobj/rapidobj.hpp>

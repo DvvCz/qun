@@ -2,8 +2,6 @@
 
 #include <expected>
 #include <string>
-#include <vector>
-#include <array>
 #include <filesystem>
 #include <optional>
 
@@ -13,7 +11,6 @@
 #include <glm/glm.hpp>
 
 #include "asset/asset.hpp"
-#include "render/vertex.hpp"
 
 namespace asset {
   class Gltf : public Asset {
