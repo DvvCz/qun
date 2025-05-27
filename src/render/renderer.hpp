@@ -2,7 +2,8 @@
 
 #include "window.hpp"
 
-#include "render/uniform.hpp"
+#include "render/uniform/single.hpp"
+#include "render/uniform/block.hpp"
 #include "render/texture.hpp"
 #include "render/material/material2d.hpp"
 #include "render/material/material3d.hpp"
@@ -59,17 +60,17 @@ private:
   std::shared_ptr<entt::registry> registry;
 
   // 3d uniforms
-  Uniform<glm::mat4x4> uniformProjMatrix3D;
-  Uniform<glm::mat4x4> uniformViewMatrix3D;
-  Uniform<glm::mat4x4> uniformModelMatrix3D;
-  Uniform<GLuint> uniformTextureArray3D;
-  Uniform<glm::vec3> uniformCameraPos3D;
-  UniformBlock<LightBlock> uniformLightBlock3D;
-  UniformBlock<material::Block3D> uniformMaterialBlock3D;
+  uniform::Single<glm::mat4x4> uniformProjMatrix3D;
+  uniform::Single<glm::mat4x4> uniformViewMatrix3D;
+  uniform::Single<glm::mat4x4> uniformModelMatrix3D;
+  uniform::Single<GLuint> uniformTextureArray3D;
+  uniform::Single<glm::vec3> uniformCameraPos3D;
+  uniform::Block<LightBlock> uniformLightBlock3D;
+  uniform::Block<material::Block3D> uniformMaterialBlock3D;
 
   // 2d uniforms
-  Uniform<GLuint> uniformTextureArray2D;
-  UniformBlock<material::Block2D> uniformMaterialBlock2D;
+  uniform::Single<GLuint> uniformTextureArray2D;
+  uniform::Block<material::Block2D> uniformMaterialBlock2D;
 
   glm::mat4x4 projMatrix;
   glm::mat4x4 viewMatrix;

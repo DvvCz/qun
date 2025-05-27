@@ -39,7 +39,7 @@ add_executable(trender
     ./src/render/model/3d/asset.cpp
     ./src/render/material/material2d.cpp
     ./src/render/material/material3d.cpp
-    ./src/render/uniform.cpp
+    ./src/render/uniform/block.cpp
     ./src/render/texture.cpp
     ./src/render/shader/shader.cpp
     ./src/render/shader/program.cpp

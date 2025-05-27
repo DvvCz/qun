@@ -2,10 +2,8 @@
 
 #include <rapidobj/rapidobj.hpp>
 
-#include "render/uniform.hpp"
+#include "render/uniform/block.hpp"
 #include "render/texture.hpp"
-
-#include "asset/obj/obj.hpp"
 
 namespace material {
   struct Block3D {
@@ -21,7 +19,7 @@ namespace material {
 
   class Manager3D {
   public:
-    Manager3D(UniformBlock<Block3D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan);
+    Manager3D(uniform::Block<Block3D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan);
     ~Manager3D();
 
     void setMaterial(const asset::Material& material) noexcept;
@@ -31,7 +29,7 @@ namespace material {
   private:
     std::shared_ptr<texture::Manager> textureManager;
 
-    UniformBlock<Block3D> uniformMaterialBlock;
+    uniform::Block<Block3D> uniformMaterialBlock;
     Block3D currentMaterial;
   };
 };

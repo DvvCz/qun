@@ -6,7 +6,7 @@
 #define MAX_HEIGHT 2048
 #define MAX_TEXTURES 64
 
-texture::Manager::Manager(Uniform<GLuint> sampler2DUniform) : sampler2DArray(sampler2DUniform) {
+texture::Manager::Manager(uniform::Single<GLuint> sampler2DUniform) : sampler2DArray(sampler2DUniform) {
   GLint maxLayers;
   glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
 

@@ -4,7 +4,7 @@
 
 #include <print>
 
-material::Manager3D::Manager3D(UniformBlock<material::Block3D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan)
+material::Manager3D::Manager3D(uniform::Block<material::Block3D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan)
     : uniformMaterialBlock(uniformMaterialBlock), textureManager(texMan) {
 }
 

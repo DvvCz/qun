@@ -2,7 +2,7 @@
 
 #include <rapidobj/rapidobj.hpp>
 
-#include "render/uniform.hpp"
+#include "render/uniform/block.hpp"
 #include "render/texture.hpp"
 
 namespace material {
@@ -12,7 +12,7 @@ namespace material {
 
   class Manager2D {
   public:
-    Manager2D(UniformBlock<Block2D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan);
+    Manager2D(uniform::Block<Block2D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan);
     ~Manager2D();
 
     void setMaterial(const Block2D& material) noexcept;
@@ -21,7 +21,7 @@ namespace material {
   private:
     std::shared_ptr<texture::Manager> textureManager;
 
-    UniformBlock<Block2D> uniformMaterialBlock;
+    uniform::Block<Block2D> uniformMaterialBlock;
     Block2D currentMaterial;
   };
 };

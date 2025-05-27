@@ -10,6 +10,8 @@
 #include "components/transform.hpp"
 
 #include "asset/img/img.hpp"
+#include "asset/obj/obj.hpp"
+#include "asset/gltf/gltf.hpp"
 
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"

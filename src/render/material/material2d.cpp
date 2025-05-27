@@ -1,7 +1,7 @@
 #include "material2d.hpp"
 #include "render/texture.hpp"
 
-material::Manager2D::Manager2D(UniformBlock<material::Block2D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan)
+material::Manager2D::Manager2D(uniform::Block<material::Block2D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan)
     : uniformMaterialBlock(uniformMaterialBlock), textureManager(texMan) {
 }
 
