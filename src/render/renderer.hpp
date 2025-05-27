@@ -1,13 +1,13 @@
 #pragma once
 
 #include "window.hpp"
-#include "shader/program.hpp"
 
 #include "render/uniform.hpp"
 #include "render/texture.hpp"
 #include "render/material/material2d.hpp"
 #include "render/material/material3d.hpp"
 #include "render/model/3d/asset.hpp"
+#include "render/shader/program.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

@@ -6,9 +6,8 @@
 #include <entt/entt.hpp>
 
 #include "render/material/material2d.hpp"
-#include "shader/shader.hpp"
-#include "shader/program.hpp"
-#include "asset/obj/obj.hpp"
+#include "render/shader/shader.hpp"
+#include "render/shader/program.hpp"
 
 #include "components/transform.hpp"
 #include "components/material.hpp"

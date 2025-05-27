@@ -41,8 +41,8 @@ add_executable(trender
     ./src/render/material/material3d.cpp
     ./src/render/uniform.cpp
     ./src/render/texture.cpp
-    ./src/shader/shader.cpp
-    ./src/shader/program.cpp
+    ./src/render/shader/shader.cpp
+    ./src/render/shader/program.cpp
     ./src/asset/obj/obj.cpp
     ./src/asset/img/img.cpp
     ./src/asset/gltf/gltf.cpp
