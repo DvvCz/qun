@@ -12,6 +12,10 @@
 
 #include "render/texture.hpp"
 
+static glm::vec3 convertFromGLTF(float x, float y, float z) noexcept {
+  return glm::vec3(x, z, -y);
+};
+
 /* clang-format off */
 std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   const std::filesystem::path& path,
@@ -153,8 +157,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
       // Extract positions
       fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(
           asset, positionAccessor, [&](fastgltf::math::fvec3 pos, std::size_t idx) {
-            // Convert from glTF Y-up to renderer Z-up coordinate system
-            primitiveVertices[idx].pos = glm::vec3(pos.x(), pos.z(), -pos.y());
+            primitiveVertices[idx].pos = convertFromGLTF(pos.x(), pos.y(), pos.z());
           });
 
       // Extract normals if available
@@ -164,7 +167,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
           fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(
               asset, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t idx) {
                 // Convert from glTF Y-up to renderer Z-up coordinate system
-                glm::vec3 converted_normal = glm::vec3(normal.x(), normal.z(), -normal.y());
+                glm::vec3 converted_normal = convertFromGLTF(normal.x(), normal.y(), normal.z());
                 // Normalize to ensure unit length after coordinate transformation
                 primitiveVertices[idx].normal = glm::normalize(converted_normal);
               });

@@ -3,8 +3,6 @@
 #include "render/vertex.hpp"
 #include "render/material/material3d.hpp"
 
-#include "asset/img/img.hpp"
-
 #include <print>
 
 model::Asset::Asset(/* clang-format off */

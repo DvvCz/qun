@@ -9,6 +9,10 @@
 #include "asset/asset.hpp"
 #include "asset/img/img.hpp"
 
+static glm::vec3 convertFromObj(float x, float y, float z) noexcept {
+  return glm::vec3(x, z, -y);
+};
+
 /* clang-format off */
 std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
   const std::filesystem::path& path,
@@ -78,7 +82,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
       auto vertexIndex = vertices.size();
 
       /* clang-format off */
-      glm::vec3 position = glm::vec3(
+      glm::vec3 position = convertFromObj(
         obj.attributes.positions[index.position_index * 3],
         obj.attributes.positions[index.position_index * 3 + 1],
         obj.attributes.positions[index.position_index * 3 + 2]
@@ -90,11 +94,11 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
 
       // Check if normal index is valid and normals array is not empty
       if (index.normal_index >= 0) {
-        normal = glm::vec3(/* clang-format off */
+        normal = glm::normalize(convertFromObj(/* clang-format off */
           obj.attributes.normals[index.normal_index * 3],
           obj.attributes.normals[index.normal_index * 3 + 1],
           obj.attributes.normals[index.normal_index * 3 + 2]
-        );/* clang-format on */
+        ));/* clang-format on */
       }
 
       // Check if texcoord index is valid and texcoords array is not empty
