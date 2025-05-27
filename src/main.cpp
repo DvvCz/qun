@@ -40,7 +40,7 @@ int main() {
   auto registry = std::make_shared<entt::registry>();
   auto renderer = std::make_unique<Renderer>(window, registry);
 
-  auto plateTexture = resource::ImgAsset::tryFromFile("resources/NumernSchildAudiR8.png");
+  auto plateTexture = asset::Img::tryFromFile("resources/NumernSchildAudiR8.png");
   if (!plateTexture.has_value()) {
     std::println(stderr, "Failed to load texture: {}", plateTexture.error());
     return EXIT_FAILURE;
@@ -69,7 +69,7 @@ int main() {
   bunnyMaterial->dissolve = 1.0f;
   bunnyMaterial->diffuseTextureId = -1;
 
-  auto car = resource::ObjAsset::tryFromFile("resources/78717.obj");
+  auto car = asset::Obj::tryFromFile("resources/78717.obj");
   if (car.has_value()) {
     auto assetModel = renderer->createAsset3D(car.value());
 
@@ -83,7 +83,7 @@ int main() {
     registry->emplace<components::Material3D>(ent, redMaterial);
   }
 
-  auto out = resource::ObjAsset::tryFromFile("resources/bunny.obj");
+  auto out = asset::Obj::tryFromFile("resources/bunny.obj");
   if (out.has_value()) {
     auto assetModel = renderer->createAsset3D(out.value());
 

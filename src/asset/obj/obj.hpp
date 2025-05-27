@@ -3,17 +3,16 @@
 #include <expected>
 #include <string>
 #include <vector>
-#include <array>
 #include <filesystem>
 #include <optional>
 
 #include <rapidobj/rapidobj.hpp>
 #include <glm/glm.hpp>
 
-#include "resource/asset.hpp"
+#include "asset/asset.hpp"
 #include "render/vertex.hpp"
 
-namespace resource {
+namespace asset {
   struct ObjMaterialGroup {
   public:
     int materialId;
@@ -39,13 +38,13 @@ namespace resource {
     std::optional<std::filesystem::path> diffuseTexture;
   };
 
-  class ObjAsset : public Asset {
+  class Obj : public Asset {
   public:
     [[nodiscard]] std::optional<std::string> getName() const noexcept {
       return "OBJ Asset";
     }
 
-    [[nodiscard]] static std::expected<ObjAsset, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
+    [[nodiscard]] static std::expected<Obj, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
 
     [[nodiscard]] std::filesystem::path getPath() const noexcept {
       return path;
@@ -55,8 +54,8 @@ namespace resource {
     std::vector<ObjShape> shapes;
     std::vector<ObjMaterial> materials;
 
-    ObjAsset(std::vector<Vertex3D> vertices, std::vector<ObjShape> shapes, std::vector<ObjMaterial> materials,
-             std::filesystem::path path)
+    Obj(std::vector<Vertex3D> vertices, std::vector<ObjShape> shapes, std::vector<ObjMaterial> materials,
+        std::filesystem::path path)
         : vertices(std::move(vertices)), shapes(std::move(shapes)), materials(std::move(materials)), path(std::move(path)) {
     }
 

@@ -42,15 +42,15 @@ add_executable(trender
     ./src/render/texture.cpp
     ./src/shader/shader.cpp
     ./src/shader/program.cpp
-    ./src/resource/obj/obj.cpp
-    ./src/resource/img/img.cpp
+    ./src/asset/obj/obj.cpp
+    ./src/asset/img/img.cpp
 )
 
 target_include_directories(trender
     PRIVATE
     ./thirdparty
-    ./src
     ./thirdparty/fastgltf/include
+    ./src
 )
 
 target_link_libraries(trender

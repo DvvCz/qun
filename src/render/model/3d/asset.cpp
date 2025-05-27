@@ -6,7 +6,7 @@
 #include <print>
 
 model::Asset::Asset(/* clang-format off */
-  const resource::ObjAsset& asset,
+  const asset::Obj& asset,
   std::shared_ptr<TextureManager> texMan,
   std::shared_ptr<material::Manager3D> matMan
 ):
@@ -54,7 +54,7 @@ model::Asset::Asset(/* clang-format off */
         continue;
       }
 
-      auto texture = resource::ImgAsset::tryFromFile(diffuseFileName);
+      auto texture = asset::Img::tryFromFile(diffuseFileName);
       if (texture.has_value()) {
         auto textureId = textureManager->addTexture(texture.value());
         if (!textureId.has_value()) {

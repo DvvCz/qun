@@ -10,21 +10,21 @@
 #include <stb/stb_image.h>
 #include "../asset.hpp"
 
-namespace resource {
+namespace asset {
 
-  class ImgAsset : public Asset {
+  class Img : public Asset {
   public:
     [[nodiscard]] std::optional<std::string> getName() const noexcept {
       return "Img";
     };
 
-    [[nodiscard]] static std::expected<ImgAsset, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
+    [[nodiscard]] static std::expected<Img, std::string> tryFromFile(const std::filesystem::path& path) noexcept;
 
     std::filesystem::path getPath() const noexcept {
       return path;
     }
 
-    ImgAsset(int width, int height, int channels, std::vector<unsigned char> data, std::filesystem::path path)
+    Img(int width, int height, int channels, std::vector<unsigned char> data, std::filesystem::path path)
         : width(width), height(height), channels(channels), data(std::move(data)), path(std::move(path)) {
     }
 

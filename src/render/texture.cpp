@@ -30,7 +30,7 @@ TextureManager::~TextureManager() {
   glDeleteSamplers(1, &samplerIdx);
 }
 
-std::expected<GLuint, std::string> TextureManager::addTexture(const resource::ImgAsset& texture) noexcept {
+std::expected<GLuint, std::string> TextureManager::addTexture(const asset::Img& texture) noexcept {
   // todo: allow freeing up slots
   if (textures.size() >= MAX_TEXTURES) {
     return std::unexpected("Maximum number of textures reached");

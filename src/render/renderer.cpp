@@ -8,7 +8,7 @@
 #include "render/material/material2d.hpp"
 #include "shader/shader.hpp"
 #include "shader/program.hpp"
-#include "resource/obj/obj.hpp"
+#include "asset/obj/obj.hpp"
 
 #include "components/transform.hpp"
 #include "components/material.hpp"
@@ -246,6 +246,6 @@ const glm::vec3& Renderer::getCameraPos() const noexcept {
   return cameraPos;
 }
 
-std::shared_ptr<model::Asset> Renderer::createAsset3D(const resource::ObjAsset& asset) const {
+std::shared_ptr<model::Asset> Renderer::createAsset3D(const asset::Obj& asset) const {
   return std::make_shared<model::Asset>(asset, textureManager3D, materialManager3D);
 }

@@ -5,7 +5,7 @@
 #include "render/uniform.hpp"
 #include "render/texture.hpp"
 
-#include "resource/obj/obj.hpp"
+#include "asset/obj/obj.hpp"
 
 namespace material {
   struct Block3D {
@@ -24,7 +24,7 @@ namespace material {
     Manager3D(UniformBlock<Block3D> uniformMaterialBlock, std::shared_ptr<TextureManager> texMan);
     ~Manager3D();
 
-    void setMaterial(const resource::ObjMaterial& material) noexcept;
+    void setMaterial(const asset::ObjMaterial& material) noexcept;
     void setMaterial(const Block3D& material) noexcept;
     [[nodiscard]] Block3D getMaterial() const noexcept;
 

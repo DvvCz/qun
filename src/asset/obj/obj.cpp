@@ -8,7 +8,7 @@
 
 #include <rapidobj/rapidobj.hpp>
 
-std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(const std::filesystem::path& path) noexcept {
+std::expected<asset::Obj, std::string> asset::Obj::tryFromFile(const std::filesystem::path& path) noexcept {
   auto obj = rapidobj::ParseFile(path);
 
   if (obj.error) {
@@ -116,7 +116,7 @@ std::expected<resource::ObjAsset, std::string> resource::ObjAsset::tryFromFile(c
     });/* clang-format on */
   }
 
-  return ObjAsset{/* clang-format off */
+  return Obj{/* clang-format off */
     std::move(vertices),
     std::move(shapes),
     std::move(materials),

@@ -4,12 +4,12 @@
 #include "render/material/material3d.hpp"
 #include "render/texture.hpp"
 
-#include "resource/obj/obj.hpp"
+#include "asset/obj/obj.hpp"
 
 namespace model {
   class Asset : public Model3D {
   public:
-    Asset(const resource::ObjAsset& asset, std::shared_ptr<TextureManager> texMan, std::shared_ptr<material::Manager3D> matMan);
+    Asset(const asset::Obj& asset, std::shared_ptr<TextureManager> texMan, std::shared_ptr<material::Manager3D> matMan);
     ~Asset();
     void draw() const;
 
@@ -17,9 +17,9 @@ namespace model {
     std::shared_ptr<TextureManager> textureManager;
     std::shared_ptr<material::Manager3D> materialManager;
 
-    std::vector<resource::ObjMaterialGroup> materialGroups;
+    std::vector<asset::ObjMaterialGroup> materialGroups;
 
-    resource::ObjAsset inner;
+    asset::Obj inner;
     std::vector<GLuint> allIndices;
     GLuint glAttributesIdx;
     GLuint glBufferIdx;
