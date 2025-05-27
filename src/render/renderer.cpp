@@ -23,15 +23,13 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformViewMatrix3D(1),
   uniformModelMatrix3D(2),
   uniformTextureArray3D(3),
-  uniformTextureIdx3D(4),
-  uniformCameraPos3D(5),
+  uniformCameraPos3D(4),
   // 3d - blocks
   uniformLightBlock3D(0),
   uniformMaterialBlock3D(1),
 
   // 2d
   uniformTextureArray2D(0),
-  uniformTextureIdx2D(1),
   // 2d - blocks
   uniformMaterialBlock2D(0)
 { /* clang-format on */
@@ -110,8 +108,8 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
     shader2D->link();
   }
 
-  textureManager2D = std::make_shared<TextureManager>(uniformTextureArray2D, uniformTextureIdx2D);
-  textureManager3D = std::make_shared<TextureManager>(uniformTextureArray3D, uniformTextureIdx3D);
+  textureManager2D = std::make_shared<TextureManager>(uniformTextureArray2D);
+  textureManager3D = std::make_shared<TextureManager>(uniformTextureArray3D);
 
   // todo: probably only store the uniform in the material manager itself
   materialManager2D = std::make_shared<material::Manager2D>(uniformMaterialBlock2D, textureManager2D);
@@ -128,7 +126,8 @@ material::Block3D defaultMaterial3D = {/* clang-format off */
   .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
   .specular = glm::vec3(1.0f, 1.0f, 1.0f),
   .shininess = 32.0f,
-  .dissolve = 1.0f
+  .dissolve = 1.0f,
+  .diffuseTextureId = -1
 };/* clang-format on */
 
 material::Block2D defaultMaterial2D = {/* clang-format off */
@@ -136,6 +135,8 @@ material::Block2D defaultMaterial2D = {/* clang-format off */
 };/* clang-format on */
 
 void Renderer::draw2D() {
+  textureManager2D->bind();
+
   shader2D->use();
 #ifdef SHADER_HOTRELOADING
   shader2D->checkForHotReload();
@@ -156,9 +157,13 @@ void Renderer::draw2D() {
 
     model->draw();
   }
+
+  textureManager2D->unbind();
 }
 
 void Renderer::draw3D() {
+  textureManager3D->bind();
+
   shader3D->use();
 #ifdef SHADER_HOTRELOADING
   shader3D->checkForHotReload();
@@ -201,13 +206,15 @@ void Renderer::draw3D() {
       materialManager3D->setMaterial(defaultMaterial3D);
     }
 
-    textureManager3D->unbindTexture();
+    // textureManager3D->unbindTexture();
 
     modelMatrix = globalTransform;
     uniformModelMatrix3D.set(modelMatrix);
 
     model->draw();
   }
+
+  textureManager3D->unbind();
 }
 
 void Renderer::drawFrame() {

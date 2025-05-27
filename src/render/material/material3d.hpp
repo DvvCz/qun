@@ -14,6 +14,9 @@ namespace material {
     alignas(16) glm::vec3 specular;
     float shininess;
     float dissolve;
+
+    // -1 for no texture
+    int diffuseTextureId;
   };
 
   class Manager3D {

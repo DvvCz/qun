@@ -83,7 +83,6 @@ void model::Asset::draw() const {
   for (const auto& group : materialGroups) {
     if (group.materialId >= 0 && group.materialId < static_cast<int>(inner.materials.size())) {
       const auto& material = inner.materials[group.materialId];
-
       materialManager->setMaterial(material);
     }
 

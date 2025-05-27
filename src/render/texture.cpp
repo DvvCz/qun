@@ -6,8 +6,7 @@
 #define MAX_HEIGHT 2048
 #define MAX_TEXTURES 64
 
-TextureManager::TextureManager(Uniform<GLuint> sampler2DUniform, Uniform<GLint> textureIdxUniform)
-    : sampler2DArray(sampler2DUniform), textureIdx(textureIdxUniform) {
+TextureManager::TextureManager(Uniform<GLuint> sampler2DUniform) : sampler2DArray(sampler2DUniform) {
   GLint maxLayers;
   glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
 
@@ -92,18 +91,6 @@ std::expected<GLuint, std::string> TextureManager::addTexture(const resource::Im
   return textureId;
 }
 
-void TextureManager::bindTexture(GLuint textureId) noexcept {
-  glBindTextureUnit(0, sampler2DArrayIdx);
-  glBindSampler(0, samplerIdx);
-  glBindImageTexture(0, sampler2DArrayIdx, 0, GL_FALSE, textureId, GL_READ_ONLY, GL_RGBA8);
-  textureIdx.set(textureId);
-}
-
-void TextureManager::unbindTexture() noexcept {
-  glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
-  textureIdx.set(-1);
-}
-
 std::optional<GLuint> TextureManager::getTextureByPath(const std::filesystem::path& path) const noexcept {
   for (size_t i = 0; i < textures.size(); ++i) {
     // todo: i think this should enforce that the path is resolved.
@@ -114,4 +101,14 @@ std::optional<GLuint> TextureManager::getTextureByPath(const std::filesystem::pa
   }
 
   return std::nullopt;
+}
+
+void TextureManager::bind() {
+  glBindTextureUnit(0, sampler2DArrayIdx);
+  glBindSampler(0, samplerIdx);
+}
+
+void TextureManager::unbind() {
+  glBindTextureUnit(0, 0);
+  glBindSampler(0, 0);
 }

@@ -15,9 +15,7 @@ layout(location = 1) uniform mat4x4 viewMatrix;
 layout(location = 2) uniform mat4x4 modelMatrix;
 
 layout(location = 3) uniform sampler2DArray textureList;
-layout(location = 4) uniform int textureIdx;
-
-layout(location = 5) uniform vec3 cameraPos;
+layout(location = 4) uniform vec3 cameraPos;
 
 #define MAX_LIGHTS 20
 
@@ -32,6 +30,7 @@ layout(std140, binding = 1) uniform MaterialBlock {
     vec3 materialSpecular;
     float materialShininess;
     float materialDissolve;
+    int diffuseTextureIdx;
 };
 
 out vec4 outColor;
@@ -41,8 +40,8 @@ void main() {
     vec3 normal = normalize(fragNormal);
 
     vec3 ambient = vec3(1.0);
-    if (textureIdx >= 0) {
-        ambient = texture(textureList, vec3(fragUV, float(textureIdx))).rgb;
+    if (diffuseTextureIdx >= 0) {
+        ambient = texture(textureList, vec3(fragUV, float(diffuseTextureIdx))).rgb;
     }
 
     vec3 diffuse = vec3(0.0);

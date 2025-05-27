@@ -40,12 +40,25 @@ int main() {
   auto registry = std::make_shared<entt::registry>();
   auto renderer = std::make_unique<Renderer>(window, registry);
 
+  auto plateTexture = resource::ImgAsset::tryFromFile("resources/NumernSchildAudiR8.png");
+  if (!plateTexture.has_value()) {
+    std::println(stderr, "Failed to load texture: {}", plateTexture.error());
+    return EXIT_FAILURE;
+  }
+
+  auto plateTextureId = renderer->textureManager3D->addTexture(plateTexture.value());
+  if (!plateTextureId.has_value()) {
+    std::println(stderr, "Failed to add texture: {}", plateTextureId.error());
+    return EXIT_FAILURE;
+  }
+
   auto redMaterial = std::make_shared<material::Block3D>();
   redMaterial->ambient = glm::vec3(0.2f, 0.05f, 0.05f);
   redMaterial->diffuse = glm::vec3(0.8f, 0.2f, 0.2f);
   redMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
   redMaterial->shininess = 64.0f;
   redMaterial->dissolve = 1.0f;
+  redMaterial->diffuseTextureId = -1;
 
   // Create a shiny material for the bunny
   auto bunnyMaterial = std::make_shared<material::Block3D>();
@@ -54,6 +67,7 @@ int main() {
   bunnyMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
   bunnyMaterial->shininess = 32.0f;
   bunnyMaterial->dissolve = 1.0f;
+  bunnyMaterial->diffuseTextureId = -1;
 
   auto car = resource::ObjAsset::tryFromFile("resources/78717.obj");
   if (car.has_value()) {

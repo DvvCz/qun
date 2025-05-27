@@ -23,6 +23,9 @@ target_include_directories(stb INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/
 add_library(entt INTERFACE)
 target_include_directories(entt INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/entt/single_include)
 
+# fastgltf
+add_subdirectory(thirdparty/fastgltf)
+
 # TRender
 add_executable(trender
     ./src/main.cpp
@@ -47,12 +50,14 @@ target_include_directories(trender
     PRIVATE
     ./thirdparty
     ./src
+    ./thirdparty/fastgltf/include
 )
 
 target_link_libraries(trender
     glad
     rapidobj
     entt
+    fastgltf
     glfw
     OpenGL::GL
     glm::glm

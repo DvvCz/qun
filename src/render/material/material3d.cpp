@@ -19,18 +19,16 @@ void material::Manager3D::setMaterial(const resource::ObjMaterial& material) noe
     .specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]),
     .shininess = material.shininess,
     .dissolve = material.dissolve,
+    .diffuseTextureId = -1
   };/* clang-format on */
 
   if (material.diffuseTexture.has_value()) {
     auto out = textureManager->getTextureByPath(material.diffuseTexture.value());
     if (out.has_value()) {
-      textureManager->bindTexture(out.value());
+      newMaterial.diffuseTextureId = out.value();
     } else {
       std::println(stderr, "Failed to get texture by path: {}", material.diffuseTexture.value().generic_string());
-      textureManager->unbindTexture();
     }
-  } else {
-    textureManager->unbindTexture();
   }
 
   uniformMaterialBlock.set(newMaterial);

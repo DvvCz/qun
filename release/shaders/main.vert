@@ -9,9 +9,7 @@ layout(location = 1) uniform mat4x4 viewMatrix;
 layout(location = 2) uniform mat4x4 modelMatrix;
 
 layout(location = 3) uniform sampler2DArray textureList;
-layout(location = 4) uniform int textureIdx;
-
-layout(location = 5) uniform vec3 cameraPos;
+layout(location = 4) uniform vec3 cameraPos;
 
 out vec3 fragPos;
 out vec3 fragNormal;

@@ -45,15 +45,14 @@ public:
 
   [[nodiscard]] std::shared_ptr<model::Asset> createAsset3D(const resource::ObjAsset& asset) const;
 
+  std::shared_ptr<TextureManager> textureManager2D;
+  std::shared_ptr<TextureManager> textureManager3D;
+
 private:
   void draw3D();
   void draw2D();
 
   // todo: this is a mess, separate 2d and 3d into structs
-
-  std::shared_ptr<TextureManager> textureManager2D;
-  std::shared_ptr<TextureManager> textureManager3D;
-
   std::shared_ptr<material::Manager2D> materialManager2D;
   std::shared_ptr<material::Manager3D> materialManager3D;
 
@@ -64,14 +63,12 @@ private:
   Uniform<glm::mat4x4> uniformViewMatrix3D;
   Uniform<glm::mat4x4> uniformModelMatrix3D;
   Uniform<GLuint> uniformTextureArray3D;
-  Uniform<GLint> uniformTextureIdx3D;
   Uniform<glm::vec3> uniformCameraPos3D;
   UniformBlock<LightBlock> uniformLightBlock3D;
   UniformBlock<material::Block3D> uniformMaterialBlock3D;
 
   // 2d uniforms
   Uniform<GLuint> uniformTextureArray2D;
-  Uniform<GLint> uniformTextureIdx2D;
   UniformBlock<material::Block2D> uniformMaterialBlock2D;
 
   glm::mat4x4 projMatrix;
