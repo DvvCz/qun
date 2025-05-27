@@ -18,5 +18,14 @@ namespace asset::loader {
       const std::filesystem::path& path,
       texture::Manager& texMan
     ) noexcept; /* clang-format on */
+
+    /* clang-format off */
+    [[nodiscard]] static std::expected<asset::Asset2D, std::string> tryFromData(
+      const std::vector<unsigned char>& data,
+      int width,
+      int height,
+      texture::Format format,
+      texture::Manager& texMan
+    ) noexcept; /* clang-format on */
   };
 }

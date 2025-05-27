@@ -47,11 +47,5 @@ namespace asset {
   struct Asset2D {
     // TextureID to whatever texture manager this is linked to.
     size_t textureId;
-    // int width;
-    // int height;
-    // int channels;
-    // std::vector<unsigned char> data;
-
-    // std::filesystem::path path;
   };
 }

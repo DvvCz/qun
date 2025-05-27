@@ -11,9 +11,10 @@
 
 namespace texture {
   enum Format {
-    RG = 0,
-    RGB = 1,
-    RGBA = 2
+    R = 0,
+    RG = 1,
+    RGB = 2,
+    RGBA = 3
   };
 
   using Data = std::vector<unsigned char>;
