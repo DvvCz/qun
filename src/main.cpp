@@ -55,6 +55,20 @@ int main() {
   bunnyMaterial->shininess = 32.0f;
   bunnyMaterial->dissolve = 1.0f;
 
+  auto car = resource::ObjAsset::tryFromFile("resources/78717.obj");
+  if (car.has_value()) {
+    auto assetModel = renderer->createAsset3D(car.value());
+
+    auto modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(-5.5f, -30.0f, -4.6f));
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, modelMatrix);
+    registry->emplace<components::Model3D>(ent, assetModel);
+    registry->emplace<components::Material3D>(ent, redMaterial);
+  }
+
   auto out = resource::ObjAsset::tryFromFile("resources/bunny.obj");
   if (out.has_value()) {
     auto assetModel = renderer->createAsset3D(out.value());
@@ -93,20 +107,20 @@ int main() {
   registry->emplace<components::Model3D>(baseEnt, baseModel);
   registry->emplace<components::Material3D>(baseEnt, redMaterial);
 
-  /* clang-format off */
-  auto basequad = std::make_shared<model::Quad>(
-      Vertex2D{glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f)},
-      Vertex2D{glm::vec3(0.0f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f)},
-      Vertex2D{glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-      Vertex2D{glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)}
-  ); /* clang-format on */
-  auto quadEnt = registry->create();
-  registry->emplace<components::GlobalTransform>(quadEnt, glm::mat4(1.0f));
-  registry->emplace<components::Model2D>(quadEnt, basequad);
+  // /* clang-format off */
+  // auto basequad = std::make_shared<model::Quad>(
+  //     Vertex2D{glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f)},
+  //     Vertex2D{glm::vec3(0.0f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f)},
+  //     Vertex2D{glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+  //     Vertex2D{glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)}
+  // ); /* clang-format on */
+  // auto quadEnt = registry->create();
+  // registry->emplace<components::GlobalTransform>(quadEnt, glm::mat4(1.0f));
+  // registry->emplace<components::Model2D>(quadEnt, basequad);
 
-  auto blueMaterial = std::make_shared<material::Block2D>();
-  blueMaterial->color = glm::vec3(0.0f, 0.0f, 1.0f);
-  registry->emplace<components::Material2D>(quadEnt, blueMaterial);
+  // auto blueMaterial = std::make_shared<material::Block2D>();
+  // blueMaterial->color = glm::vec3(0.0f, 0.0f, 1.0f);
+  // registry->emplace<components::Material2D>(quadEnt, blueMaterial);
 
   float deltaTime = 0.0f;
   float lastTime = glfwGetTime();
