@@ -1,6 +1,11 @@
 # trender
 
-This is an attempt to make a relatively simple renderer using modern OpenGL (4.5) and C++ (23)
+This is an attempt to make a simple renderer using modern OpenGL (4.5) and C++ (23)
+
+## Why?
+
+- To finally properly learn OpenGL, instead of jumping straight into newer abstractions like [wgpu](https://github.com/gfx-rs/wgpu)
+- As an exercise in writing idiomatic, modern C++, as I mostly write Rust
 
 ## Features
 
