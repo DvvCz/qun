@@ -13,6 +13,13 @@ This is an attempt to make a relatively simple renderer using modern OpenGL (4.5
 
 ![sample](./sample.png)
 
+## Building
+
+This project uses [`CMake`](https://cmake.org) and [`Ninja`](https://ninja-build.org).
+I recommend doing your configuration via your IDE, I use VSCode.
+
+Later on there may be build artifacts served via GitHub if I get around to it.
+
 ## Troubleshooting
 
 | Error | Solution |
