@@ -77,7 +77,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
 
   for (const auto& shape : obj.shapes) {
     // Create a map of material ID to vector of indices
-    std::map<size_t, std::vector<int>> materialGroups;
+    std::map<int, std::vector<int>> materialGroups;
 
     for (size_t i = 0; i < shape.mesh.indices.size(); i++) {
       const auto& index = shape.mesh.indices[i];
@@ -119,7 +119,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
 
       // Get material ID for the current face (each triangle/3 vertices)
       int faceIndex = i / 3;
-      int materialId = 0; // Default material ID
+      int materialId = -1; // Default material ID
       if (faceIndex < static_cast<int>(shape.mesh.material_ids.size())) {
         materialId = shape.mesh.material_ids[faceIndex];
       }
@@ -131,7 +131,11 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
     // Convert the map to the vector of asset::MaterialGroup
     std::vector<asset::MaterialGroup> groups;
     for (const auto& [materialId, indices] : materialGroups) {
-      groups.push_back(asset::MaterialGroup{.materialId = materialId, .indices = indices});
+      if (materialId == -1) {
+        groups.push_back(asset::MaterialGroup{.materialId = std::nullopt, .indices = indices});
+      } else {
+        groups.push_back(asset::MaterialGroup{.materialId = materialId, .indices = indices});
+      }
     }
 
     shapes.push_back(asset::Shape{/* clang-format off */

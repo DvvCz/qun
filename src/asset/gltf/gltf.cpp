@@ -130,7 +130,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   // Process meshes
   for (const auto& gltfMesh : asset.meshes) {
     // Create a map of material ID to vector of indices
-    std::map<size_t, std::vector<int>> materialGroups;
+    std::map<int, std::vector<int>> materialGroups;
 
     for (const auto& primitive : gltfMesh.primitives) {
       // Find position attribute
@@ -194,13 +194,9 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
         }
       }
 
-      // Get material ID
-      int materialId = 0;
+      int materialId = -1;
       if (primitive.materialIndex.has_value()) {
-        materialId = static_cast<int>(primitive.materialIndex.value());
-        if (materialId >= static_cast<int>(materials.size())) {
-          materialId = 0; // Fallback to default material
-        }
+        materialId = primitive.materialIndex.value();
       }
 
       // Handle indices
@@ -235,7 +231,11 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
     // Convert the map to the vector of asset::MaterialGroup
     std::vector<asset::MaterialGroup> groups;
     for (const auto& [materialId, indices] : materialGroups) {
-      groups.push_back(asset::MaterialGroup{.materialId = materialId, .indices = indices});
+      if (materialId == -1) {
+        groups.push_back(asset::MaterialGroup{.materialId = std::nullopt, .indices = indices});
+      } else {
+        groups.push_back(asset::MaterialGroup{.materialId = materialId, .indices = indices});
+      }
     }
 
     shapes.push_back(asset::Shape{/* clang-format off */

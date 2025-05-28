@@ -26,7 +26,7 @@ namespace asset {
   struct MaterialGroup {
   public:
     // Index into the Material[] in Asset3D
-    size_t materialId;
+    std::optional<size_t> materialId;
     std::vector<int> indices;
   };
 

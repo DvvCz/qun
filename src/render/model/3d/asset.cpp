@@ -3,6 +3,7 @@
 #include "render/vertex.hpp"
 #include "render/material/material3d.hpp"
 
+#include "constants.hpp"
 #include <print>
 
 model::Asset::Asset(/* clang-format off */
@@ -59,9 +60,11 @@ void model::Asset::draw() const {
 
   size_t currentOffset = 0;
   for (const auto& group : materialGroups) {
-    if (group.materialId >= 0 && group.materialId < static_cast<int>(inner.materials.size())) {
-      const auto& material = inner.materials[group.materialId];
+    if (group.materialId.has_value()) {
+      const auto& material = inner.materials[group.materialId.value()];
       materialManager->setMaterial(material);
+    } else {
+      materialManager->setMaterial(constants::DEFAULT_MATERIAL_3D);
     }
 
     glDrawElements(GL_TRIANGLES, group.indices.size(), GL_UNSIGNED_INT, (void*)currentOffset);

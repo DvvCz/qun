@@ -1,6 +1,7 @@
 #include "game.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
+#include <print>
 #include <string>
 
 #include "components/light.hpp"
