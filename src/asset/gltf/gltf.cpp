@@ -129,7 +129,8 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
         .specular = glm::vec3(0.5f),
         .shininess = std::max(1.0f, 1 / std::pow(gltfMaterial.pbrData.roughnessFactor, 2.0f)),
         .dissolve = baseColorAlpha,
-        .diffuseTexture = std::nullopt
+        .diffuseTexture = std::nullopt,
+        .normalTexture = std::nullopt
     };/* clang-format on */
 
     auto getTexture = [&asset, &texMan](size_t textureIndex) -> std::expected<size_t, std::string> {

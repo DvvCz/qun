@@ -66,6 +66,18 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
       mat.diffuseTexture = asset->textureId;
     }
 
+    if (!material.normal_texname.empty()) {
+      auto unresolvedPath = std::filesystem::path(material.normal_texname);
+      auto resolvedPath = path.parent_path() / unresolvedPath;
+
+      auto asset = asset::loader::Img::tryFromFile(resolvedPath, texMan);
+      if (!asset.has_value()) {
+        return std::unexpected{std::format("Failed to load normal texture: {}", asset.error())};
+      }
+
+      mat.normalTexture = asset->textureId;
+    }
+
     materials.push_back(mat);
   }
 

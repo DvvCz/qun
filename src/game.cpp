@@ -273,7 +273,7 @@ std::expected<bool, std::string> Game::start() {
 
       float modifier = 1.0;
       if (input::Keyboard::isCurrentlyHeld(input::Key::LeftControl)) {
-        modifier *= 0.5f;
+        modifier *= 0.25f;
       }
       if (input::Keyboard::isCurrentlyHeld(input::Key::LeftShift)) {
         modifier *= 2.0f;
