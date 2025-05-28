@@ -1,6 +1,6 @@
 #include "cube.hpp"
 
-model::Cube::Cube(glm::vec3 pos, glm::vec3 size, glm::quat rot) : pos(pos), size(size), rot(rot) {
+model::Cube::Cube(glm::vec3 scale) : scale(scale) {
   glCreateVertexArrays(1, &glAttributesIdx);
   glCreateBuffers(1, &glBufferIdx);
   glCreateBuffers(1, &glIndexBufferIdx);
@@ -78,18 +78,8 @@ model::Cube::Cube(glm::vec3 pos, glm::vec3 size, glm::quat rot) : pos(pos), size
       20, 21, 22, 22, 23, 20
   }; /* clang-format on */
 
-  glm::mat4 transform = glm::mat4(1.0f);
-  transform = glm::translate(transform, pos);
-  transform = transform * glm::mat4_cast(rot);
-  transform = glm::scale(transform, size);
-
   for (auto& vertex : vertices) {
-    glm::vec4 transformedPos = transform * glm::vec4(vertex.pos, 1.0f);
-    vertex.pos = glm::vec3(transformedPos);
-
-    // Transform normals (only rotation, no translation or scale)
-    glm::mat3 normalMatrix = glm::mat3(glm::mat4_cast(rot));
-    vertex.normal = normalMatrix * vertex.normal;
+    vertex.pos *= scale;
   }
 
   glNamedBufferData(glBufferIdx, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);

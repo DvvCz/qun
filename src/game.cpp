@@ -44,68 +44,65 @@ std::expected<bool, std::string> Game::setupScene() {
   registry->emplace<components::Light>(mainLight, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 1000.0f);
   registry->emplace<components::GlobalTransform>(mainLight, mainLightMatrix);
 
-  // auto redMaterial = std::make_shared<material::Block3D>();
-  // redMaterial->ambient = glm::vec3(0.2f, 0.05f, 0.05f);
-  // redMaterial->diffuse = glm::vec3(0.8f, 0.2f, 0.2f);
-  // redMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
-  // redMaterial->shininess = 64.0f;
-  // redMaterial->dissolve = 1.0f;
-  // redMaterial->diffuseTextureId = -1;
+  auto redMaterial = std::make_shared<material::Block3D>();
+  redMaterial->ambient = glm::vec3(0.2f, 0.05f, 0.05f);
+  redMaterial->diffuse = glm::vec3(0.8f, 0.2f, 0.2f);
+  redMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+  redMaterial->shininess = 64.0f;
+  redMaterial->dissolve = 1.0f;
+  redMaterial->diffuseTextureId = -1;
 
-  // // Create a shiny material for the bunny
-  // auto bunnyMaterial = std::make_shared<material::Block3D>();
-  // bunnyMaterial->ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-  // bunnyMaterial->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-  // bunnyMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
-  // bunnyMaterial->shininess = 32.0f;
-  // bunnyMaterial->dissolve = 1.0f;
-  // bunnyMaterial->diffuseTextureId = -1;
+  // Create a shiny material for the bunny
+  auto bunnyMaterial = std::make_shared<material::Block3D>();
+  bunnyMaterial->ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+  bunnyMaterial->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+  bunnyMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+  bunnyMaterial->shininess = 32.0f;
+  bunnyMaterial->dissolve = 1.0f;
+  bunnyMaterial->diffuseTextureId = -1;
 
-  // auto car = asset::loader::Obj::tryFromFile("resources/78717.obj", *renderer->textureManager3D);
-  // if (car.has_value()) {
-  //   auto assetModel = renderer->createAsset3D(car.value());
+  auto car = asset::loader::Obj::tryFromFile("resources/78717.obj", *renderer->textureManager3D);
+  if (car.has_value()) {
+    auto assetModel = renderer->createAsset3D(car.value());
 
-  //   auto modelMatrix = glm::mat4(1.0f);
-  //   modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
-  //   modelMatrix = glm::translate(modelMatrix, glm::vec3(-5.5f, -30.0f, -4.6f));
+    auto modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(-5.5f, -30.0f, -4.6f));
 
-  //   auto ent = registry->create();
-  //   registry->emplace<components::GlobalTransform>(ent, modelMatrix);
-  //   registry->emplace<components::Model3D>(ent, assetModel);
-  //   registry->emplace<components::Material3D>(ent, redMaterial);
-  // }
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, modelMatrix);
+    registry->emplace<components::Model3D>(ent, assetModel);
+    registry->emplace<components::Material3D>(ent, redMaterial);
+  }
 
-  // auto out = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
-  // if (out.has_value()) {
-  //   auto assetModel = renderer->createAsset3D(out.value());
+  auto out = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
+  if (out.has_value()) {
+    auto assetModel = renderer->createAsset3D(out.value());
 
-  //   auto modelMatrix = glm::mat4(1.0f);
-  //   modelMatrix = glm::scale(modelMatrix, glm::vec3(1));
-  //   modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-  //   modelMatrix = glm::translate(modelMatrix, glm::vec3(2.0f, -0.8f, 0.0f));
+    auto modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
 
-  //   auto ent = registry->create();
-  //   registry->emplace<components::GlobalTransform>(ent, modelMatrix);
-  //   registry->emplace<components::Model3D>(ent, assetModel);
-  //   registry->emplace<components::Material3D>(ent, bunnyMaterial);
-  // }
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, modelMatrix);
+    registry->emplace<components::Model3D>(ent, assetModel);
+    registry->emplace<components::Material3D>(ent, bunnyMaterial);
+  }
 
-  // auto topCubeModel =
-  //     std::make_shared<model::Cube>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::quat(glm::vec3(0.0f)));
-  // auto topCubeEnt = registry->create();
-  // auto topCubeMatrix = glm::mat4(1.0f);
-  // topCubeMatrix = glm::rotate(topCubeMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-  // registry->emplace<components::GlobalTransform>(topCubeEnt, topCubeMatrix);
-  // registry->emplace<components::Model3D>(topCubeEnt, topCubeModel);
-  // registry->emplace<components::Material3D>(topCubeEnt, redMaterial);
+  auto topCubeModel = std::make_shared<model::Cube>(glm::vec3(1.0f));
+  auto topCubeEnt = registry->create();
+  auto topCubeMatrix = glm::mat4(1.0f);
+  topCubeMatrix = glm::rotate(topCubeMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+  registry->emplace<components::GlobalTransform>(topCubeEnt, topCubeMatrix);
+  registry->emplace<components::Model3D>(topCubeEnt, topCubeModel);
+  registry->emplace<components::Material3D>(topCubeEnt, redMaterial);
 
-  // // add a cube to draw
-  // auto baseModel = std::make_shared<model::Cube>(glm::vec3(0.0f, 0.0f, -0.5f), glm::vec3(1000.0f, 1000.0f, 0.1f),
-  //                                                glm::quat(glm::vec3(0.0f)));
-  // auto baseEnt = registry->create();
-  // registry->emplace<components::GlobalTransform>(baseEnt, glm::mat4(1.0f));
-  // registry->emplace<components::Model3D>(baseEnt, baseModel);
-  // registry->emplace<components::Material3D>(baseEnt, redMaterial);
+  // add a cube to draw
+  auto floorModel = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
+  auto floorEnt = registry->create();
+  auto floorMatrix = glm::mat4(1.0f);
+  registry->emplace<components::GlobalTransform>(floorEnt, floorMatrix);
+  registry->emplace<components::Model3D>(floorEnt, floorModel);
+  registry->emplace<components::Material3D>(floorEnt, redMaterial);
 
   // /* clang-format off */
   // auto basequad = std::make_shared<model::Quad>(
