@@ -21,7 +21,9 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   const std::filesystem::path& path,
   texture::Manager& texMan
 ) noexcept { /* clang-format on */
-  fastgltf::Parser parser(fastgltf::Extensions::None);
+  auto extensions = fastgltf::Extensions::KHR_materials_transmission;
+
+  fastgltf::Parser parser(extensions);
 
   auto gltfFile = fastgltf::MappedGltfFile::FromPath(path);
   if (!bool(gltfFile)) {
@@ -121,6 +123,17 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
           std::println("Unsupported buffer data type for texture {}", fastgltf::getMimeTypeString(bufferData.mimeType));
           break;
         }
+      } else if (std::holds_alternative<fastgltf::sources::Array>(image.data)) {
+        auto& arrayData = std::get<fastgltf::sources::Array>(image.data);
+
+        std::vector<std::byte> imageData(arrayData.bytes.cbegin(), arrayData.bytes.cend());
+
+        auto out = asset::loader::Img::tryFromData(imageData, texMan);
+        if (!out.has_value()) {
+          return std::unexpected{out.error()};
+        }
+
+        mat.diffuseTexture = out.value().textureId;
       } else {
         std::println("Unknown buffer data type for texture");
       }
