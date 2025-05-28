@@ -4,20 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-static texture::Format getTextureFormat(int channels) {
-  switch (channels) {
-  case 1:
-    return texture::Format::R;
-  case 2:
-    return texture::Format::RG;
-  case 3:
-    return texture::Format::RGB;
-  case 4:
-    return texture::Format::RGBA;
-  default:
-    return texture::Format::RGBA; // Fallback to RGBA
-  }
-}
+#define STBI_FORCE_RGBA 4
 
 /* clang-format off */
 std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(
@@ -25,7 +12,7 @@ std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(
   texture::Manager& texMan
 ) noexcept { /* clang-format on */
   int width, height, channels;
-  unsigned char* data = stbi_load(path.string().c_str(), &width, &height, &channels, 0);
+  unsigned char* data = stbi_load(path.string().c_str(), &width, &height, &channels, STBI_FORCE_RGBA);
 
   if (!data) {
     return std::unexpected{std::format("{}: {}", stbi_failure_reason(), path.string())};
@@ -35,7 +22,7 @@ std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(
 
   stbi_image_free(data);
 
-  auto textureId = texMan.create(width, height, getTextureFormat(channels), imageData);
+  auto textureId = texMan.create(width, height, texture::Format::RGBA, imageData);
   if (!textureId.has_value()) {
     return std::unexpected{std::format("Failed to create texture: {}", textureId.error())};
   }
@@ -48,33 +35,32 @@ std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromFile(
 /* clang-format off */
 std::expected<asset::Asset2D, std::string> asset::loader::Img::tryFromData(
   const std::vector<std::byte>& data,
-  texture::Format desiredFormat,
   texture::Manager& texMan
 ) noexcept { /* clang-format on */
-  int width;
-  int height;
-  int channels;
+  int originalWidth;
+  int originalHeight;
+  int originalChannels;
 
   /* clang-format off */
   unsigned char* imageData = stbi_load_from_memory(
     reinterpret_cast<const unsigned char*>(data.data()),
     static_cast<int>(data.size()),
-    &width,
-    &height,
-    &channels,
-    static_cast<int>(desiredFormat)
+    &originalWidth,
+    &originalHeight,
+    &originalChannels,
+    STBI_FORCE_RGBA
   ); /* clang-format on */
 
   if (!imageData) {
     return std::unexpected{std::format("Failed to load image: {}", stbi_failure_reason())};
   }
 
-  size_t outputDataSize = width * height * channels;
+  size_t outputDataSize = originalWidth * originalHeight * 4;
   std::vector<unsigned char> outputData(imageData, imageData + outputDataSize);
 
   stbi_image_free(imageData);
 
-  auto textureId = texMan.create(width, height, desiredFormat, outputData);
+  auto textureId = texMan.create(originalWidth, originalHeight, texture::Format::RGBA, outputData);
   if (!textureId.has_value()) {
     return std::unexpected{std::format("Failed to create texture: {}", textureId.error())};
   }

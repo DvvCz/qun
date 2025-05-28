@@ -105,7 +105,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
         case fastgltf::MimeType::JPEG: {
           std::vector<std::byte> imageData(arrayData.bytes.cbegin(), arrayData.bytes.cend());
 
-          auto out = asset::loader::Img::tryFromData(imageData, texture::Format::RGBA, texMan);
+          auto out = asset::loader::Img::tryFromData(imageData, texMan);
           if (!out.has_value()) {
             return std::unexpected{out.error()};
           }

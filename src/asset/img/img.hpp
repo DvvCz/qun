@@ -22,7 +22,6 @@ namespace asset::loader {
     /* clang-format off */
     [[nodiscard]] static std::expected<asset::Asset2D, std::string> tryFromData(
       const std::vector<std::byte>& data,
-      texture::Format desiredFormat,
       texture::Manager& texMan
     ) noexcept; /* clang-format on */
   };
