@@ -42,8 +42,17 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
 
   std::vector<asset::Material> materials;
   for (const auto& material : obj.materials) {
+    asset::Material mat = {/* clang-format off */
+        .name = material.name,
 
-    std::optional<size_t> diffuseTexture = std::nullopt;
+        .ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]),
+        .diffuse = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]),
+        .specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]),
+        .shininess = material.shininess,
+        .dissolve = material.dissolve,
+
+        .diffuseTexture = std::nullopt
+    };/* clang-format on */
 
     if (!material.diffuse_texname.empty()) {
       auto unresolvedPath = std::filesystem::path(material.diffuse_texname);
@@ -54,20 +63,8 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
         return std::unexpected{std::format("Failed to load texture: {}", asset.error())};
       }
 
-      diffuseTexture = asset->textureId;
+      mat.diffuseTexture = asset->textureId;
     }
-
-    asset::Material mat = {/* clang-format off */
-        .name = material.name,
-
-        .ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]),
-        .diffuse = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]),
-        .specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]),
-        .shininess = material.shininess,
-        .dissolve = material.dissolve,
-
-        .diffuseTexture = diffuseTexture
-    };/* clang-format on */
 
     materials.push_back(mat);
   }

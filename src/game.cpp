@@ -15,6 +15,7 @@
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"
 #include "render/model/3d/cube.hpp"
+#include "render/model/3d/sphere.hpp"
 
 #include "util/error.hpp"
 
@@ -40,6 +41,22 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::Model3D>(ent, model);
   }
 
+  // { // water bottle
+  //   auto asset = asset::loader::Gltf::tryFromFile("resources/WaterBottle.glb", *renderer->textureManager3D);
+  //   if (!asset.has_value()) {
+  //     return std::unexpected{std::format("Failed to load bottle asset: {}", util::error::indent(asset.error()))};
+  //   }
+
+  //   auto model = renderer->createAsset3D(asset.value());
+
+  //   auto matrix = glm::mat4(1.0f);
+  //   matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -1.0f));
+
+  //   auto ent = registry->create();
+  //   registry->emplace<components::GlobalTransform>(ent, matrix);
+  //   registry->emplace<components::Model3D>(ent, model);
+  // }
+
   { // main light
     auto matrix = glm::mat4(1.0f);
     matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 5.0f));
@@ -49,13 +66,21 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::Light>(ent, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 1000.0f);
   }
 
-  auto redMaterial = std::make_shared<material::Block3D>();
-  redMaterial->ambient = glm::vec3(0.2f, 0.05f, 0.05f);
-  redMaterial->diffuse = glm::vec3(0.8f, 0.2f, 0.2f);
-  redMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
-  redMaterial->shininess = 64.0f;
-  redMaterial->dissolve = 1.0f;
-  redMaterial->diffuseTextureId = -1;
+  auto blueMaterial = std::make_shared<material::Block3D>();
+  blueMaterial->ambient = glm::vec3(0.05f);
+  blueMaterial->diffuse = glm::vec3(0.2f, 0.2f, 0.6f);
+  blueMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+  blueMaterial->shininess = 64.0f;
+  blueMaterial->dissolve = 1.0f;
+  blueMaterial->diffuseTextureId = -1;
+
+  auto metallicRedMaterial = std::make_shared<material::Block3D>();
+  metallicRedMaterial->ambient = glm::vec3(0.05f);
+  metallicRedMaterial->diffuse = glm::vec3(0.8f, 0.1f, 0.1f);
+  metallicRedMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+  metallicRedMaterial->shininess = 128.0f; // Higher shininess for metallic look
+  metallicRedMaterial->dissolve = 1.0f;
+  metallicRedMaterial->diffuseTextureId = -1;
 
   { // bunny
     auto asset = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
@@ -73,7 +98,7 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::Model3D>(ent, model);
   }
 
-  { // red cube
+  { // blue cube
     auto model = std::make_shared<model::Cube>(glm::vec3(1.0f));
 
     auto matrix = glm::mat4(1.0f);
@@ -83,7 +108,19 @@ std::expected<bool, std::string> Game::setupScene() {
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Model3D>(ent, model);
-    registry->emplace<components::Material3D>(ent, redMaterial);
+    registry->emplace<components::Material3D>(ent, blueMaterial);
+  }
+
+  { // red sphere
+    auto model = std::make_shared<model::Sphere>(0.5f, 4);
+
+    auto matrix = glm::mat4(1.0f);
+    matrix = glm::translate(matrix, glm::vec3(3.0f, 0.0f, 0.5f)); // Position it to the right of the cube
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Model3D>(ent, model);
+    registry->emplace<components::Material3D>(ent, metallicRedMaterial); // Use the red metallic material
   }
 
   { // textured obj cube
@@ -110,7 +147,7 @@ std::expected<bool, std::string> Game::setupScene() {
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Model3D>(ent, model);
-    registry->emplace<components::Material3D>(ent, redMaterial);
+    registry->emplace<components::Material3D>(ent, blueMaterial);
   }
 
   // /* clang-format off */

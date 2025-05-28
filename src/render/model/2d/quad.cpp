@@ -7,11 +7,11 @@ model::Quad::Quad(Vertex2D q1, Vertex2D q2, Vertex2D q3, Vertex2D q4) {
   {
     GLuint glAttrSlot1 = 0;
 
-    glVertexArrayAttribFormat(glAttributesIdx, 0, 3, GL_FLOAT, GL_FALSE, 0);
+    glVertexArrayAttribFormat(glAttributesIdx, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex2D, pos));
     glEnableVertexArrayAttrib(glAttributesIdx, 0);
     glVertexArrayAttribBinding(glAttributesIdx, 0, glAttrSlot1);
 
-    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex2D, uv) - offsetof(Vertex2D, pos));
+    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex2D, uv));
     glEnableVertexArrayAttrib(glAttributesIdx, 1);
     glVertexArrayAttribBinding(glAttributesIdx, 1, glAttrSlot1);
 

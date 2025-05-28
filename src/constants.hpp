@@ -14,10 +14,10 @@ namespace constants {
 
   constexpr asset::Material DEFAULT_MATERIAL_3D = {/* clang-format off */
     .name = "DefaultMaterial",
-    .ambient = glm::vec3(0.2f, 0.9f, 0.2f),
+    .ambient = glm::vec3(0.2f, 0.2f, 0.2f),
     .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
     .specular = glm::vec3(1.0f, 1.0f, 1.0f),
-    .shininess = 32.0f,
+    .shininess = 128.0f,
     .dissolve = 1.0f,
     .diffuseTexture = std::nullopt
   }; /* clang-format on */
