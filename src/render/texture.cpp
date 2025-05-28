@@ -87,6 +87,8 @@ std::expected<size_t, std::string> texture::Manager::create(
     data.data()
   ); /* clang-format on */
 
+  textureSlots.push_back(true);
+
   return textureId;
 }
 
