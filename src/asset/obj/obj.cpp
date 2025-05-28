@@ -12,7 +12,7 @@
 #include "util/error.hpp"
 
 static glm::vec3 convertFromObj(float x, float y, float z) noexcept {
-  return glm::vec3(x, z, y);
+  return glm::vec3(x, -z, y);
 };
 
 /* clang-format off */
