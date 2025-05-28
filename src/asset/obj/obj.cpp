@@ -9,6 +9,8 @@
 #include "asset/asset.hpp"
 #include "asset/img/img.hpp"
 
+#include "util/error.hpp"
+
 static glm::vec3 convertFromObj(float x, float y, float z) noexcept {
   return glm::vec3(x, z, y);
 };
@@ -22,9 +24,9 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
 
   if (obj.error) {
     return std::unexpected{std::format(/* clang-format off */
-      "Error parsing OBJ File: '{}' (at line {})",
-      obj.error.code.message(),
-      obj.error.line_num
+      "Error parsing OBJ File (at line {}):\n\t{}",
+      obj.error.line_num,
+      util::error::indent(obj.error.code.message())
     )};/* clang-format on */
   }
 
@@ -32,9 +34,9 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
 
   if (obj.error) {
     return std::unexpected{std::format(/* clang-format off */
-      "Error triangulating OBJ File: '{}' (at line {})",
-      obj.error.code.message(),
-      obj.error.line_num
+      "Error triangulating OBJ File (at line {}):\n\t'{}'",
+      obj.error.line_num,
+      util::error::indent(obj.error.code.message())
     )};/* clang-format on */
   }
 

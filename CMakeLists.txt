@@ -46,6 +46,7 @@ add_executable(trender
     ./src/asset/obj/obj.cpp
     ./src/asset/img/img.cpp
     ./src/asset/gltf/gltf.cpp
+    ./src/util/error.cpp
 )
 
 target_include_directories(trender

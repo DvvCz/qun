@@ -1,7 +1,6 @@
 #include "game.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
-#include <print>
 #include <string>
 
 #include "components/light.hpp"
@@ -9,13 +8,14 @@
 #include "components/model.hpp"
 #include "components/transform.hpp"
 
-#include "asset/img/img.hpp"
 #include "asset/obj/obj.hpp"
 #include "asset/gltf/gltf.hpp"
 
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"
 #include "render/model/3d/cube.hpp"
+
+#include "util/error.hpp"
 
 Game::Game() {
   registry = std::make_shared<entt::registry>();
@@ -25,7 +25,7 @@ std::expected<bool, std::string> Game::setupScene() {
   { // gltf fish
     auto asset = asset::loader::Gltf::tryFromFile("resources/BarramundiFish.glb", *renderer->textureManager3D);
     if (!asset.has_value()) {
-      return std::unexpected{std::format("Failed to load GLTF asset: {}", asset.error())};
+      return std::unexpected{std::format("Failed to load GLTF asset: {}", util::error::indent(asset.error()))};
     }
 
     auto model = renderer->createAsset3D(asset.value());
@@ -68,7 +68,7 @@ std::expected<bool, std::string> Game::setupScene() {
   { // bunny
     auto asset = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
     if (!asset.has_value()) {
-      return std::unexpected{std::format("Failed to load bunny asset: {}", asset.error())};
+      return std::unexpected{std::format("Failed to load bunny asset: {}", util::error::indent(asset.error()))};
     }
 
     auto model = renderer->createAsset3D(asset.value());
@@ -93,6 +93,22 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Model3D>(ent, model);
     registry->emplace<components::Material3D>(ent, redMaterial);
+  }
+
+  { // textured obj cube
+    auto asset = asset::loader::Obj::tryFromFile("resources/cube-tex.obj", *renderer->textureManager3D);
+    if (!asset.has_value()) {
+      return std::unexpected{std::format("Failed to load textured cube asset:\n\t{}", util::error::indent(asset.error()))};
+    }
+
+    auto model = renderer->createAsset3D(asset.value());
+
+    auto matrix = glm::mat4(1.0f);
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -2.0f, 0.5f));
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Model3D>(ent, model);
   }
 
   { // baseplate
