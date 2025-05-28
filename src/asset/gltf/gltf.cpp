@@ -13,6 +13,8 @@
 
 #include "render/texture.hpp"
 
+#include "constants.hpp"
+
 static glm::vec3 convertFromGLTF(float x, float y, float z) noexcept {
   return glm::vec3(x, -z, y);
 };
@@ -186,6 +188,9 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
       // Find normal attribute
       auto* normalIt = primitive.findAttribute("NORMAL");
 
+      // Find tangent attribute
+      auto* tangentIt = primitive.findAttribute("TANGENT");
+
       // Find texture coordinate attribute
       auto* texcoordIt = primitive.findAttribute("TEXCOORD_0");
 
@@ -209,9 +214,24 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
               });
         }
       } else {
-        // Generate default normals (pointing up in Z-up coordinate system)
         for (auto& vertex : primitiveVertices) {
-          vertex.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+          vertex.normal = constants::WORLD_UP;
+        }
+      }
+
+      // Extract tangents if available
+      if (tangentIt != primitive.attributes.end()) {
+        auto& tangentAccessor = asset.accessors[tangentIt->accessorIndex];
+        if (tangentAccessor.bufferViewIndex.has_value()) {
+          fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec4>(
+              asset, tangentAccessor, [&](fastgltf::math::fvec4 tangent, std::size_t idx) {
+                primitiveVertices[idx].tangent = glm::normalize(convertFromGLTF(tangent.x(), tangent.y(), tangent.z()));
+              });
+        }
+      } else {
+        // Generate default tangents (pointing along X-axis in Z-up coordinate system)
+        for (auto& vertex : primitiveVertices) {
+          vertex.tangent = constants::WORLD_FORWARD;
         }
       }
 
@@ -224,7 +244,6 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
               [&](fastgltf::math::fvec2 uv, std::size_t idx) { primitiveVertices[idx].uv = glm::vec2(uv.x(), uv.y()); });
         }
       } else {
-        // Set default UVs
         for (auto& vertex : primitiveVertices) {
           vertex.uv = glm::vec2(0.0f, 0.0f);
         }

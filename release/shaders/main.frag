@@ -9,6 +9,7 @@ struct Light {
 in vec3 fragPos;
 in vec3 fragNormal;
 in vec2 fragUV;
+in mat3 fragTBN;
 
 layout(location = 0) uniform mat4x4 projMatrix;
 layout(location = 1) uniform mat4x4 viewMatrix;
@@ -38,17 +39,17 @@ out vec4 outColor;
 
 void main() {
     vec3 fragToCameraDir = normalize(cameraPos - fragPos);
-    vec3 normal = normalize(fragNormal);
 
     vec3 ambient = vec3(1.0);
     if (diffuseTextureIdx >= 0) {
         ambient = texture(textureList, vec3(fragUV, float(diffuseTextureIdx))).rgb;
     }
 
+    vec3 normal = fragNormal;
     if (normalTextureIdx >= 0) {
         vec3 normalMap = texture(textureList, vec3(fragUV, float(normalTextureIdx))).rgb;
-        normal = normalize(normal * 2.0 - 1.0); // Convert from [0,1] to [-1,1]
-        normal = normalize(mat3(modelMatrix) * normal); // Transform normal by model matrix
+        normalMap = normalize(normalMap * 2.0 - 1.0); // [0,1] -> [-1,1]
+        normal = normalize(fragTBN * normalMap); // tangent space to world space
     }
 
     vec3 diffuse = vec3(0.0);

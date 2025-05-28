@@ -22,6 +22,10 @@ model::Cube::Cube(glm::vec3 scale) : scale(scale) {
     glEnableVertexArrayAttrib(glAttributesIdx, 2);
     glVertexArrayAttribBinding(glAttributesIdx, 2, glAttrSlot1);
 
+    glVertexArrayAttribFormat(glAttributesIdx, 3, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, tangent));
+    glEnableVertexArrayAttrib(glAttributesIdx, 3);
+    glVertexArrayAttribBinding(glAttributesIdx, 3, glAttrSlot1);
+
     glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx);
   }
 

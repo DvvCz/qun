@@ -37,7 +37,6 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   cameraPos = constants::WORLD_ORIGIN;
   cameraFront = constants::WORLD_FORWARD;
 
-  // Use the fixed 16:9 aspect ratio instead of calculating from window size
   projMatrix = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.1f, 100.0f);
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
 
