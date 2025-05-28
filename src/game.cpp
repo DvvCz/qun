@@ -57,15 +57,6 @@ std::expected<bool, std::string> Game::setupScene() {
   redMaterial->dissolve = 1.0f;
   redMaterial->diffuseTextureId = -1;
 
-  // Create a shiny material for the bunny
-  auto bunnyMaterial = std::make_shared<material::Block3D>();
-  bunnyMaterial->ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-  bunnyMaterial->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-  bunnyMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
-  bunnyMaterial->shininess = 32.0f;
-  bunnyMaterial->dissolve = 1.0f;
-  bunnyMaterial->diffuseTextureId = -1;
-
   { // bunny
     auto asset = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
     if (!asset.has_value()) {
@@ -80,7 +71,6 @@ std::expected<bool, std::string> Game::setupScene() {
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Model3D>(ent, model);
-    registry->emplace<components::Material3D>(ent, bunnyMaterial);
   }
 
   { // red cube
