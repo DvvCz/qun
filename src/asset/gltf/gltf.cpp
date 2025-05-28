@@ -181,10 +181,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
         if (normalAccessor.bufferViewIndex.has_value()) {
           fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(
               asset, normalAccessor, [&](fastgltf::math::fvec3 normal, std::size_t idx) {
-                // Convert from glTF Y-up to renderer Z-up coordinate system
-                glm::vec3 converted_normal = convertFromGLTF(normal.x(), normal.y(), normal.z());
-                // Normalize to ensure unit length after coordinate transformation
-                primitiveVertices[idx].normal = glm::normalize(converted_normal);
+                primitiveVertices[idx].normal = glm::normalize(convertFromGLTF(normal.x(), normal.y(), normal.z()));
               });
         }
       } else {
