@@ -172,6 +172,7 @@ void Renderer::draw3D() {
 
   uniformProjMatrix3D.set(projMatrix);
   uniformViewMatrix3D.set(viewMatrix);
+  uniformCameraPos3D.set(cameraPos);
 
   auto lightEnts = registry->view<components::GlobalTransform, components::Light>();
   lightBlock.lightCount = 0;
@@ -229,18 +230,10 @@ void Renderer::drawFrame() {
 void Renderer::setCameraPos(const glm::vec3& cameraPos) noexcept {
   this->cameraPos = cameraPos;
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
-
-  shader3D->use();
-  uniformViewMatrix3D.set(viewMatrix);
-  uniformCameraPos3D.set(cameraPos);
 }
 
 void Renderer::setCameraDir(const glm::vec3& cameraDir) noexcept {
-  cameraFront = cameraDir;
-
-  shader3D->use();
-  viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
-  uniformViewMatrix3D.set(viewMatrix);
+  this->cameraFront = cameraDir;
 }
 
 const glm::vec3& Renderer::getCameraPos() const noexcept {
