@@ -34,28 +34,13 @@ std::expected<bool, std::string> Game::setupScene() {
 
     auto matrix = glm::mat4(1.0f);
     matrix = glm::scale(matrix, glm::vec3(5.0f));
-    matrix = glm::translate(matrix, glm::vec3(0.0f, -1.0f, 1.0f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -0.25f, 0.1f));
+    matrix = glm::rotate(matrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Model3D>(ent, model);
   }
-
-  // { // water bottle
-  //   auto asset = asset::loader::Gltf::tryFromFile("resources/WaterBottle.glb", *renderer->textureManager3D);
-  //   if (!asset.has_value()) {
-  //     return std::unexpected{std::format("Failed to load bottle asset: {}", util::error::indent(asset.error()))};
-  //   }
-
-  //   auto model = renderer->createAsset3D(asset.value());
-
-  //   auto matrix = glm::mat4(1.0f);
-  //   matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -1.0f));
-
-  //   auto ent = registry->create();
-  //   registry->emplace<components::GlobalTransform>(ent, matrix);
-  //   registry->emplace<components::Model3D>(ent, model);
-  // }
 
   { // main light
     auto matrix = glm::mat4(1.0f);
@@ -65,6 +50,14 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Light>(ent, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 1000.0f);
   }
+
+  auto greenMaterial = std::make_shared<material::Block3D>();
+  greenMaterial->ambient = glm::vec3(0.05f);
+  greenMaterial->diffuse = glm::vec3(0.2f, 0.6f, 0.2f);
+  greenMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
+  greenMaterial->shininess = 64.0f;
+  greenMaterial->dissolve = 1.0f;
+  greenMaterial->diffuseTextureId = -1;
 
   auto blueMaterial = std::make_shared<material::Block3D>();
   blueMaterial->ambient = glm::vec3(0.05f);
@@ -123,22 +116,6 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::Material3D>(ent, metallicRedMaterial); // Use the red metallic material
   }
 
-  { // textured obj cube
-    auto asset = asset::loader::Obj::tryFromFile("resources/cube-tex.obj", *renderer->textureManager3D);
-    if (!asset.has_value()) {
-      return std::unexpected{std::format("Failed to load textured cube asset:\n\t{}", util::error::indent(asset.error()))};
-    }
-
-    auto model = renderer->createAsset3D(asset.value());
-
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(0.0f, -2.0f, 0.5f));
-
-    auto ent = registry->create();
-    registry->emplace<components::GlobalTransform>(ent, matrix);
-    registry->emplace<components::Model3D>(ent, model);
-  }
-
   { // baseplate
     auto model = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
 
@@ -147,7 +124,7 @@ std::expected<bool, std::string> Game::setupScene() {
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Model3D>(ent, model);
-    registry->emplace<components::Material3D>(ent, blueMaterial);
+    registry->emplace<components::Material3D>(ent, greenMaterial);
   }
 
   // /* clang-format off */

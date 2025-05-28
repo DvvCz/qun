@@ -62,7 +62,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
     asset::Material mat = {/* clang-format off */
         .name = std::string(gltfMaterial.name),
         .ambient = baseColorFactor * 0.2f,
-        .diffuse = baseColorFactor * 0.8f,
+        .diffuse = baseColorFactor * 0.4f,
         .specular = glm::vec3(0.5f),
         .shininess = std::max(1.0f, 1 / std::pow(gltfMaterial.pbrData.roughnessFactor, 2.0f)),
         .dissolve = baseColorAlpha,
