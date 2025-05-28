@@ -116,6 +116,23 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::Material3D>(ent, metallicRedMaterial); // Use the red metallic material
   }
 
+  { // flight helmet
+    auto asset = asset::loader::Gltf::tryFromFile("resources/FlightHelmet/FlightHelmet.gltf", *renderer->textureManager3D);
+    if (!asset.has_value()) {
+      return std::unexpected{std::format("Failed to load GLTF asset: {}", util::error::indent(asset.error()))};
+    }
+
+    auto model = renderer->createAsset3D(asset.value());
+
+    auto matrix = glm::mat4(1.0f);
+    matrix = glm::scale(matrix, glm::vec3(0.5f));
+    matrix = glm::translate(matrix, glm::vec3(-2.0f, 0.0f, 0.5f));
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Model3D>(ent, model);
+  }
+
   { // baseplate
     auto model = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
 

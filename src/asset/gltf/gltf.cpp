@@ -103,7 +103,9 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
         switch (bufferData.mimeType) {
         case fastgltf::MimeType::PNG:
         case fastgltf::MimeType::JPEG: {
-          std::vector<std::byte> imageData(arrayData.bytes.cbegin(), arrayData.bytes.cend());
+          auto dataStart = arrayData.bytes.cbegin() + bufferView.byteOffset;
+          auto dataEnd = dataStart + bufferView.byteLength;
+          std::vector<std::byte> imageData(dataStart, dataEnd);
 
           auto out = asset::loader::Img::tryFromData(imageData, texMan);
           if (!out.has_value()) {
