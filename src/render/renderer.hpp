@@ -35,7 +35,6 @@ public:
 
   // 16:9 aspect ratio constant
   static constexpr float ASPECT_RATIO = 16.0f / 9.0f;
-  const glm::vec3 upDir = glm::vec3(0.0f, 0.0f, 1.0f);
 
   void drawFrame();
 

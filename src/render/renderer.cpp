@@ -14,6 +14,8 @@
 #include "components/model.hpp"
 #include "components/light.hpp"
 
+#include "constants.hpp"
+
 Renderer::Renderer(const std::shared_ptr<Window>& window,
                    const std::shared_ptr<entt::registry>& registry) /* clang-format off */
   : window(window), registry(registry),
@@ -32,12 +34,12 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   // 2d - blocks
   uniformMaterialBlock2D(0)
 { /* clang-format on */
-  cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
-  cameraFront = glm::vec3(1.0f, 0.0f, 0.0f);
+  cameraPos = constants::WORLD_ORIGIN;
+  cameraFront = constants::WORLD_FORWARD;
 
   // Use the fixed 16:9 aspect ratio instead of calculating from window size
   projMatrix = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.1f, 100.0f);
-  viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, upDir);
+  viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
 
   modelMatrix = glm::mat4(1.0f);
   modelMatrix = glm::translate(modelMatrix, glm::vec3(5.0f, 0.0f, 0.0f));
@@ -226,7 +228,7 @@ void Renderer::drawFrame() {
 
 void Renderer::setCameraPos(const glm::vec3& cameraPos) noexcept {
   this->cameraPos = cameraPos;
-  viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, upDir);
+  viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
 
   shader3D->use();
   uniformViewMatrix3D.set(viewMatrix);
@@ -237,7 +239,7 @@ void Renderer::setCameraDir(const glm::vec3& cameraDir) noexcept {
   cameraFront = cameraDir;
 
   shader3D->use();
-  viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, upDir);
+  viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
   uniformViewMatrix3D.set(viewMatrix);
 }
 

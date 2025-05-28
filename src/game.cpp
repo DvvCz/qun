@@ -22,27 +22,31 @@ Game::Game() {
 }
 
 std::expected<bool, std::string> Game::setupScene() {
-  auto boxAsset = asset::loader::Gltf::tryFromFile("resources/BarramundiFish.glb", *renderer->textureManager3D);
-  if (!boxAsset.has_value()) {
-    return std::unexpected{std::format("Failed to load GLTF asset: {}", boxAsset.error())};
+  { // gltf fish
+    auto asset = asset::loader::Gltf::tryFromFile("resources/BarramundiFish.glb", *renderer->textureManager3D);
+    if (!asset.has_value()) {
+      return std::unexpected{std::format("Failed to load GLTF asset: {}", asset.error())};
+    }
+
+    auto model = renderer->createAsset3D(asset.value());
+
+    auto matrix = glm::mat4(1.0f);
+    matrix = glm::scale(matrix, glm::vec3(5.0f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, -1.0f, 1.0f));
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Model3D>(ent, model);
   }
 
-  std::println("Loaded GLTF asset with {} vertices and {} shapes", boxAsset.value().vertices.size(),
-               boxAsset.value().shapes.size());
+  { // main light
+    auto matrix = glm::mat4(1.0f);
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 5.0f));
 
-  auto boxModel = renderer->createAsset3D(boxAsset.value());
-  auto boxEnt = registry->create();
-  auto boxMatrix = glm::mat4(1.0f);
-  boxMatrix = glm::scale(boxMatrix, glm::vec3(5.0f));
-  boxMatrix = glm::translate(boxMatrix, glm::vec3(0.0f, -1.0f, 1.0f));
-  registry->emplace<components::GlobalTransform>(boxEnt, boxMatrix);
-  registry->emplace<components::Model3D>(boxEnt, boxModel);
-
-  auto mainLight = registry->create();
-  auto mainLightMatrix = glm::mat4(1.0f);
-  mainLightMatrix = glm::translate(mainLightMatrix, glm::vec3(0.0f, 0.0f, 5.0f));
-  registry->emplace<components::Light>(mainLight, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 1000.0f);
-  registry->emplace<components::GlobalTransform>(mainLight, mainLightMatrix);
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Light>(ent, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 1000.0f);
+  }
 
   auto redMaterial = std::make_shared<material::Block3D>();
   redMaterial->ambient = glm::vec3(0.2f, 0.05f, 0.05f);
@@ -61,48 +65,46 @@ std::expected<bool, std::string> Game::setupScene() {
   bunnyMaterial->dissolve = 1.0f;
   bunnyMaterial->diffuseTextureId = -1;
 
-  auto car = asset::loader::Obj::tryFromFile("resources/78717.obj", *renderer->textureManager3D);
-  if (car.has_value()) {
-    auto assetModel = renderer->createAsset3D(car.value());
+  { // bunny
+    auto asset = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
+    if (!asset.has_value()) {
+      return std::unexpected{std::format("Failed to load bunny asset: {}", asset.error())};
+    }
 
-    auto modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(-5.5f, -30.0f, -4.6f));
+    auto model = renderer->createAsset3D(asset.value());
 
-    auto ent = registry->create();
-    registry->emplace<components::GlobalTransform>(ent, modelMatrix);
-    registry->emplace<components::Model3D>(ent, assetModel);
-    registry->emplace<components::Material3D>(ent, redMaterial);
-  }
-
-  auto out = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
-  if (out.has_value()) {
-    auto assetModel = renderer->createAsset3D(out.value());
-
-    auto modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
+    auto matrix = glm::mat4(1.0f);
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 2.0f, -0.325f));
 
     auto ent = registry->create();
-    registry->emplace<components::GlobalTransform>(ent, modelMatrix);
-    registry->emplace<components::Model3D>(ent, assetModel);
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Model3D>(ent, model);
     registry->emplace<components::Material3D>(ent, bunnyMaterial);
   }
 
-  auto topCubeModel = std::make_shared<model::Cube>(glm::vec3(1.0f));
-  auto topCubeEnt = registry->create();
-  auto topCubeMatrix = glm::mat4(1.0f);
-  topCubeMatrix = glm::rotate(topCubeMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-  registry->emplace<components::GlobalTransform>(topCubeEnt, topCubeMatrix);
-  registry->emplace<components::Model3D>(topCubeEnt, topCubeModel);
-  registry->emplace<components::Material3D>(topCubeEnt, redMaterial);
+  { // red cube
+    auto model = std::make_shared<model::Cube>(glm::vec3(1.0f));
 
-  // add a cube to draw
-  auto floorModel = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
-  auto floorEnt = registry->create();
-  auto floorMatrix = glm::mat4(1.0f);
-  registry->emplace<components::GlobalTransform>(floorEnt, floorMatrix);
-  registry->emplace<components::Model3D>(floorEnt, floorModel);
-  registry->emplace<components::Material3D>(floorEnt, redMaterial);
+    auto matrix = glm::mat4(1.0f);
+    matrix = glm::rotate(matrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 0.5f));
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Model3D>(ent, model);
+    registry->emplace<components::Material3D>(ent, redMaterial);
+  }
+
+  { // baseplate
+    auto model = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
+
+    auto matrix = glm::mat4(1.0f);
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Model3D>(ent, model);
+    registry->emplace<components::Material3D>(ent, redMaterial);
+  }
 
   // /* clang-format off */
   // auto basequad = std::make_shared<model::Quad>(
@@ -153,7 +155,7 @@ std::expected<bool, std::string> Game::start() {
   // Hide cursor for first-person camera
   glfwSetInputMode(window->getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-  renderer->setCameraPos(glm::vec3(-5.0f, 0.0f, 0.0f));
+  renderer->setCameraPos(glm::vec3(-5.0f, 0.0f, 0.5f));
 
   while (!window->shouldClose()) {
     // Update
