@@ -21,6 +21,7 @@ namespace asset {
     float dissolve;
 
     std::optional<size_t> diffuseTexture;
+    std::optional<size_t> normalTexture;
   };
 
   struct MaterialGroup {

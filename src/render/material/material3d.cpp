@@ -18,7 +18,8 @@ void material::Manager3D::setMaterial(const asset::Material& material) noexcept 
     .specular = material.specular,
     .shininess = material.shininess,
     .dissolve = material.dissolve,
-    .diffuseTextureId = material.diffuseTexture.has_value() ? static_cast<int>(material.diffuseTexture.value()) : -1
+    .diffuseTextureId = material.diffuseTexture.has_value() ? static_cast<int>(material.diffuseTexture.value()) : -1,
+    .normalTextureId = material.normalTexture.has_value() ? static_cast<int>(material.normalTexture.value()) : -1
   };/* clang-format on */
 
   uniformMaterialBlock.set(newMaterial);

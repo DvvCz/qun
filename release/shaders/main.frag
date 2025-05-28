@@ -31,6 +31,7 @@ layout(std140, binding = 1) uniform MaterialBlock {
     float materialShininess;
     float materialDissolve;
     int diffuseTextureIdx;
+    int normalTextureIdx;
 };
 
 out vec4 outColor;
@@ -42,6 +43,12 @@ void main() {
     vec3 ambient = vec3(1.0);
     if (diffuseTextureIdx >= 0) {
         ambient = texture(textureList, vec3(fragUV, float(diffuseTextureIdx))).rgb;
+    }
+
+    if (normalTextureIdx >= 0) {
+        vec3 normalMap = texture(textureList, vec3(fragUV, float(normalTextureIdx))).rgb;
+        normal = normalize(normal * 2.0 - 1.0); // Convert from [0,1] to [-1,1]
+        normal = normalize(mat3(modelMatrix) * normal); // Transform normal by model matrix
     }
 
     vec3 diffuse = vec3(0.0);

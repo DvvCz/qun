@@ -14,7 +14,8 @@ namespace material {
     float dissolve;
 
     // -1 for no texture
-    int diffuseTextureId;
+    int diffuseTextureId = -1;
+    int normalTextureId = -1;
   };
 
   class Manager3D {

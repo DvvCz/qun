@@ -19,6 +19,7 @@ namespace constants {
     .specular = glm::vec3(1.0f, 1.0f, 1.0f),
     .shininess = 128.0f,
     .dissolve = 1.0f,
-    .diffuseTexture = std::nullopt
+    .diffuseTexture = std::nullopt,
+    .normalTexture = std::nullopt
   }; /* clang-format on */
 };
