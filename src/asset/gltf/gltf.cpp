@@ -13,7 +13,7 @@
 #include "render/texture.hpp"
 
 static glm::vec3 convertFromGLTF(float x, float y, float z) noexcept {
-  return glm::vec3(x, z, -y);
+  return glm::vec3(x, z, y);
 };
 
 /* clang-format off */
