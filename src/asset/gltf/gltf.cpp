@@ -51,8 +51,6 @@ static std::expected<size_t, std::string> tryCreateTexture(
         return std::unexpected{out.error()};
       }
 
-      std::println("Loaded texture {}", fastgltf::getMimeTypeString(bufferData.mimeType));
-
       return out.value().textureId;
     }
     default:

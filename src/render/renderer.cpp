@@ -128,7 +128,8 @@ material::Block3D defaultMaterial3D = {/* clang-format off */
   .specular = glm::vec3(1.0f, 1.0f, 1.0f),
   .shininess = 32.0f,
   .dissolve = 1.0f,
-  .diffuseTextureId = -1
+  .diffuseTextureId = -1,
+  .normalTextureId = -1
 };/* clang-format on */
 
 material::Block2D defaultMaterial2D = {/* clang-format off */

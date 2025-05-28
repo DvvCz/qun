@@ -51,29 +51,26 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::Light>(ent, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 1000.0f);
   }
 
-  auto greenMaterial = std::make_shared<material::Block3D>();
+  auto greenMaterial = std::make_shared<asset::Material>();
   greenMaterial->ambient = glm::vec3(0.05f);
   greenMaterial->diffuse = glm::vec3(0.2f, 0.6f, 0.2f);
   greenMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
   greenMaterial->shininess = 64.0f;
   greenMaterial->dissolve = 1.0f;
-  greenMaterial->diffuseTextureId = -1;
 
-  auto blueMaterial = std::make_shared<material::Block3D>();
+  auto blueMaterial = std::make_shared<asset::Material>();
   blueMaterial->ambient = glm::vec3(0.05f);
   blueMaterial->diffuse = glm::vec3(0.2f, 0.2f, 0.6f);
   blueMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
   blueMaterial->shininess = 64.0f;
   blueMaterial->dissolve = 1.0f;
-  blueMaterial->diffuseTextureId = -1;
 
-  auto metallicRedMaterial = std::make_shared<material::Block3D>();
+  auto metallicRedMaterial = std::make_shared<asset::Material>();
   metallicRedMaterial->ambient = glm::vec3(0.05f);
   metallicRedMaterial->diffuse = glm::vec3(0.8f, 0.1f, 0.1f);
   metallicRedMaterial->specular = glm::vec3(1.0f, 1.0f, 1.0f);
   metallicRedMaterial->shininess = 128.0f; // Higher shininess for metallic look
   metallicRedMaterial->dissolve = 1.0f;
-  metallicRedMaterial->diffuseTextureId = -1;
 
   { // bunny
     auto asset = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
