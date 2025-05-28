@@ -21,7 +21,7 @@ namespace texture {
 
   class Manager {
   public:
-    Manager(uniform::Single<GLuint> sampler2DArrayUniform);
+    Manager(uniform::Single<GLint> sampler2DArrayUniform, GLint textureUnit);
     ~Manager();
 
     /* clang-format off */
@@ -39,7 +39,8 @@ namespace texture {
     std::vector<bool> textureSlots;
     GLuint sampler2DArrayIdx;
     GLuint samplerIdx;
-    uniform::Single<GLuint> sampler2DArray;
+    uniform::Single<GLint> sampler2DArray;
+    GLint textureUnit;
   };
 
 }

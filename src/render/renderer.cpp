@@ -109,8 +109,8 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
     shader2D->link();
   }
 
-  textureManager2D = std::make_shared<texture::Manager>(uniformTextureArray2D);
-  textureManager3D = std::make_shared<texture::Manager>(uniformTextureArray3D);
+  textureManager2D = std::make_shared<texture::Manager>(uniformTextureArray2D, 0);
+  textureManager3D = std::make_shared<texture::Manager>(uniformTextureArray3D, 1);
 
   // todo: probably only store the uniform in the material manager itself
   materialManager2D = std::make_shared<material::Manager2D>(uniformMaterialBlock2D, textureManager2D);

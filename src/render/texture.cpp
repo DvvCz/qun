@@ -4,7 +4,8 @@
 #define MAX_HEIGHT 2048
 #define MAX_TEXTURES 64
 
-texture::Manager::Manager(uniform::Single<GLuint> sampler2DUniform) : sampler2DArray(sampler2DUniform) {
+texture::Manager::Manager(uniform::Single<GLint> sampler2DUniform, GLint textureUnit)
+    : sampler2DArray(sampler2DUniform), textureUnit(textureUnit) {
   GLint maxLayers;
   glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
 
@@ -93,11 +94,12 @@ std::expected<size_t, std::string> texture::Manager::create(
 }
 
 void texture::Manager::bind() {
-  glBindTextureUnit(0, sampler2DArrayIdx);
-  glBindSampler(0, samplerIdx);
+  sampler2DArray.set(textureUnit);
+  glBindTextureUnit(textureUnit, sampler2DArrayIdx);
+  glBindSampler(textureUnit, samplerIdx);
 }
 
 void texture::Manager::unbind() {
-  glBindTextureUnit(0, 0);
-  glBindSampler(0, 0);
+  glBindTextureUnit(textureUnit, 0);
+  glBindSampler(textureUnit, 0);
 }

@@ -62,13 +62,13 @@ private:
   uniform::Single<glm::mat4x4> uniformProjMatrix3D;
   uniform::Single<glm::mat4x4> uniformViewMatrix3D;
   uniform::Single<glm::mat4x4> uniformModelMatrix3D;
-  uniform::Single<GLuint> uniformTextureArray3D;
+  uniform::Single<GLint> uniformTextureArray3D;
   uniform::Single<glm::vec3> uniformCameraPos3D;
   uniform::Block<LightBlock> uniformLightBlock3D;
   uniform::Block<material::Block3D> uniformMaterialBlock3D;
 
   // 2d uniforms
-  uniform::Single<GLuint> uniformTextureArray2D;
+  uniform::Single<GLint> uniformTextureArray2D;
   uniform::Block<material::Block2D> uniformMaterialBlock2D;
 
   glm::mat4x4 projMatrix;
