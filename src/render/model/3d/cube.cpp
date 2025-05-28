@@ -8,19 +8,20 @@ model::Cube::Cube(glm::vec3 scale) : scale(scale) {
   {
     GLuint glAttrSlot1 = 0;
 
+    glVertexArrayVertexBuffer(glAttributesIdx, glAttrSlot1, glBufferIdx, 0, sizeof(Vertex3D));
+
     glVertexArrayAttribFormat(glAttributesIdx, 0, 3, GL_FLOAT, GL_FALSE, 0);
     glEnableVertexArrayAttrib(glAttributesIdx, 0);
     glVertexArrayAttribBinding(glAttributesIdx, 0, glAttrSlot1);
 
-    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, normal) - offsetof(Vertex3D, pos));
+    glVertexArrayAttribFormat(glAttributesIdx, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, normal));
     glEnableVertexArrayAttrib(glAttributesIdx, 1);
     glVertexArrayAttribBinding(glAttributesIdx, 1, glAttrSlot1);
 
-    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, uv) - offsetof(Vertex3D, normal));
+    glVertexArrayAttribFormat(glAttributesIdx, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex3D, uv));
     glEnableVertexArrayAttrib(glAttributesIdx, 2);
     glVertexArrayAttribBinding(glAttributesIdx, 2, glAttrSlot1);
 
-    glVertexArrayVertexBuffer(glAttributesIdx, glAttrSlot1, glBufferIdx, 0, sizeof(Vertex3D));
     glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx);
   }
 

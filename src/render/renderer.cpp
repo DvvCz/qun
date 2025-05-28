@@ -136,12 +136,12 @@ material::Block2D defaultMaterial2D = {/* clang-format off */
 };/* clang-format on */
 
 void Renderer::draw2D() {
-  textureManager2D->bind();
-
   shader2D->use();
 #ifdef SHADER_HOTRELOADING
   shader2D->checkForHotReload();
 #endif
+
+  textureManager2D->bind();
 
   auto ents2d = registry->view<components::GlobalTransform, components::Model2D>();
   for (const auto ent : ents2d) {
@@ -163,12 +163,12 @@ void Renderer::draw2D() {
 }
 
 void Renderer::draw3D() {
-  textureManager3D->bind();
-
   shader3D->use();
 #ifdef SHADER_HOTRELOADING
   shader3D->checkForHotReload();
 #endif
+
+  textureManager3D->bind();
 
   uniformProjMatrix3D.set(projMatrix);
   uniformViewMatrix3D.set(viewMatrix);
