@@ -231,19 +231,26 @@ std::expected<bool, std::string> Game::start() {
       // Movement relative to camera direction
       glm::vec3 cameraPos = renderer->getCameraPos();
       float velocity = cameraSpeed * deltaTime;
-      float shiftMul = input::Keyboard::isCurrentlyHeld(input::Key::LeftShift) ? 2.0f : 1.0f;
+
+      float modifier = 1.0;
+      if (input::Keyboard::isCurrentlyHeld(input::Key::LeftControl)) {
+        modifier *= 0.5f;
+      }
+      if (input::Keyboard::isCurrentlyHeld(input::Key::LeftShift)) {
+        modifier *= 2.0f;
+      }
 
       if (input::Keyboard::isCurrentlyHeld(input::Key::W)) {
-        cameraPos += cameraFront * velocity * shiftMul;
+        cameraPos += cameraFront * velocity * modifier;
       }
       if (input::Keyboard::isCurrentlyHeld(input::Key::S)) {
-        cameraPos -= cameraFront * velocity * shiftMul;
+        cameraPos -= cameraFront * velocity * modifier;
       }
       if (input::Keyboard::isCurrentlyHeld(input::Key::A)) {
-        cameraPos -= cameraRight * velocity * shiftMul;
+        cameraPos -= cameraRight * velocity * modifier;
       }
       if (input::Keyboard::isCurrentlyHeld(input::Key::D)) {
-        cameraPos += cameraRight * velocity * shiftMul;
+        cameraPos += cameraRight * velocity * modifier;
       }
 
       // Update camera position and direction
