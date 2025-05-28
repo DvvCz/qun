@@ -56,17 +56,17 @@ void main() {
     vec3 specular = vec3(0.0);
 
     for (uint i = 0; i < lightCount; i++) {
-        // Calculate light direction and distance
         vec3 lightToFrag = fragPos - lights[i].position;
-        vec3 lightDir = -normalize(lightToFrag);
+        vec3 lightToFragDir = normalize(lightToFrag);
+        vec3 fragToLightDir = -lightToFragDir;
 
         // Diffuse calculation
-        float diff = max(dot(normal, lightDir), 0.0);
+        float diff = max(dot(normal, fragToLightDir), 0.0);
 
         // Specular calculation - only calculate if light is hitting the front face
         float spec = 0.0;
         if (diff > 0.0) {
-            vec3 reflectDir = reflect(-lightDir, normal);
+            vec3 reflectDir = reflect(lightToFragDir, normal);
             spec = pow(max(dot(fragToCameraDir, reflectDir), 0.0), materialShininess);
         }
 

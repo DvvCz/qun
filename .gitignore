@@ -4,3 +4,21 @@ resources
 
 release/*
 !release/shaders
+
+# Assets explicitly not ignored are public domain
+!release/resources
+release/resources/*
+
+# Allow all attribution
+!release/resources/*.attribution.md
+
+# GLTF
+!release/resources/FlightHelmet
+
+# GLB
+!release/resources/BarramundiFish.glb
+!release/resources/DragonAttenuation.glb
+!release/resources/NormalTangentTest.glb
+
+# OBJ
+!release/resources/Bunny.obj

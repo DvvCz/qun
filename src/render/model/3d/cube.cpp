@@ -1,4 +1,5 @@
 #include "cube.hpp"
+#include "constants.hpp"
 
 model::Cube::Cube(glm::vec3 scale) : scale(scale) {
   glCreateVertexArrays(1, &glAttributesIdx);
@@ -31,41 +32,41 @@ model::Cube::Cube(glm::vec3 scale) : scale(scale) {
 
   // Each face has its own vertices to allow for proper normals and UVs
   vertices = {/* clang-format off */
-      // Front face (Y+)
-      Vertex3D{glm::vec3(-.5f,  .5f, -.5f), glm::vec3(0, 1, 0), glm::vec2(0, 0)},
-      Vertex3D{glm::vec3( .5f,  .5f, -.5f), glm::vec3(0, 1, 0), glm::vec2(1, 0)},
-      Vertex3D{glm::vec3( .5f,  .5f,  .5f), glm::vec3(0, 1, 0), glm::vec2(1, 1)},
-      Vertex3D{glm::vec3(-.5f,  .5f,  .5f), glm::vec3(0, 1, 0), glm::vec2(0, 1)},
+      // Front face (Y+) - tangent points in +X direction
+      Vertex3D{glm::vec3(-.5f,  .5f, -.5f), glm::vec3(0, 1, 0), glm::vec2(0, 0), constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3( .5f,  .5f, -.5f), glm::vec3(0, 1, 0), glm::vec2(1, 0), constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3( .5f,  .5f,  .5f), glm::vec3(0, 1, 0), glm::vec2(1, 1), constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3(-.5f,  .5f,  .5f), glm::vec3(0, 1, 0), glm::vec2(0, 1), constants::WORLD_FORWARD},
 
-      // Back face (Y-)
-      Vertex3D{glm::vec3( .5f, -.5f, -.5f), glm::vec3(0, -1, 0), glm::vec2(0, 0)},
-      Vertex3D{glm::vec3(-.5f, -.5f, -.5f), glm::vec3(0, -1, 0), glm::vec2(1, 0)},
-      Vertex3D{glm::vec3(-.5f, -.5f,  .5f), glm::vec3(0, -1, 0), glm::vec2(1, 1)},
-      Vertex3D{glm::vec3( .5f, -.5f,  .5f), glm::vec3(0, -1, 0), glm::vec2(0, 1)},
+      // Back face (Y-) - tangent points in -X direction
+      Vertex3D{glm::vec3( .5f, -.5f, -.5f), glm::vec3(0, -1, 0), glm::vec2(0, 0), -constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3(-.5f, -.5f, -.5f), glm::vec3(0, -1, 0), glm::vec2(1, 0), -constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3(-.5f, -.5f,  .5f), glm::vec3(0, -1, 0), glm::vec2(1, 1), -constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3( .5f, -.5f,  .5f), glm::vec3(0, -1, 0), glm::vec2(0, 1), -constants::WORLD_FORWARD},
 
-      // Left face (X-)
-      Vertex3D{glm::vec3(-.5f, -.5f, -.5f), glm::vec3(-1, 0, 0), glm::vec2(0, 0)},
-      Vertex3D{glm::vec3(-.5f,  .5f, -.5f), glm::vec3(-1, 0, 0), glm::vec2(1, 0)},
-      Vertex3D{glm::vec3(-.5f,  .5f,  .5f), glm::vec3(-1, 0, 0), glm::vec2(1, 1)},
-      Vertex3D{glm::vec3(-.5f, -.5f,  .5f), glm::vec3(-1, 0, 0), glm::vec2(0, 1)},
+      // Left face (X-) - tangent points in +Y direction
+      Vertex3D{glm::vec3(-.5f, -.5f, -.5f), glm::vec3(-1, 0, 0), glm::vec2(0, 0), constants::WORLD_RIGHT},
+      Vertex3D{glm::vec3(-.5f,  .5f, -.5f), glm::vec3(-1, 0, 0), glm::vec2(1, 0), constants::WORLD_RIGHT},
+      Vertex3D{glm::vec3(-.5f,  .5f,  .5f), glm::vec3(-1, 0, 0), glm::vec2(1, 1), constants::WORLD_RIGHT},
+      Vertex3D{glm::vec3(-.5f, -.5f,  .5f), glm::vec3(-1, 0, 0), glm::vec2(0, 1), constants::WORLD_RIGHT},
 
-      // Right face (X+)
-      Vertex3D{glm::vec3( .5f,  .5f, -.5f), glm::vec3(1, 0, 0), glm::vec2(0, 0)},
-      Vertex3D{glm::vec3( .5f, -.5f, -.5f), glm::vec3(1, 0, 0), glm::vec2(1, 0)},
-      Vertex3D{glm::vec3( .5f, -.5f,  .5f), glm::vec3(1, 0, 0), glm::vec2(1, 1)},
-      Vertex3D{glm::vec3( .5f,  .5f,  .5f), glm::vec3(1, 0, 0), glm::vec2(0, 1)},
+      // Right face (X+) - tangent points in -Y direction
+      Vertex3D{glm::vec3( .5f,  .5f, -.5f), glm::vec3(1, 0, 0), glm::vec2(0, 0), -constants::WORLD_RIGHT},
+      Vertex3D{glm::vec3( .5f, -.5f, -.5f), glm::vec3(1, 0, 0), glm::vec2(1, 0), -constants::WORLD_RIGHT},
+      Vertex3D{glm::vec3( .5f, -.5f,  .5f), glm::vec3(1, 0, 0), glm::vec2(1, 1), -constants::WORLD_RIGHT},
+      Vertex3D{glm::vec3( .5f,  .5f,  .5f), glm::vec3(1, 0, 0), glm::vec2(0, 1), -constants::WORLD_RIGHT},
 
-      // Bottom face (Z-)
-      Vertex3D{glm::vec3(-.5f, -.5f, -.5f), glm::vec3(0, 0, -1), glm::vec2(0, 0)},
-      Vertex3D{glm::vec3( .5f, -.5f, -.5f), glm::vec3(0, 0, -1), glm::vec2(1, 0)},
-      Vertex3D{glm::vec3( .5f,  .5f, -.5f), glm::vec3(0, 0, -1), glm::vec2(1, 1)},
-      Vertex3D{glm::vec3(-.5f,  .5f, -.5f), glm::vec3(0, 0, -1), glm::vec2(0, 1)},
+      // Bottom face (Z-) - tangent points in +X direction
+      Vertex3D{glm::vec3(-.5f, -.5f, -.5f), glm::vec3(0, 0, -1), glm::vec2(0, 0), constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3( .5f, -.5f, -.5f), glm::vec3(0, 0, -1), glm::vec2(1, 0), constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3( .5f,  .5f, -.5f), glm::vec3(0, 0, -1), glm::vec2(1, 1), constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3(-.5f,  .5f, -.5f), glm::vec3(0, 0, -1), glm::vec2(0, 1), constants::WORLD_FORWARD},
 
-      // Top face (Z+)
-      Vertex3D{glm::vec3(-.5f, -.5f,  .5f), glm::vec3(0, 0, 1), glm::vec2(0, 0)},
-      Vertex3D{glm::vec3(-.5f,  .5f,  .5f), glm::vec3(0, 0, 1), glm::vec2(1, 0)},
-      Vertex3D{glm::vec3( .5f,  .5f,  .5f), glm::vec3(0, 0, 1), glm::vec2(1, 1)},
-      Vertex3D{glm::vec3( .5f, -.5f,  .5f), glm::vec3(0, 0, 1), glm::vec2(0, 1)}
+      // Top face (Z+) - tangent points in +X direction
+      Vertex3D{glm::vec3(-.5f, -.5f,  .5f), glm::vec3(0, 0, 1), glm::vec2(0, 0), constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3(-.5f,  .5f,  .5f), glm::vec3(0, 0, 1), glm::vec2(1, 0), constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3( .5f,  .5f,  .5f), glm::vec3(0, 0, 1), glm::vec2(1, 1), constants::WORLD_FORWARD},
+      Vertex3D{glm::vec3( .5f, -.5f,  .5f), glm::vec3(0, 0, 1), glm::vec2(0, 1), constants::WORLD_FORWARD}
       }; /* clang-format on */
 
   indices = {/* clang-format off */

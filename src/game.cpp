@@ -73,7 +73,7 @@ std::expected<bool, std::string> Game::setupScene() {
   metallicRedMaterial->dissolve = 1.0f;
 
   { // bunny
-    auto asset = asset::loader::Obj::tryFromFile("resources/bunny.obj", *renderer->textureManager3D);
+    auto asset = asset::loader::Obj::tryFromFile("resources/Bunny.obj", *renderer->textureManager3D);
     if (!asset.has_value()) {
       return std::unexpected{std::format("Failed to load bunny asset: {}", util::error::indent(asset.error()))};
     }
@@ -151,8 +151,26 @@ std::expected<bool, std::string> Game::setupScene() {
     registry->emplace<components::Model3D>(ent, model);
   }
 
-  { // lamborghini
-    auto asset = asset::loader::Gltf::tryFromFile("resources/lamborghini.glb", *renderer->textureManager3D);
+  // { // car concept
+  //   auto asset = asset::loader::Gltf::tryFromFile("resources/CarConcept/CarConcept.gltf", *renderer->textureManager3D);
+  //   if (!asset.has_value()) {
+  //     return std::unexpected{std::format("Failed to load car asset: {}", util::error::indent(asset.error()))};
+  //   }
+
+  //   auto model = renderer->createAsset3D(asset.value());
+
+  //   auto matrix = glm::mat4(1.0f);
+  //   matrix = glm::scale(matrix, glm::vec3(0.5f));
+  //   matrix = glm::translate(matrix, glm::vec3(18.0f, 5.0f, 1.2f));
+  //   matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate to face forward
+
+  //   auto ent = registry->create();
+  //   registry->emplace<components::GlobalTransform>(ent, matrix);
+  //   registry->emplace<components::Model3D>(ent, model);
+  // }
+
+  { // normal tangent test
+    auto asset = asset::loader::Gltf::tryFromFile("resources/NormalTangentTest.glb", *renderer->textureManager3D);
     if (!asset.has_value()) {
       return std::unexpected{std::format("Failed to load GLTF asset: {}", util::error::indent(asset.error()))};
     }
@@ -160,14 +178,31 @@ std::expected<bool, std::string> Game::setupScene() {
     auto model = renderer->createAsset3D(asset.value());
 
     auto matrix = glm::mat4(1.0f);
-    matrix = glm::scale(matrix, glm::vec3(0.5f));
-    matrix = glm::translate(matrix, glm::vec3(-18.0f, 5.0f, 1.2f));
-    matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate to face forward
+    matrix = glm::translate(matrix, glm::vec3(-10.0f, 3.0f, 1.0f));
+    matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Model3D>(ent, model);
   }
+
+  // { // lamborghini
+  //   auto asset = asset::loader::Gltf::tryFromFile("resources/lamborghini.glb", *renderer->textureManager3D);
+  //   if (!asset.has_value()) {
+  //     return std::unexpected{std::format("Failed to load GLTF asset: {}", util::error::indent(asset.error()))};
+  //   }
+
+  //   auto model = renderer->createAsset3D(asset.value());
+
+  //   auto matrix = glm::mat4(1.0f);
+  //   matrix = glm::scale(matrix, glm::vec3(0.5f));
+  //   matrix = glm::translate(matrix, glm::vec3(-18.0f, 5.0f, 1.2f));
+  //   matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate to face forward
+
+  //   auto ent = registry->create();
+  //   registry->emplace<components::GlobalTransform>(ent, matrix);
+  //   registry->emplace<components::Model3D>(ent, model);
+  // }
 
   { // baseplate
     auto model = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
