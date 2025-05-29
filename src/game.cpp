@@ -48,7 +48,7 @@ std::expected<bool, std::string> Game::setupScene() {
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
-    registry->emplace<components::Light>(ent, glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 1000.0f);
+    registry->emplace<components::Light>(ent, glm::vec3(1.0f), 2.0f, 1000.0f);
   }
 
   auto greenMaterial = std::make_shared<asset::Material>();

@@ -19,6 +19,14 @@ static glm::vec3 convertFromGLTF(float x, float y, float z) noexcept {
   return glm::vec3(x, -z, y);
 };
 
+static glm::vec3 glmVecFromParserVec(const fastgltf::math::nvec3& vec) noexcept {
+  return glm::vec3(vec[0], vec[1], vec[2]);
+}
+
+static glm::vec3 glmVecFromParserVec(const fastgltf::math::nvec4& vec) noexcept {
+  return glm::vec3(vec[0], vec[1], vec[2]);
+}
+
 /* clang-format off */
 static std::expected<size_t, std::string> tryCreateTexture(
   const fastgltf::Asset& asset,
@@ -82,7 +90,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   const std::filesystem::path& path,
   texture::Manager& texMan
 ) noexcept { /* clang-format on */
-  auto extensions = fastgltf::Extensions::KHR_materials_transmission;
+  auto extensions = fastgltf::Extensions::KHR_materials_transmission | fastgltf::Extensions::KHR_materials_specular;
 
   fastgltf::Parser parser(extensions);
 
@@ -113,22 +121,30 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
 
   // Convert materials
   for (const auto& gltfMaterial : asset.materials) {
-    glm::vec3 baseColorFactor = glm::vec3(/* clang-format off */
-      gltfMaterial.pbrData.baseColorFactor[0],
-      gltfMaterial.pbrData.baseColorFactor[1],
-      gltfMaterial.pbrData.baseColorFactor[2]
-    ); /* clang-format on */
-    float baseColorAlpha = gltfMaterial.pbrData.baseColorFactor[3];
+    // Base physically based data
+    auto& pbrInfo = gltfMaterial.pbrData;
 
-    // These were manually picked to try and replicate phong properties
-    // There's likely a better way to do this, but works for now.
+    // KHR_materials_specular
+    auto& specularInfo = gltfMaterial.specular;
+
+    glm::vec3 baseColor = glmVecFromParserVec(pbrInfo.baseColorFactor);
+    float baseAlpha = pbrInfo.baseColorFactor[3];
+
+    glm::vec3 specular;
+    if (gltfMaterial.specular) {
+      specular = glmVecFromParserVec(specularInfo->specularColorFactor) * specularInfo->specularFactor;
+    } else {
+      specular = baseColor * (pbrInfo.metallicFactor - pbrInfo.roughnessFactor * 0.5f);
+    }
+
+    // Rough manual translations from PBR to phong.
     asset::Material mat = {/* clang-format off */
         .name = std::string(gltfMaterial.name),
-        .ambient = baseColorFactor * 0.2f,
-        .diffuse = baseColorFactor * 0.4f,
-        .specular = glm::vec3(0.5f),
-        .shininess = std::max(1.0f, 1 / std::pow(gltfMaterial.pbrData.roughnessFactor, 2.0f)),
-        .dissolve = baseColorAlpha,
+        .ambient = baseColor * 0.2f,
+        .diffuse = (1.0f - pbrInfo.metallicFactor) * baseColor * 0.6f,
+        .specular = specular,
+        .shininess = std::max(1.0f, 1 / std::pow(pbrInfo.roughnessFactor, 2.0f)),
+        .dissolve = baseAlpha,
         .diffuseTexture = std::nullopt,
         .normalTexture = std::nullopt
     };/* clang-format on */
@@ -229,7 +245,6 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
               });
         }
       } else {
-        // Generate default tangents (pointing along X-axis in Z-up coordinate system)
         for (auto& vertex : primitiveVertices) {
           vertex.tangent = constants::WORLD_FORWARD;
         }
