@@ -24,7 +24,7 @@ namespace shader {
     void addShader(std::unique_ptr<Shader> shader);
 
     void link();
-    void use() const;
+    void use();
     [[nodiscard]] uint32_t getProgramIdx() const;
 
     void checkForHotReload();

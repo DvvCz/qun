@@ -19,8 +19,8 @@
         "CMAKE_EXPORT_COMPILE_COMMANDS": "YES"
       },
       "environment": {
-        "CFLAGS": "-DSHADER_HOTRELOADING=1",
-        "CXXFLAGS": "-DSHADER_HOTRELOADING=1"
+        "CFLAGS": "-DDEBUG=1,-DSHADER_HOTRELOADING=1",
+        "CXXFLAGS": "-DDEBUG=1,-DSHADER_HOTRELOADING=1"
       }
     }
   ],

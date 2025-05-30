@@ -40,7 +40,11 @@ namespace shader {
     }
   }
 
-  void Program::use() const {
+  void Program::use() {
+#ifdef SHADER_HOTRELOADING
+    this->checkForHotReload();
+#endif
+
     glUseProgram(programIdx);
   }
 

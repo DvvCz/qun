@@ -70,7 +70,10 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
 
   glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
 
+#ifdef DEBUG
   glEnable(GL_DEBUG_OUTPUT);
+#endif
+
   glEnable(GL_DEPTH_TEST);
 
   glEnable(GL_BLEND);
@@ -137,9 +140,6 @@ material::Block2D defaultMaterial2D = {/* clang-format off */
 
 void Renderer::draw2D() {
   shader2D->use();
-#ifdef SHADER_HOTRELOADING
-  shader2D->checkForHotReload();
-#endif
 
   textureManager2D->bind();
 
@@ -164,9 +164,6 @@ void Renderer::draw2D() {
 
 void Renderer::draw3D() {
   shader3D->use();
-#ifdef SHADER_HOTRELOADING
-  shader3D->checkForHotReload();
-#endif
 
   textureManager3D->bind();
 
