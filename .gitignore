@@ -19,6 +19,7 @@ release/resources/*
 !release/resources/BarramundiFish.glb
 !release/resources/DragonAttenuation.glb
 !release/resources/NormalTangentTest.glb
+!release/resources/NegativeScaleTest.glb
 
 # OBJ
 !release/resources/Bunny.obj
