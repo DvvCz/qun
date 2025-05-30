@@ -9,6 +9,9 @@
 #include <print>
 #include <variant>
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "asset/img/img.hpp"
 
 #include "render/texture.hpp"
@@ -16,7 +19,7 @@
 #include "constants.hpp"
 
 static glm::vec3 convertFromGLTF(float x, float y, float z) noexcept {
-  return glm::vec3(x, -z, y);
+  return glm::vec3(z, -x, y);
 };
 
 static glm::vec3 glmVecFromParserVec(const fastgltf::math::nvec3& vec) noexcept {
@@ -27,24 +30,85 @@ static glm::vec3 glmVecFromParserVec(const fastgltf::math::nvec4& vec) noexcept 
   return glm::vec3(vec[0], vec[1], vec[2]);
 }
 
+static glm::mat4x4 glmMatFromParserMat(const fastgltf::math::fmat4x4& mat) noexcept {
+  return glm::mat4(/* clang-format off */
+    mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+    mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+    mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+    mat[3][0], mat[3][1], mat[3][2], mat[3][3]
+  );/* clang-format on */
+}
+
+static glm::quat glmQuatFromParserQuat(const fastgltf::math::fquat& quat) noexcept {
+  // fastgltf uses w, x, y, z order for quaternions
+  return glm::quat(quat[3], quat[0], quat[1], quat[2]);
+}
+
+glm::mat4 matConvertFromGLTF = glm::mat4(/* clang-format off */
+  0.0f,  0.0f,  1.0f,  0.0f,  // X' = Z (glTF forward becomes your forward)
+  -1.0f, 0.0f,  0.0f,  0.0f,  // Y' = -X (glTF -right becomes your right)
+  0.0f,  1.0f,  0.0f,  0.0f,  // Z' = Y (glTF up becomes your up)
+  0.0f,  0.0f,  0.0f,  1.0f   // W' = W (homogeneous coordinate)
+); /* clang-format on */
+
+static glm::mat4 getNodeTransform(const fastgltf::Node& node) noexcept {
+  if (std::holds_alternative<fastgltf::math::fmat4x4>(node.transform)) {
+    auto gltfMat = glmMatFromParserMat(std::get<fastgltf::math::fmat4x4>(node.transform));
+    return gltfMat * matConvertFromGLTF;
+  } else {
+    auto& trs = std::get<fastgltf::TRS>(node.transform);
+
+    auto translation = glmVecFromParserVec(trs.translation);
+    auto rotation = glmQuatFromParserQuat(trs.rotation);
+    auto scale = glmVecFromParserVec(trs.scale);
+
+    auto gltfMat = glm::translate(glm::mat4(1.0f), translation) * glm::mat4_cast(rotation) * glm::scale(glm::mat4(1.0f), scale);
+    return gltfMat * matConvertFromGLTF;
+  }
+}
+
+// Traverse node hierarchy and apply transforms
+static glm::mat4 calculateWorldTransform(/* clang-format off */
+  const fastgltf::Asset& asset,
+  size_t nodeIndex,
+  const std::vector<glm::mat4>& nodeTransforms
+) noexcept { /* clang-format on */
+  auto currentTransform = nodeTransforms[nodeIndex];
+
+  // Find parent of this node
+  for (size_t i = 0; i < asset.nodes.size(); ++i) {
+    const auto& node = asset.nodes[i];
+    for (size_t childIndex : node.children) {
+      if (childIndex == nodeIndex) {
+        // Found parent, recursively calculate its world transform
+        return calculateWorldTransform(asset, i, nodeTransforms) * currentTransform;
+      }
+    }
+  }
+
+  // No parent found, this is a root node
+  return currentTransform;
+}
+
 // Calculate tangents for a set of vertices using Lengyel's method
 static void calculateTangents(std::vector<Vertex3D>& vertices, const std::vector<std::uint32_t>& indices) {
-  // Initialize tangents to zero
   for (auto& vertex : vertices) {
     vertex.tangent = glm::vec3(0.0f);
   }
 
   // Calculate tangents for each triangle
   for (size_t i = 0; i < indices.size(); i += 3) {
-    if (i + 2 >= indices.size())
+    if (i + 2 >= indices.size()) {
       break;
+    }
 
     std::uint32_t i0 = indices[i];
     std::uint32_t i1 = indices[i + 1];
     std::uint32_t i2 = indices[i + 2];
 
-    if (i0 >= vertices.size() || i1 >= vertices.size() || i2 >= vertices.size())
+    if (i0 >= vertices.size() || i1 >= vertices.size() || i2 >= vertices.size()) {
       continue;
+    }
 
     Vertex3D& v0 = vertices[i0];
     Vertex3D& v1 = vertices[i1];
@@ -256,7 +320,36 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   }
 
   // Process meshes
-  for (const auto& gltfMesh : asset.meshes) {
+  // First, calculate transforms for all nodes
+  std::vector<glm::mat4> nodeTransforms;
+  nodeTransforms.reserve(asset.nodes.size());
+
+  for (const auto& node : asset.nodes) {
+    nodeTransforms.push_back(getNodeTransform(node));
+  }
+
+  // Calculate world transforms for each node
+  std::vector<glm::mat4> worldTransforms;
+  worldTransforms.reserve(asset.nodes.size());
+
+  for (size_t i = 0; i < asset.nodes.size(); ++i) {
+    worldTransforms.push_back(calculateWorldTransform(asset, i, nodeTransforms));
+  }
+
+  // Process nodes that reference meshes
+  for (size_t nodeIndex = 0; nodeIndex < asset.nodes.size(); ++nodeIndex) {
+    const auto& node = asset.nodes[nodeIndex];
+
+    if (!node.meshIndex.has_value()) {
+      continue; // Node doesn't reference a mesh
+    }
+
+    const auto& gltfMesh = asset.meshes[node.meshIndex.value()];
+    const glm::mat4& worldTransform = worldTransforms[nodeIndex];
+
+    // Extract normal matrix (for transforming normals and tangents)
+    glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(worldTransform)));
+
     // Create a map of material ID to vector of indices
     std::map<int, std::vector<int>> materialGroups;
 
@@ -279,7 +372,9 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
         asset,
         positionAccessor,
         [&](fastgltf::math::fvec3 pos, std::size_t idx) {
-          primitiveVertices[idx].pos = convertFromGLTF(pos.x(), pos.y(), pos.z());
+          glm::vec3 localPos = convertFromGLTF(pos.x(), pos.y(), pos.z());
+          glm::vec4 worldPos = worldTransform * glm::vec4(localPos, 1.0f);
+          primitiveVertices[idx].pos = glm::vec3(worldPos);
         }
       ); /* clang-format on */
 
@@ -318,7 +413,9 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
           asset,
           normalAccessor,
           [&](fastgltf::math::fvec3 normal, std::size_t idx) {
-            primitiveVertices[idx].normal = glm::normalize(convertFromGLTF(normal.x(), normal.y(), normal.z()));
+            glm::vec3 localNormal = convertFromGLTF(normal.x(), normal.y(), normal.z());
+            glm::vec3 worldNormal = normalMatrix * localNormal;
+            primitiveVertices[idx].normal = glm::normalize(worldNormal);
           }
         ); /* clang-format on */
       } else {
@@ -362,7 +459,9 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
           asset,
           tangentAccessor,
           [&](fastgltf::math::fvec4 tangent, std::size_t idx) {
-            primitiveVertices[idx].tangent = glm::normalize(convertFromGLTF(tangent.x(), tangent.y(), tangent.z()));
+            glm::vec3 localTangent = convertFromGLTF(tangent.x(), tangent.y(), tangent.z());
+            glm::vec3 worldTangent = normalMatrix * localTangent;
+            primitiveVertices[idx].tangent = glm::normalize(worldTangent);
           }
         ); /* clang-format on */
       } else {
@@ -387,8 +486,18 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
       }
     }
 
+    // Create shape name from node name or mesh name
+    std::string shapeName;
+    if (!node.name.empty()) {
+      shapeName = std::string(node.name);
+    } else if (!gltfMesh.name.empty()) {
+      shapeName = std::string(gltfMesh.name);
+    } else {
+      shapeName = std::format("Shape_{}", nodeIndex);
+    }
+
     shapes.push_back(asset::Shape{/* clang-format off */
-      .name = std::string(gltfMesh.name),
+      .name = shapeName,
       .groups = std::move(groups)
     });/* clang-format on */
   }
