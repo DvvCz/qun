@@ -20,9 +20,17 @@ This is an attempt to make a simple renderer using modern OpenGL (4.5) and C++ (
 
 ## Building
 
-This project uses [`CMake`](https://cmake.org) and [`Ninja`](https://ninja-build.org).
-I recommend doing your configuration via your IDE, I use VSCode.
+1. You **must** clone the repository with submodules, as most dependencies are submodules.
 
+```sh
+git clone https://github.com/DvvCz/trender --recurse-submodules
+```
+
+2. Ensure you have system dependencies. This relies on `opengl`, `glm` and `glfw` which you may need to install development packages for on your system.
+
+3. To build, configure with [`CMake`](https://cmake.org) and build with [`Ninja`](https://ninja-build.org).
+
+I recommend doing your configuration via your IDE, I use VSCode.
 Later on there may be build artifacts served via GitHub if I get around to it.
 
 ## Troubleshooting
