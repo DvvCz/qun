@@ -55,6 +55,9 @@ add_executable(trender
 
     # Test Scene (included by default)
     ./src/scenes/test.cpp
+
+    # Need for Speed Scene (might not have assets included)
+    # ./src/scenes/nfs.cpp
 )
 
 target_include_directories(trender

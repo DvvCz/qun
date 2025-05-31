@@ -16,7 +16,12 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   const std::filesystem::path& path,
   texture::Manager& texMan
 ) noexcept { /* clang-format on */
-  auto extensions = fastgltf::Extensions::KHR_materials_transmission | fastgltf::Extensions::KHR_materials_specular;
+  /* clang-format off */
+  auto extensions =
+    fastgltf::Extensions::KHR_materials_transmission |
+    fastgltf::Extensions::KHR_materials_specular |
+    fastgltf::Extensions::KHR_texture_transform;
+  /* clang-format on */
 
   fastgltf::Parser parser(extensions);
 
