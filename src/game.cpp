@@ -144,7 +144,6 @@ std::expected<bool, std::string> Game::setupScene() {
     auto matrix = glm::mat4(1.0f);
     matrix = glm::scale(matrix, glm::vec3(0.35f));
     matrix = glm::translate(matrix, glm::vec3(18.0f, 5.0f, 0.5f));
-    matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate to face forward
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
@@ -179,7 +178,6 @@ std::expected<bool, std::string> Game::setupScene() {
 
     auto matrix = glm::mat4(1.0f);
     matrix = glm::translate(matrix, glm::vec3(-10.0f, 3.0f, 1.0f));
-    matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
@@ -197,7 +195,6 @@ std::expected<bool, std::string> Game::setupScene() {
     auto matrix = glm::mat4(1.0f);
     matrix = glm::scale(matrix, glm::vec3(0.3f));
     matrix = glm::translate(matrix, glm::vec3(10.0f, 3.0f, 1.0f));
-    matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);

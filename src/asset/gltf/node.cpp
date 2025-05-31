@@ -107,7 +107,10 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
         asset,
         positionAccessor,
         [&](fastgltf::math::fvec3 pos, std::size_t idx) {
-          primitiveVertices[idx].pos = glm::vec3(convertFromGLTF(pos.x(), pos.y(), pos.z()));
+          // todo: better names
+          auto raw = glm::vec3(pos.x(), pos.y(), pos.z());
+          auto rawResult =  glm::vec3(worldTransform * glm::vec4(raw, 1.0f));
+          primitiveVertices[idx].pos = convertFromGLTF(rawResult.x, rawResult.y, rawResult.z);
         }
       ); /* clang-format on */
 
@@ -142,13 +145,13 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
       }
 
       /* clang-format off */
-        fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(
-          asset,
-          normalAccessor,
-          [&](fastgltf::math::fvec3 normal, std::size_t idx) {
-            primitiveVertices[idx].normal = glm::normalize(convertFromGLTF(normal.x(), normal.y(), normal.z()));
-          }
-        ); /* clang-format on */
+      fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec3>(
+        asset,
+        normalAccessor,
+        [&](fastgltf::math::fvec3 normal, std::size_t idx) {
+          primitiveVertices[idx].normal = glm::normalize(convertFromGLTF(normal.x(), normal.y(), normal.z()));
+        }
+      ); /* clang-format on */
     } else {
       for (auto& vertex : primitiveVertices) {
         vertex.normal = constants::WORLD_UP;
@@ -164,13 +167,13 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
       }
 
       /* clang-format off */
-        fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(
-            asset,
-            texcoordAccessor,
-            [&](fastgltf::math::fvec2 uv, std::size_t idx) {
-              primitiveVertices[idx].uv = glm::vec2(uv.x(), uv.y());
-            }
-        ); /* clang-format on */
+      fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(
+          asset,
+          texcoordAccessor,
+          [&](fastgltf::math::fvec2 uv, std::size_t idx) {
+            primitiveVertices[idx].uv = glm::vec2(uv.x(), uv.y());
+          }
+      ); /* clang-format on */
     } else {
       for (auto& vertex : primitiveVertices) {
         vertex.uv = glm::vec2(0.0f, 0.0f);
@@ -186,15 +189,15 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
       }
 
       /* clang-format off */
-        fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec4>(
-          asset,
-          tangentAccessor,
-          [&](fastgltf::math::fvec4 tangent, std::size_t idx) {
-            glm::vec3 localTangent = convertFromGLTF(tangent.x(), tangent.y(), tangent.z());
-            glm::vec3 worldTangent = normalMatrix * localTangent;
-            primitiveVertices[idx].tangent = glm::normalize(worldTangent);
-          }
-        ); /* clang-format on */
+      fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec4>(
+        asset,
+        tangentAccessor,
+        [&](fastgltf::math::fvec4 tangent, std::size_t idx) {
+          glm::vec3 localTangent = convertFromGLTF(tangent.x(), tangent.y(), tangent.z());
+          glm::vec3 worldTangent = normalMatrix * localTangent;
+          primitiveVertices[idx].tangent = glm::normalize(worldTangent);
+        }
+      ); /* clang-format on */
     } else {
       calculateTangents(primitiveVertices, indices);
     }
