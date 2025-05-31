@@ -21,5 +21,33 @@ namespace asset::loader {
       const std::filesystem::path& path,
       texture::Manager& texMan
     ) noexcept; /* clang-format on */
+  private:
+    /* clang-format off */
+    static std::expected<std::vector<asset::Material>, std::string> tryConvertMaterials(
+      const fastgltf::Asset& asset,
+      texture::Manager& texMan
+    ) noexcept; /* clang-format on */
+
+    /* clang-format off */
+    static std::expected<size_t, std::string> tryCreateTexture(
+      const fastgltf::Asset& asset,
+      const fastgltf::Image& image,
+      texture::Manager& texMan
+    ) noexcept; /* clang-format on */
+
+    /* clang-format off */
+    static std::expected<asset::Shape, std::string> tryConvertNode(
+      fastgltf::Asset& asset,
+      fastgltf::Node& node,
+      glm::mat4x4 worldTransform,
+      std::vector<Vertex3D>& allVertices
+    ) noexcept; /* clang-format on */
+
+    static glm::vec3 convertFromGLTF(float x, float y, float z) noexcept;
+
+    static glm::vec3 glmVecAsParserVec(const fastgltf::math::nvec3& vec) noexcept;
+    static glm::vec3 glmVecAsParserVec(const fastgltf::math::nvec4& vec) noexcept;
+    static glm::mat4x4 glmMatAsParserMat(const fastgltf::math::fmat4x4& mat) noexcept;
+    static glm::quat glmQuatAsParserQuat(const fastgltf::math::fquat& quat) noexcept;
   };
 }

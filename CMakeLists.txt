@@ -46,6 +46,10 @@ add_executable(trender
     ./src/render/shader/program.cpp
     ./src/asset/obj/obj.cpp
     ./src/asset/img/img.cpp
+    ./src/asset/gltf/convert.cpp
+    ./src/asset/gltf/material.cpp
+    ./src/asset/gltf/node.cpp
+    ./src/asset/gltf/texture.cpp
     ./src/asset/gltf/gltf.cpp
     ./src/util/error.cpp
 )
