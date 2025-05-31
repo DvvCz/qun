@@ -14,12 +14,12 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
     // KHR_materials_specular
     auto& specularInfo = gltfMaterial.specular;
 
-    glm::vec3 baseColor = Gltf::glmVecAsParserVec(pbrInfo.baseColorFactor);
+    glm::vec3 baseColor = Gltf::parserVecAsGlm(pbrInfo.baseColorFactor);
     float baseAlpha = pbrInfo.baseColorFactor[3];
 
     glm::vec3 specular;
     if (gltfMaterial.specular) {
-      specular = Gltf::glmVecAsParserVec(specularInfo->specularColorFactor) * specularInfo->specularFactor;
+      specular = Gltf::parserVecAsGlm(specularInfo->specularColorFactor) * specularInfo->specularFactor;
     } else {
       specular = baseColor * (pbrInfo.metallicFactor - pbrInfo.roughnessFactor * 0.5f);
     }

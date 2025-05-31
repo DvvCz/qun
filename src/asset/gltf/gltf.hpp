@@ -46,9 +46,8 @@ namespace asset::loader {
 
     static glm::vec3 convertFromGLTF(float x, float y, float z) noexcept;
 
-    static glm::vec3 glmVecAsParserVec(const fastgltf::math::nvec3& vec) noexcept;
-    static glm::vec3 glmVecAsParserVec(const fastgltf::math::nvec4& vec) noexcept;
-    static glm::mat4x4 glmMatAsParserMat(const fastgltf::math::fmat4x4& mat) noexcept;
-    static glm::quat glmQuatAsParserQuat(const fastgltf::math::fquat& quat) noexcept;
+    static glm::vec3 parserVecAsGlm(const fastgltf::math::nvec3& vec) noexcept;
+    static glm::vec3 parserVecAsGlm(const fastgltf::math::nvec4& vec) noexcept;
+    static glm::mat4x4 parserMatAsGlm(const fastgltf::math::fmat4x4& mat) noexcept;
   };
 }

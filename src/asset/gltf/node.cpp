@@ -83,7 +83,7 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
   std::vector<Vertex3D>& allVertices
 ) noexcept { /* clang-format off */
   // Extract normal matrix (for transforming normals and tangents)
-  glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(worldTransform)));
+  glm::mat3 rawNormalMatrix = glm::transpose(glm::inverse(glm::mat3(worldTransform)));
 
   // Create a map of material ID to vector of indices
   std::map<int, std::vector<int>> materialGroups;
@@ -107,10 +107,9 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
         asset,
         positionAccessor,
         [&](fastgltf::math::fvec3 pos, std::size_t idx) {
-          // todo: better names
-          auto raw = glm::vec3(pos.x(), pos.y(), pos.z());
-          auto rawResult =  glm::vec3(worldTransform * glm::vec4(raw, 1.0f));
-          primitiveVertices[idx].pos = convertFromGLTF(rawResult.x, rawResult.y, rawResult.z);
+          auto raw = Gltf::parserVecAsGlm(pos);
+          auto rawTransform = glm::vec3(worldTransform * glm::vec4(raw, 1.0f));
+          primitiveVertices[idx].pos = convertFromGLTF(rawTransform.x, rawTransform.y, rawTransform.z);
         }
       ); /* clang-format on */
 
@@ -149,7 +148,10 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
         asset,
         normalAccessor,
         [&](fastgltf::math::fvec3 normal, std::size_t idx) {
-          primitiveVertices[idx].normal = glm::normalize(convertFromGLTF(normal.x(), normal.y(), normal.z()));
+          auto raw = Gltf::parserVecAsGlm(normal);
+          auto rawWorldNormal = rawNormalMatrix * raw;
+          auto worldNormal = convertFromGLTF(rawWorldNormal.x, rawWorldNormal.y, rawWorldNormal.z);
+          primitiveVertices[idx].normal = glm::normalize(worldNormal);
         }
       ); /* clang-format on */
     } else {
@@ -193,8 +195,9 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
         asset,
         tangentAccessor,
         [&](fastgltf::math::fvec4 tangent, std::size_t idx) {
-          glm::vec3 localTangent = convertFromGLTF(tangent.x(), tangent.y(), tangent.z());
-          glm::vec3 worldTangent = normalMatrix * localTangent;
+          auto raw = Gltf::parserVecAsGlm(tangent);
+          auto rawWorldTangent = rawNormalMatrix * raw;
+          auto worldTangent = convertFromGLTF(rawWorldTangent.x, rawWorldTangent.y, rawWorldTangent.z);
           primitiveVertices[idx].tangent = glm::normalize(worldTangent);
         }
       ); /* clang-format on */

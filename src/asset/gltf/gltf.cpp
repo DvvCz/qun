@@ -72,7 +72,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
       const auto& mesh = asset.meshes[node.meshIndex.value()];
 
       // todo: revert terrible conversion name change
-      auto worldTransform = Gltf::glmMatAsParserMat(worldTransformRaw);
+      auto worldTransform = Gltf::parserMatAsGlm(worldTransformRaw);
       auto shapeResult = Gltf::tryConvertNode(asset, node, mesh, worldTransform, vertices);
 
       if (!shapeResult.has_value()) {
