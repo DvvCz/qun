@@ -15,7 +15,7 @@ public:
   std::expected<bool, std::string> start();
 
 private:
-  std::expected<bool, std::string> setupScene();
+  std::expected<bool, std::string> setupScene() noexcept;
 
   std::shared_ptr<Window> window;
   std::shared_ptr<entt::registry> registry;

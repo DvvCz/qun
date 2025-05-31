@@ -52,6 +52,9 @@ add_executable(trender
     ./src/asset/gltf/texture.cpp
     ./src/asset/gltf/gltf.cpp
     ./src/util/error.cpp
+
+    # Test Scene (included by default)
+    ./src/scenes/test.cpp
 )
 
 target_include_directories(trender
