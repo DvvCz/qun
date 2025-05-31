@@ -76,25 +76,19 @@ static void calculateTangents(std::vector<Vertex3D>& vertices, const std::vector
 
 /* clang-format off */
 std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
-  fastgltf::Asset& asset,
-  fastgltf::Node& node,
-  glm::mat4x4 worldTransform,
+  const fastgltf::Asset& asset,
+  const fastgltf::Node& node,
+  const fastgltf::Mesh& mesh,
+  const glm::mat4x4 worldTransform,
   std::vector<Vertex3D>& allVertices
 ) noexcept { /* clang-format off */
-  if (!node.meshIndex.has_value()) {
-    return std::unexpected{"Node does not have a mesh index"};
-  }
-
-  const auto& gltfMesh = asset.meshes[node.meshIndex.value()];
-  // const glm::mat4& worldTransform = worldTransforms[nodeIndex];
-
   // Extract normal matrix (for transforming normals and tangents)
   glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(worldTransform)));
 
   // Create a map of material ID to vector of indices
   std::map<int, std::vector<int>> materialGroups;
 
-  for (const auto& primitive : gltfMesh.primitives) {
+  for (const auto& primitive : mesh.primitives) {
     int materialId = primitive.materialIndex.value_or(-1);
 
     std::vector<Vertex3D> primitiveVertices;
@@ -113,9 +107,7 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
         asset,
         positionAccessor,
         [&](fastgltf::math::fvec3 pos, std::size_t idx) {
-          glm::vec3 localPos = convertFromGLTF(pos.x(), pos.y(), pos.z());
-          glm::vec4 worldPos = worldTransform * glm::vec4(localPos, 1.0f);
-          primitiveVertices[idx].pos = glm::vec3(worldPos);
+          primitiveVertices[idx].pos = glm::vec3(convertFromGLTF(pos.x(), pos.y(), pos.z()));
         }
       ); /* clang-format on */
 
@@ -154,9 +146,7 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
           asset,
           normalAccessor,
           [&](fastgltf::math::fvec3 normal, std::size_t idx) {
-            glm::vec3 localNormal = convertFromGLTF(normal.x(), normal.y(), normal.z());
-            glm::vec3 worldNormal = normalMatrix * localNormal;
-            primitiveVertices[idx].normal = glm::normalize(worldNormal);
+            primitiveVertices[idx].normal = glm::normalize(convertFromGLTF(normal.x(), normal.y(), normal.z()));
           }
         ); /* clang-format on */
     } else {
@@ -231,7 +221,7 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
   if (!node.name.empty()) {
     shapeName = std::string(node.name);
   } else { // todo: include node index
-    shapeName = "<unnamed_shape>";
+    shapeName = std::string("<unnamed_shape>");
   }
 
   return asset::Shape{.name = shapeName, .groups = std::move(groups)};

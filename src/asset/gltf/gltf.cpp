@@ -52,27 +52,41 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
     return std::unexpected{"GLTF asset has no scenes defined"};
   }
 
-  std::vector<std::expected<asset::Shape, std::string>> shapeResults;
+  std::vector<asset::Shape> shapes;
+  std::string errorMessage;
+  bool hasError = false;
+
   fastgltf::iterateSceneNodes(/* clang-format off */
     asset,
     defaultScene,
     fastgltf::math::fmat4x4(),
     [&](fastgltf::Node& node, fastgltf::math::fmat4x4 worldTransformRaw) {
+      if (hasError) return;
+
+      if (!node.meshIndex.has_value()) {
+        // Nothing to render for this node.
+        // Still important for transforms / grouping.
+        return;
+      }
+
+      const auto& mesh = asset.meshes[node.meshIndex.value()];
+
       // todo: revert terrible conversion name change
       auto worldTransform = Gltf::glmMatAsParserMat(worldTransformRaw);
-      shapeResults.push_back(Gltf::tryConvertNode(asset, node, worldTransform, vertices));
+      auto shapeResult = Gltf::tryConvertNode(asset, node, mesh, worldTransform, vertices);
+
+      if (!shapeResult.has_value()) {
+        errorMessage = shapeResult.error();
+        hasError = true;
+        return;
+      }
+
+      shapes.push_back(std::move(shapeResult.value()));
     }
   ); /* clang-format on */
 
-  std::vector<asset::Shape> shapes;
-  shapes.reserve(shapeResults.size());
-
-  for (auto& shapeResult : shapeResults) {
-    if (!shapeResult.has_value()) {
-      return std::unexpected{shapeResult.error()};
-    }
-
-    shapes.push_back(std::move(shapeResult.value()));
+  if (hasError) {
+    return std::unexpected{errorMessage};
   }
 
   return asset::Asset3D{/* clang-format off */

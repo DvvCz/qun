@@ -4,7 +4,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 glm::vec3 asset::loader::Gltf::convertFromGLTF(float x, float y, float z) noexcept {
-  return glm::vec3(-z, x, y);
+  return glm::vec3(x, -z, y);
 };
 
 glm::vec3 asset::loader::Gltf::glmVecAsParserVec(const fastgltf::math::nvec3& vec) noexcept {

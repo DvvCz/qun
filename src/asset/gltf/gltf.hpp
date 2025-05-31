@@ -37,9 +37,10 @@ namespace asset::loader {
 
     /* clang-format off */
     static std::expected<asset::Shape, std::string> tryConvertNode(
-      fastgltf::Asset& asset,
-      fastgltf::Node& node,
-      glm::mat4x4 worldTransform,
+      const fastgltf::Asset& asset,
+      const fastgltf::Node& node,
+      const fastgltf::Mesh& mesh,
+      const glm::mat4x4 worldTransform,
       std::vector<Vertex3D>& allVertices
     ) noexcept; /* clang-format on */
 
