@@ -19,6 +19,8 @@ namespace material {
     texture::Texture normalTexture;
   };
 
+  static_assert(sizeof(Material3D) % 16 == 0, "Ensure Material3D is std140 compliant");
+
   class Manager3D {
   public:
     Manager3D(uniform::Block<material::Material3D> uniformMaterial, std::shared_ptr<texture::Manager> texMan);

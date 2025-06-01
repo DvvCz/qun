@@ -49,17 +49,43 @@ layout(std140, binding = 1) uniform Material3D {
 
 out vec4 outColor;
 
+// Function to apply UV transformations
+vec2 transformUV(vec2 uv, Texture tex) {
+    // Apply offset
+    vec2 transformedUV = uv + tex.uvOffset;
+
+    // Apply scale
+    transformedUV *= tex.uvScale;
+
+    // Apply rotation around center (0.5, 0.5)
+    if (tex.uvRotation != 0.0) {
+        vec2 center = vec2(0.5);
+        transformedUV -= center;
+
+        float cosAngle = cos(tex.uvRotation);
+        float sinAngle = sin(tex.uvRotation);
+        mat2 rotationMatrix = mat2(cosAngle, -sinAngle, sinAngle, cosAngle);
+
+        transformedUV = rotationMatrix * transformedUV;
+        transformedUV += center;
+    }
+
+    return transformedUV;
+}
+
 void main() {
     vec3 fragToCameraDir = normalize(cameraPos - fragPos);
 
     vec3 ambient = vec3(1.0);
     if (diffuseTexture.index >= 0) {
-        ambient = texture(textureList, vec3(fragUV, float(diffuseTexture.index))).rgb;
+        vec2 diffuseUV = transformUV(fragUV, diffuseTexture);
+        ambient = texture(textureList, vec3(diffuseUV, float(diffuseTexture.index))).rgb;
     }
 
     vec3 normal = fragNormal;
     if (normalTexture.index >= 0) {
-        vec3 normalMap = texture(textureList, vec3(fragUV, float(normalTexture.index))).rgb;
+        vec2 normalUV = transformUV(fragUV, normalTexture);
+        vec3 normalMap = texture(textureList, vec3(normalUV, float(normalTexture.index))).rgb;
         normalMap = normalize(normalMap * 2.0 - 1.0); // [0,1] -> [-1,1]
         normal = normalize(fragTBN * normalMap); // tangent space to world space
     }

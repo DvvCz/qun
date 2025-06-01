@@ -19,6 +19,8 @@ namespace texture {
     float _padding[2];
   };
 
+  static_assert(sizeof(Texture) % 16 == 0, "Ensure Texture is std140 compliant");
+
   enum Format {
     R = 0,
     RG = 1,
