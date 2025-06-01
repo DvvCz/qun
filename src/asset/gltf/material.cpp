@@ -8,7 +8,7 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
   std::vector<asset::Material> materials;
 
   for (const auto& gltfMaterial : asset.materials) {
-    // Base physically based data
+    // Physically based data
     auto& pbrInfo = gltfMaterial.pbrData;
 
     // KHR_materials_specular
@@ -133,6 +133,18 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
         .uvOffset = uvOffset,
         .uvRotation = uvRotation
       };/* clang-format on */
+    }
+
+    // TODO: This works for phong materials,
+    // since we can just remove diffuse and specular.
+    // But might not work for PBR later on.
+    //
+    // Also, not super intuitive
+    if (gltfMaterial.unlit) {
+      mat.ambient = glm::vec3(1.0f);
+      mat.diffuse = glm::vec3(0.0f);
+      mat.specular = glm::vec3(0.0f);
+      mat.shininess = 0.0f;
     }
 
     materials.push_back(mat);

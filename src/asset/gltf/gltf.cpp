@@ -20,7 +20,8 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   auto extensions =
     fastgltf::Extensions::KHR_materials_transmission |
     fastgltf::Extensions::KHR_materials_specular |
-    fastgltf::Extensions::KHR_texture_transform;
+    fastgltf::Extensions::KHR_texture_transform |
+    fastgltf::Extensions::KHR_materials_unlit;
   /* clang-format on */
 
   fastgltf::Parser parser(extensions);
