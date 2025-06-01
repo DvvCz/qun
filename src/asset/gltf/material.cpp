@@ -31,9 +31,7 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
         .diffuse = (1.0f - pbrInfo.metallicFactor) * baseColor * 0.6f,
         .specular = specular,
         .shininess = std::max(1.0f, 1 / std::pow(pbrInfo.roughnessFactor, 2.0f)),
-        .dissolve = baseAlpha,
-        .diffuseTexture = std::nullopt,
-        .normalTexture = std::nullopt
+        .dissolve = baseAlpha
     };/* clang-format on */
 
     auto getTexture = [&asset, &texMan](size_t textureIndex) -> std::expected<size_t, std::string> {
@@ -101,6 +99,35 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
       }
 
       mat.diffuseTexture = asset::Texture{/* clang-format off */
+        .index = textureIdx.value(),
+        .uvScale = uvScale,
+        .uvOffset = uvOffset,
+        .uvRotation = uvRotation
+      };/* clang-format on */
+    }
+
+    // Has an emissive texture
+    if (gltfMaterial.emissiveTexture.has_value()) {
+      auto& emissiveTexture = gltfMaterial.emissiveTexture.value();
+
+      auto textureIdx = getTexture(emissiveTexture.textureIndex);
+      if (!textureIdx.has_value()) {
+        return std::unexpected{textureIdx.error()};
+      }
+
+      glm::vec2 uvScale = glm::vec2(1.0f, 1.0f);
+      glm::vec2 uvOffset = glm::vec2(0.0f, 0.0f);
+      float uvRotation = 0.0f;
+
+      if (emissiveTexture.transform) {
+        auto& transform = *emissiveTexture.transform;
+
+        uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
+        uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        uvRotation = transform.rotation;
+      }
+
+      mat.emissiveTexture = asset::Texture{/* clang-format off */
         .index = textureIdx.value(),
         .uvScale = uvScale,
         .uvOffset = uvOffset,

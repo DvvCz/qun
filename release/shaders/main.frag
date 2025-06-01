@@ -45,30 +45,24 @@ layout(std140, binding = 1) uniform Material3D {
     float _padding;
     Texture diffuseTexture;
     Texture normalTexture;
+    Texture emissiveTexture;
 };
 
 out vec4 outColor;
 
 // Function to apply UV transformations
 vec2 transformUV(vec2 uv, Texture tex) {
-    // Apply offset
-    vec2 transformedUV = uv + tex.uvOffset;
+    vec2 transformedUV = uv;
 
-    // Apply scale
-    transformedUV *= tex.uvScale;
-
-    // Apply rotation around center (0.5, 0.5)
     if (tex.uvRotation != 0.0) {
-        vec2 center = vec2(0.5);
-        transformedUV -= center;
-
         float cosAngle = cos(tex.uvRotation);
         float sinAngle = sin(tex.uvRotation);
         mat2 rotationMatrix = mat2(cosAngle, -sinAngle, sinAngle, cosAngle);
-
         transformedUV = rotationMatrix * transformedUV;
-        transformedUV += center;
     }
+
+    transformedUV *= tex.uvScale;
+    transformedUV += tex.uvOffset;
 
     return transformedUV;
 }

@@ -86,6 +86,23 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
       }; /* clang-format on */
     }
 
+    if (!material.emissive_texname.empty()) {
+      auto unresolvedPath = std::filesystem::path(material.emissive_texname);
+      auto resolvedPath = path.parent_path() / unresolvedPath;
+
+      auto asset = asset::loader::Img::tryFromFile(resolvedPath, texMan);
+      if (!asset.has_value()) {
+        return std::unexpected{std::format("Failed to load emissive texture: {}", asset.error())};
+      }
+
+      mat.emissiveTexture = {/* clang-format off */
+        .index = asset->textureId,
+        .uvScale = glm::vec2(1.0f, 1.0f),
+        .uvOffset = glm::vec2(0.0f, 0.0f),
+        .uvRotation = 0.0f
+      }; /* clang-format on */
+    }
+
     materials.push_back(mat);
   }
 

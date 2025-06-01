@@ -28,6 +28,14 @@ void material::Manager3D::setMaterial(const asset::Material& material) noexcept 
     normalTexture.uvRotation = material.normalTexture->uvRotation;
   }
 
+  texture::Texture emissiveTexture;
+  if (material.emissiveTexture.has_value()) {
+    emissiveTexture.index = material.emissiveTexture->index;
+    emissiveTexture.uvScale = material.emissiveTexture->uvScale;
+    emissiveTexture.uvOffset = material.emissiveTexture->uvOffset;
+    emissiveTexture.uvRotation = material.emissiveTexture->uvRotation;
+  }
+
   /* clang-format off */
   material::Material3D newMaterial = {
     .ambient = material.ambient,

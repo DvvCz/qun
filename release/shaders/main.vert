@@ -32,6 +32,7 @@ layout(std140, binding = 1) uniform Material3D {
     float _padding;
     Texture diffuseTexture;
     Texture normalTexture;
+    Texture emissiveTexture;
 };
 
 out vec3 fragPos;

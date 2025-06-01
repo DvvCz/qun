@@ -17,6 +17,7 @@ namespace material {
 
     texture::Texture diffuseTexture;
     texture::Texture normalTexture;
+    texture::Texture emissiveTexture;
   };
 
   static_assert(sizeof(Material3D) % 16 == 0, "Ensure Material3D is std140 compliant");

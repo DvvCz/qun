@@ -32,6 +32,7 @@ namespace asset {
 
     std::optional<Texture> diffuseTexture;
     std::optional<Texture> normalTexture;
+    std::optional<Texture> emissiveTexture;
   };
 
   struct MaterialGroup {
