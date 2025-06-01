@@ -6,22 +6,22 @@
 #include "render/texture.hpp"
 
 namespace material {
-  struct Block2D {
+  struct Material2D {
     alignas(16) glm::vec3 color;
   };
 
   class Manager2D {
   public:
-    Manager2D(uniform::Block<Block2D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan);
+    Manager2D(uniform::Block<Material2D> uniformMaterial, std::shared_ptr<texture::Manager> texMan);
     ~Manager2D();
 
-    void setMaterial(const Block2D& material) noexcept;
-    [[nodiscard]] Block2D getMaterial() const noexcept;
+    void setMaterial(const Material2D& material) noexcept;
+    [[nodiscard]] Material2D getMaterial() const noexcept;
 
   private:
     std::shared_ptr<texture::Manager> textureManager;
 
-    uniform::Block<Block2D> uniformMaterialBlock;
-    Block2D currentMaterial;
+    uniform::Block<Material2D> uniformMaterial;
+    Material2D currentMaterial;
   };
 };

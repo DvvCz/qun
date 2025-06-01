@@ -27,12 +27,12 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformCameraPos3D(4),
   // 3d - blocks
   uniformLightsArray3D(0),
-  uniformMaterialBlock3D(1),
+  uniformMaterial3D(1),
 
   // 2d
   uniformTextureArray2D(0),
   // 2d - blocks
-  uniformMaterialBlock2D(0)
+  uniformMaterial2D(0)
 { /* clang-format on */
   cameraPos = constants::WORLD_ORIGIN;
   cameraFront = constants::WORLD_FORWARD;
@@ -115,8 +115,8 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   textureManager3D = std::make_shared<texture::Manager>(uniformTextureArray3D, 1);
 
   // todo: probably only store the uniform in the material manager itself
-  materialManager2D = std::make_shared<material::Manager2D>(uniformMaterialBlock2D, textureManager2D);
-  materialManager3D = std::make_shared<material::Manager3D>(uniformMaterialBlock3D, textureManager3D);
+  materialManager2D = std::make_shared<material::Manager2D>(uniformMaterial2D, textureManager2D);
+  materialManager3D = std::make_shared<material::Manager3D>(uniformMaterial3D, textureManager3D);
 
   // Need to activate shader program before setting uniforms
   shader3D->use();
@@ -132,7 +132,7 @@ material::Material3D defaultMaterial3D = {/* clang-format off */
   .dissolve = 1.0f
 };/* clang-format on */
 
-material::Block2D defaultMaterial2D = {/* clang-format off */
+material::Material2D defaultMaterial2D = {/* clang-format off */
   .color = glm::vec3(1.0f, 1.0f, 1.0f)
 };/* clang-format on */
 

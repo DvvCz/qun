@@ -2,9 +2,8 @@
 
 #include "render/texture.hpp"
 
-material::Manager3D::Manager3D(uniform::Block<material::Material3D> uniformMaterialBlock,
-                               std::shared_ptr<texture::Manager> texMan)
-    : uniformMaterialBlock(uniformMaterialBlock), textureManager(texMan) {
+material::Manager3D::Manager3D(uniform::Block<material::Material3D> uniformMaterial, std::shared_ptr<texture::Manager> texMan)
+    : uniformMaterial(uniformMaterial), textureManager(texMan) {
 }
 
 material::Manager3D::~Manager3D() {
@@ -40,12 +39,12 @@ void material::Manager3D::setMaterial(const asset::Material& material) noexcept 
     .normalTexture = normalTexture
   };/* clang-format on */
 
-  uniformMaterialBlock.set(newMaterial);
+  uniformMaterial.set(newMaterial);
   currentMaterial = newMaterial;
 }
 
 void material::Manager3D::setMaterial(const material::Material3D& material) noexcept {
-  uniformMaterialBlock.set(material);
+  uniformMaterial.set(material);
   currentMaterial = material;
 }
 

@@ -7,5 +7,5 @@
 
 namespace components {
   using Material3D = std::shared_ptr<asset::Material>;
-  using Material2D = std::shared_ptr<material::Block2D>;
+  using Material2D = std::shared_ptr<material::Material2D>;
 }

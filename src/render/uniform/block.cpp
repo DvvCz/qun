@@ -17,5 +17,5 @@ template <typename T> void uniform::Block<T>::set(const T& value) const {
 
 template class uniform::Block<render::LightsArray>;
 
-template class uniform::Block<material::Block2D>;
+template class uniform::Block<material::Material2D>;
 template class uniform::Block<material::Material3D>;

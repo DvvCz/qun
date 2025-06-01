@@ -19,7 +19,7 @@ namespace material {
 
   class Manager3D {
   public:
-    Manager3D(uniform::Block<material::Material3D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan);
+    Manager3D(uniform::Block<material::Material3D> uniformMaterial, std::shared_ptr<texture::Manager> texMan);
     ~Manager3D();
 
     void setMaterial(const asset::Material& material) noexcept;
@@ -29,7 +29,7 @@ namespace material {
   private:
     std::shared_ptr<texture::Manager> textureManager;
 
-    uniform::Block<material::Material3D> uniformMaterialBlock;
+    uniform::Block<material::Material3D> uniformMaterial;
     material::Material3D currentMaterial;
   };
 };

@@ -230,7 +230,7 @@ std::expected<bool, std::string> Game::setupScene() noexcept {
   // registry->emplace<components::GlobalTransform>(quadEnt, glm::mat4(1.0f));
   // registry->emplace<components::Model2D>(quadEnt, basequad);
 
-  // auto blueMaterial = std::make_shared<material::Block2D>();
+  // auto blueMaterial = std::make_shared<material::Material2D>();
   // blueMaterial->color = glm::vec3(0.0f, 0.0f, 1.0f);
   // registry->emplace<components::Material2D>(quadEnt, blueMaterial);
 

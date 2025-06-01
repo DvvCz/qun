@@ -54,40 +54,58 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
     if (gltfMaterial.normalTexture.has_value()) {
       auto& normalTexture = gltfMaterial.normalTexture.value();
 
-      if (normalTexture.transform) {
-        auto& transform = *normalTexture.transform;
-
-        mat.normalTexture->uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
-        mat.normalTexture->uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
-        mat.normalTexture->uvRotation = transform.rotation;
-      }
-
       auto textureIdx = getTexture(gltfMaterial.normalTexture.value().textureIndex);
       if (!textureIdx.has_value()) {
         return std::unexpected{textureIdx.error()};
       }
 
-      mat.normalTexture->index = textureIdx.value();
+      glm::vec2 uvScale = glm::vec2(1.0f, 1.0f);
+      glm::vec2 uvOffset = glm::vec2(0.0f, 0.0f);
+      float uvRotation = 0.0f;
+
+      if (normalTexture.transform) {
+        auto& transform = *normalTexture.transform;
+
+        uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
+        uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        uvRotation = transform.rotation;
+      }
+
+      mat.normalTexture = asset::Texture{/* clang-format off */
+        .index = textureIdx.value(),
+        .uvScale = uvScale,
+        .uvOffset = uvOffset,
+        .uvRotation = uvRotation
+      };/* clang-format on */
     }
 
     // Has a diffuse texture
     if (pbrInfo.baseColorTexture.has_value()) {
       auto& baseColorTexture = pbrInfo.baseColorTexture.value();
 
-      if (baseColorTexture.transform) {
-        auto& transform = *baseColorTexture.transform;
-
-        mat.diffuseTexture->uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
-        mat.diffuseTexture->uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
-        mat.diffuseTexture->uvRotation = transform.rotation;
-      }
-
       auto textureIdx = getTexture(baseColorTexture.textureIndex);
       if (!textureIdx.has_value()) {
         return std::unexpected{textureIdx.error()};
       }
 
-      mat.diffuseTexture->index = textureIdx.value();
+      glm::vec2 uvScale = glm::vec2(1.0f, 1.0f);
+      glm::vec2 uvOffset = glm::vec2(0.0f, 0.0f);
+      float uvRotation = 0.0f;
+
+      if (baseColorTexture.transform) {
+        auto& transform = *baseColorTexture.transform;
+
+        uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
+        uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        uvRotation = transform.rotation;
+      }
+
+      mat.diffuseTexture = asset::Texture{/* clang-format off */
+        .index = textureIdx.value(),
+        .uvScale = uvScale,
+        .uvOffset = uvOffset,
+        .uvRotation = uvRotation
+      };/* clang-format on */
     }
 
     materials.push_back(mat);
