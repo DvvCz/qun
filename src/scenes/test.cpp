@@ -208,8 +208,25 @@ std::expected<bool, std::string> Game::setupScene() noexcept {
   //   registry->emplace<components::Model3D>(ent, model);
   // }
 
-  { // texture transform multi test
-    auto asset = asset::loader::Gltf::tryFromFile("resources/TextureTransformMultiTest.glb", *renderer->textureManager3D);
+  // { // texture transform multi test
+  //   auto asset = asset::loader::Gltf::tryFromFile("resources/TextureTransformMultiTest.glb", *renderer->textureManager3D);
+  //   if (!asset.has_value()) {
+  //     return std::unexpected{std::format("Failed to load GLTF asset: {}", util::error::indent(asset.error()))};
+  //   }
+
+  //   auto model = renderer->createAsset3D(asset.value());
+
+  //   auto matrix = glm::mat4(1.0f);
+  //   matrix = glm::translate(matrix, glm::vec3(-10.0f, -3.0f, 1.0f));
+
+  //   auto ent = registry->create();
+  //   registry->emplace<components::GlobalTransform>(ent, matrix);
+  //   registry->emplace<components::Model3D>(ent, model);
+  // }
+
+  { // texture transform test
+    auto asset = asset::loader::Gltf::tryFromFile("resources/TextureTransformTest/TextureTransformTest.gltf",
+                                                  *renderer->textureManager3D);
     if (!asset.has_value()) {
       return std::unexpected{std::format("Failed to load GLTF asset: {}", util::error::indent(asset.error()))};
     }
@@ -217,7 +234,7 @@ std::expected<bool, std::string> Game::setupScene() noexcept {
     auto model = renderer->createAsset3D(asset.value());
 
     auto matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(-10.0f, -3.0f, 1.0f));
+    matrix = glm::translate(matrix, glm::vec3(-10.0f, -5.0f, 1.0f));
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);

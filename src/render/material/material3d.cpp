@@ -47,6 +47,13 @@ void material::Manager3D::setMaterial(const asset::Material& material) noexcept 
     .normalTexture = normalTexture
   };/* clang-format on */
 
+  if (material.isDoubleSided) {
+    glDisable(GL_CULL_FACE);
+  } else {
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+  }
+
   uniformMaterial.set(newMaterial);
   currentMaterial = newMaterial;
 }
