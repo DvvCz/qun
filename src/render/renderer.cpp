@@ -26,7 +26,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformTextureArray3D(3),
   uniformCameraPos3D(4),
   // 3d - blocks
-  uniformLightBlock3D(0),
+  uniformLightsArray3D(0),
   uniformMaterialBlock3D(1),
 
   // 2d
@@ -124,14 +124,12 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformCameraPos3D.set(cameraPos);
 }
 
-material::Block3D defaultMaterial3D = {/* clang-format off */
+material::Material3D defaultMaterial3D = {/* clang-format off */
   .ambient = glm::vec3(0.2f, 0.2f, 0.2f),
   .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
   .specular = glm::vec3(1.0f, 1.0f, 1.0f),
   .shininess = 32.0f,
-  .dissolve = 1.0f,
-  .diffuseTextureId = -1,
-  .normalTextureId = -1
+  .dissolve = 1.0f
 };/* clang-format on */
 
 material::Block2D defaultMaterial2D = {/* clang-format off */
@@ -172,10 +170,10 @@ void Renderer::draw3D() {
   uniformCameraPos3D.set(cameraPos);
 
   auto lightEnts = registry->view<components::GlobalTransform, components::Light>();
-  lightBlock.lightCount = 0;
+  lightsArray.lightCount = 0;
 
   for (const auto ent : lightEnts) {
-    if (lightBlock.lightCount >= MAX_LIGHTS) {
+    if (lightsArray.lightCount >= MAX_LIGHTS) {
       std::println(stderr, "Maximum number of lights exceeded: {}", MAX_LIGHTS);
       break; // Prevent overflow
     }
@@ -183,14 +181,14 @@ void Renderer::draw3D() {
     auto light = registry->get<components::Light>(ent);
     auto globalTransform = registry->get<components::GlobalTransform>(ent);
 
-    lightBlock.lights[lightBlock.lightCount++] = {/* clang-format off */
+    lightsArray.lights[lightsArray.lightCount++] = {/* clang-format off */
       .position = glm::vec3(globalTransform[3]),
       .color = light.color * light.intensity,
       .radius = light.radius
     }; /* clang-format on */
   }
 
-  uniformLightBlock3D.set(lightBlock);
+  uniformLightsArray3D.set(lightsArray);
 
   auto ents3d = registry->view<components::GlobalTransform, components::Model3D>();
   for (const auto ent : ents3d) {

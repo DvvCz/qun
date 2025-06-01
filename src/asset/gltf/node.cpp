@@ -161,14 +161,33 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
     }
 
     // UVs
-    auto* uvIterator = primitive.findAttribute("TEXCOORD_0");
-    if (uvIterator != primitive.attributes.end()) {
-      auto& texcoordAccessor = asset.accessors[uvIterator->accessorIndex];
-      if (!texcoordAccessor.bufferViewIndex.has_value()) {
-        return std::unexpected{"Texture coordinate accessor does not have a valid buffer view"};
+    {
+      auto& material = asset.materials[materialId];
+      size_t uvSetIdx = 0;
+
+      if (material.pbrData.baseColorTexture.has_value()) {
+        auto& baseColorTexture = material.pbrData.baseColorTexture.value();
+
+        uvSetIdx = baseColorTexture.texCoordIndex;
+
+        if (baseColorTexture.transform) {
+          // Handle texture transform if it exists
+          auto& transform = *baseColorTexture.transform;
+
+          if (transform.texCoordIndex.has_value()) {
+            uvSetIdx = transform.texCoordIndex.value();
+          }
+        }
       }
 
-      /* clang-format off */
+      auto* uvIterator = primitive.findAttribute("TEXCOORD_" + std::to_string(uvSetIdx));
+      if (uvIterator != primitive.attributes.end()) {
+        auto& texcoordAccessor = asset.accessors[uvIterator->accessorIndex];
+        if (!texcoordAccessor.bufferViewIndex.has_value()) {
+          return std::unexpected{"Texture coordinate accessor does not have a valid buffer view"};
+        }
+
+        /* clang-format off */
       fastgltf::iterateAccessorWithIndex<fastgltf::math::fvec2>(
           asset,
           texcoordAccessor,
@@ -176,9 +195,10 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
             primitiveVertices[idx].uv = glm::vec2(uv.x(), uv.y());
           }
       ); /* clang-format on */
-    } else {
-      for (auto& vertex : primitiveVertices) {
-        vertex.uv = glm::vec2(0.0f, 0.0f);
+      } else {
+        for (auto& vertex : primitiveVertices) {
+          vertex.uv = glm::vec2(0.0f, 0.0f);
+        }
       }
     }
 

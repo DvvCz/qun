@@ -63,7 +63,12 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
         return std::unexpected{std::format("Failed to load texture: {}", asset.error())};
       }
 
-      mat.diffuseTexture = asset->textureId;
+      mat.diffuseTexture = {/* clang-format off */
+        .index = asset->textureId,
+        .uvScale = glm::vec2(1.0f, 1.0f),
+        .uvOffset = glm::vec2(0.0f, 0.0f),
+        .uvRotation = 0.0f
+      }; /* clang-format on */
     }
 
     if (!material.normal_texname.empty()) {
@@ -75,7 +80,12 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
         return std::unexpected{std::format("Failed to load normal texture: {}", asset.error())};
       }
 
-      mat.normalTexture = asset->textureId;
+      mat.normalTexture = {/* clang-format off */
+        .index = asset->textureId,
+        .uvScale = glm::vec2(1.0f, 1.0f),
+        .uvOffset = glm::vec2(0.0f, 0.0f),
+        .uvRotation = 0.0f
+      }; /* clang-format on */
     }
 
     materials.push_back(mat);

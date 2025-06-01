@@ -6,31 +6,30 @@
 #include "render/texture.hpp"
 
 namespace material {
-  struct Block3D {
+  struct Material3D {
     alignas(16) glm::vec3 ambient;
     alignas(16) glm::vec3 diffuse;
     alignas(16) glm::vec3 specular;
     float shininess;
     float dissolve;
 
-    // -1 for no texture
-    int diffuseTextureId = -1;
-    int normalTextureId = -1;
+    texture::Texture diffuseTexture;
+    texture::Texture normalTexture;
   };
 
   class Manager3D {
   public:
-    Manager3D(uniform::Block<Block3D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan);
+    Manager3D(uniform::Block<material::Material3D> uniformMaterialBlock, std::shared_ptr<texture::Manager> texMan);
     ~Manager3D();
 
     void setMaterial(const asset::Material& material) noexcept;
-    void setMaterial(const Block3D& material) noexcept;
-    [[nodiscard]] Block3D getMaterial() const noexcept;
+    void setMaterial(const material::Material3D& material) noexcept;
+    [[nodiscard]] material::Material3D getMaterial() const noexcept;
 
   private:
     std::shared_ptr<texture::Manager> textureManager;
 
-    uniform::Block<Block3D> uniformMaterialBlock;
-    Block3D currentMaterial;
+    uniform::Block<material::Material3D> uniformMaterialBlock;
+    material::Material3D currentMaterial;
   };
 };

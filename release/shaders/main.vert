@@ -1,5 +1,15 @@
 #version 450 core
 
+struct Texture {
+    int index;
+
+    vec2 uvScale;
+    vec2 uvOffset;
+
+    /// Rotation in radians
+    float uvRotation;
+};
+
 layout(location = 0) in vec3 vertPos;
 layout(location = 1) in vec3 vertNormal;
 layout(location = 2) in vec2 vertUV;
@@ -12,14 +22,14 @@ layout(location = 2) uniform mat4x4 modelMatrix;
 layout(location = 3) uniform sampler2DArray textureList;
 layout(location = 4) uniform vec3 cameraPos;
 
-layout(std140, binding = 1) uniform MaterialBlock {
+layout(std140, binding = 1) uniform Material {
     vec3 materialAmbient;
     vec3 materialDiffuse;
     vec3 materialSpecular;
     float materialShininess;
     float materialDissolve;
-    int diffuseTextureIdx;
-    int normalTextureIdx;
+    Texture diffuseTexture;
+    Texture normalTexture;
 };
 
 out vec3 fragPos;
@@ -34,7 +44,7 @@ void main() {
     vec3 transformedNormal = normalize(normalMatrix * vertNormal);
 
     // Only calculate TBN if normal map present
-    if (normalTextureIdx >= 0) {
+    if (normalTexture.index >= 0) {
         vec3 transformedTangent = normalize(normalMatrix * vertTangent);
         vec3 transformedBitangent = normalize(cross(transformedNormal, transformedTangent));
 

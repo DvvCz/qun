@@ -50,22 +50,44 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
       return Gltf::tryCreateTexture(asset, image, texMan);
     };
 
+    // Has a normal map
     if (gltfMaterial.normalTexture.has_value()) {
-      auto out = getTexture(gltfMaterial.normalTexture.value().textureIndex);
-      if (!out.has_value()) {
-        return std::unexpected{out.error()};
+      auto& normalTexture = gltfMaterial.normalTexture.value();
+
+      if (normalTexture.transform) {
+        auto& transform = *normalTexture.transform;
+
+        mat.normalTexture->uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
+        mat.normalTexture->uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        mat.normalTexture->uvRotation = transform.rotation;
       }
 
-      mat.normalTexture = out.value();
+      auto textureIdx = getTexture(gltfMaterial.normalTexture.value().textureIndex);
+      if (!textureIdx.has_value()) {
+        return std::unexpected{textureIdx.error()};
+      }
+
+      mat.normalTexture->index = textureIdx.value();
     }
 
-    if (gltfMaterial.pbrData.baseColorTexture.has_value()) {
-      auto out = getTexture(gltfMaterial.pbrData.baseColorTexture.value().textureIndex);
-      if (!out.has_value()) {
-        return std::unexpected{out.error()};
+    // Has a diffuse texture
+    if (pbrInfo.baseColorTexture.has_value()) {
+      auto& baseColorTexture = pbrInfo.baseColorTexture.value();
+
+      if (baseColorTexture.transform) {
+        auto& transform = *baseColorTexture.transform;
+
+        mat.diffuseTexture->uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
+        mat.diffuseTexture->uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        mat.diffuseTexture->uvRotation = transform.rotation;
       }
 
-      mat.diffuseTexture = out.value();
+      auto textureIdx = getTexture(baseColorTexture.textureIndex);
+      if (!textureIdx.has_value()) {
+        return std::unexpected{textureIdx.error()};
+      }
+
+      mat.diffuseTexture->index = textureIdx.value();
     }
 
     materials.push_back(mat);

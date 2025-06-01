@@ -15,7 +15,7 @@ template <typename T> void uniform::Block<T>::set(const T& value) const {
   glNamedBufferSubData(bufferIdx, 0, sizeof(T), &value);
 }
 
-template class uniform::Block<LightBlock>;
+template class uniform::Block<render::LightsArray>;
 
 template class uniform::Block<material::Block2D>;
-template class uniform::Block<material::Block3D>;
+template class uniform::Block<material::Material3D>;

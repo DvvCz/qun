@@ -10,6 +10,16 @@
 #include "render/vertex.hpp"
 
 namespace asset {
+  struct Texture {
+  public:
+    size_t index;
+
+    glm::vec2 uvScale;
+    glm::vec2 uvOffset;
+
+    float uvRotation;
+  };
+
   struct Material {
   public:
     std::string name;
@@ -20,8 +30,8 @@ namespace asset {
     float shininess;
     float dissolve;
 
-    std::optional<size_t> diffuseTexture;
-    std::optional<size_t> normalTexture;
+    std::optional<Texture> diffuseTexture;
+    std::optional<Texture> normalTexture;
   };
 
   struct MaterialGroup {

@@ -18,16 +18,18 @@
 
 #define MAX_LIGHTS 20
 
-struct Light {
-  alignas(16) glm::vec3 position;
-  alignas(16) glm::vec3 color;
-  float radius;
-};
+namespace render {
+  struct Light {
+    alignas(16) glm::vec3 position;
+    alignas(16) glm::vec3 color;
+    float radius;
+  };
 
-struct LightBlock {
-  GLuint lightCount;
-  Light lights[MAX_LIGHTS];
-};
+  struct LightsArray {
+    GLuint lightCount;
+    Light lights[MAX_LIGHTS];
+  };
+}
 
 class Renderer final {
 public:
@@ -64,8 +66,8 @@ private:
   uniform::Single<glm::mat4x4> uniformModelMatrix3D;
   uniform::Single<GLint> uniformTextureArray3D;
   uniform::Single<glm::vec3> uniformCameraPos3D;
-  uniform::Block<LightBlock> uniformLightBlock3D;
-  uniform::Block<material::Block3D> uniformMaterialBlock3D;
+  uniform::Block<render::LightsArray> uniformLightsArray3D;
+  uniform::Block<material::Material3D> uniformMaterialBlock3D;
 
   // 2d uniforms
   uniform::Single<GLint> uniformTextureArray2D;
@@ -75,7 +77,7 @@ private:
   glm::mat4x4 viewMatrix;
   glm::mat4x4 modelMatrix;
 
-  LightBlock lightBlock;
+  render::LightsArray lightsArray;
 
   glm::vec3 cameraPos;
   glm::vec3 cameraFront;

@@ -6,6 +6,16 @@ struct Light {
     float radius;
 };
 
+struct Texture {
+    int index;
+
+    vec2 uvScale;
+    vec2 uvOffset;
+
+    /// Rotation in radians
+    float uvRotation;
+};
+
 in vec3 fragPos;
 in vec3 fragNormal;
 in vec2 fragUV;
@@ -20,19 +30,19 @@ layout(location = 4) uniform vec3 cameraPos;
 
 #define MAX_LIGHTS 20
 
-layout(std140, binding = 0) uniform LightBlock {
+layout(std140, binding = 0) uniform LightsArray {
     uint lightCount;
     Light lights[MAX_LIGHTS];
 };
 
-layout(std140, binding = 1) uniform MaterialBlock {
+layout(std140, binding = 1) uniform Material {
     vec3 materialAmbient;
     vec3 materialDiffuse;
     vec3 materialSpecular;
     float materialShininess;
     float materialDissolve;
-    int diffuseTextureIdx;
-    int normalTextureIdx;
+    Texture diffuseTexture;
+    Texture normalTexture;
 };
 
 out vec4 outColor;
@@ -41,13 +51,13 @@ void main() {
     vec3 fragToCameraDir = normalize(cameraPos - fragPos);
 
     vec3 ambient = vec3(1.0);
-    if (diffuseTextureIdx >= 0) {
-        ambient = texture(textureList, vec3(fragUV, float(diffuseTextureIdx))).rgb;
+    if (diffuseTexture.index >= 0) {
+        ambient = texture(textureList, vec3(fragUV, float(diffuseTexture.index))).rgb;
     }
 
     vec3 normal = fragNormal;
-    if (normalTextureIdx >= 0) {
-        vec3 normalMap = texture(textureList, vec3(fragUV, float(normalTextureIdx))).rgb;
+    if (normalTexture.index >= 0) {
+        vec3 normalMap = texture(textureList, vec3(fragUV, float(normalTexture.index))).rgb;
         normalMap = normalize(normalMap * 2.0 - 1.0); // [0,1] -> [-1,1]
         normal = normalize(fragTBN * normalMap); // tangent space to world space
     }
