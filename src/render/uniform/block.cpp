@@ -12,9 +12,6 @@ template <typename T> uniform::Block<T>::Block(const GLint location) : location(
 }
 
 template <typename T> void uniform::Block<T>::set(const T& value) const {
-  std::println("Setting uniform block at location {}", location);
-  std::println("size: {}", sizeof(T));
-
   glBindBufferBase(GL_UNIFORM_BUFFER, location, bufferIdx);
   glNamedBufferSubData(bufferIdx, 0, sizeof(T), &value);
 }
