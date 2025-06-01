@@ -10,32 +10,21 @@ material::Manager3D::Manager3D(uniform::Block<material::Material3D> uniformMater
 material::Manager3D::~Manager3D() {
 }
 
+static texture::Texture assetTexToGLTex(const std::optional<asset::Texture> tex) noexcept {
+  texture::Texture out;
+
+  if (tex.has_value()) {
+    out.index = tex->index;
+    out.uvScale = tex->uvScale;
+    out.uvOffset = tex->uvOffset;
+    out.uvRotation = tex->uvRotation;
+  }
+
+  return out;
+}
+
 // todo: might be able to combine these in the future.
 void material::Manager3D::setMaterial(const asset::Material& material) noexcept {
-  texture::Texture diffuseTexture;
-  if (material.diffuseTexture.has_value()) {
-    diffuseTexture.index = material.diffuseTexture->index;
-    diffuseTexture.uvScale = material.diffuseTexture->uvScale;
-    diffuseTexture.uvOffset = material.diffuseTexture->uvOffset;
-    diffuseTexture.uvRotation = material.diffuseTexture->uvRotation;
-  }
-
-  texture::Texture normalTexture;
-  if (material.normalTexture.has_value()) {
-    normalTexture.index = material.normalTexture->index;
-    normalTexture.uvScale = material.normalTexture->uvScale;
-    normalTexture.uvOffset = material.normalTexture->uvOffset;
-    normalTexture.uvRotation = material.normalTexture->uvRotation;
-  }
-
-  texture::Texture emissiveTexture;
-  if (material.emissiveTexture.has_value()) {
-    emissiveTexture.index = material.emissiveTexture->index;
-    emissiveTexture.uvScale = material.emissiveTexture->uvScale;
-    emissiveTexture.uvOffset = material.emissiveTexture->uvOffset;
-    emissiveTexture.uvRotation = material.emissiveTexture->uvRotation;
-  }
-
   /* clang-format off */
   material::Material3D newMaterial = {
     .ambient = material.ambient,
@@ -43,8 +32,9 @@ void material::Manager3D::setMaterial(const asset::Material& material) noexcept 
     .diffuse = material.diffuse,
     .dissolve = material.dissolve,
     .specular = material.specular,
-    .diffuseTexture = diffuseTexture,
-    .normalTexture = normalTexture
+    .diffuseTexture = assetTexToGLTex(material.diffuseTexture),
+    .normalTexture = assetTexToGLTex(material.normalTexture),
+    .emissiveTexture = assetTexToGLTex(material.emissiveTexture),
   };/* clang-format on */
 
   if (material.isDoubleSided) {
