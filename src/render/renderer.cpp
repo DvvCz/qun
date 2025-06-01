@@ -124,12 +124,13 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformCameraPos3D.set(cameraPos);
 }
 
-material::Material3D defaultMaterial3D = {/* clang-format off */
+material::Material3D defaultMaterial3D = {
+    /* clang-format off */
   .ambient = glm::vec3(0.2f, 0.2f, 0.2f),
-  .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
-  .specular = glm::vec3(1.0f, 1.0f, 1.0f),
   .shininess = 32.0f,
-  .dissolve = 1.0f
+  .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
+  .dissolve = 1.0f,
+  .specular = glm::vec3(1.0f, 1.0f, 1.0f)
 };/* clang-format on */
 
 material::Material2D defaultMaterial2D = {/* clang-format off */
@@ -202,8 +203,6 @@ void Renderer::draw3D() {
       // Use the default material if no specific material is set
       materialManager3D->setMaterial(defaultMaterial3D);
     }
-
-    // textureManager3D->unbindTexture();
 
     modelMatrix = globalTransform;
     uniformModelMatrix3D.set(modelMatrix);

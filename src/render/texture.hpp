@@ -10,13 +10,13 @@
 #include "asset/asset.hpp"
 
 namespace texture {
+  // Carefully ensure this is std140
   struct Texture {
+    glm::vec2 uvScale = glm::vec2(1.0f, 1.0f);
+    glm::vec2 uvOffset = glm::vec2(0.0f, 0.0f);
     GLint index = -1;
-
-    alignas(16) glm::vec2 uvScale = glm::vec2(1.0f, 1.0f);
-    alignas(16) glm::vec2 uvOffset = glm::vec2(0.0f, 0.0f);
-
     float uvRotation = 0.0f;
+    float _padding[2];
   };
 
   enum Format {

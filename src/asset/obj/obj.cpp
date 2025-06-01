@@ -49,9 +49,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
         .diffuse = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]),
         .specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]),
         .shininess = material.shininess,
-        .dissolve = material.dissolve,
-
-        .diffuseTexture = std::nullopt
+        .dissolve = material.dissolve
     };/* clang-format on */
 
     if (!material.diffuse_texname.empty()) {

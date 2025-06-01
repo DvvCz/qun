@@ -1,10 +1,11 @@
 #version 450 core
 
 struct Texture {
-    int index;
-
     vec2 uvScale;
     vec2 uvOffset;
+
+    /// -1 if no texture
+    int index;
 
     /// Rotation in radians
     float uvRotation;
@@ -22,12 +23,13 @@ layout(location = 2) uniform mat4x4 modelMatrix;
 layout(location = 3) uniform sampler2DArray textureList;
 layout(location = 4) uniform vec3 cameraPos;
 
-layout(std140, binding = 1) uniform Material {
+layout(std140, binding = 1) uniform Material3D {
     vec3 materialAmbient;
-    vec3 materialDiffuse;
-    vec3 materialSpecular;
     float materialShininess;
+    vec3 materialDiffuse;
     float materialDissolve;
+    vec3 materialSpecular;
+    float _padding;
     Texture diffuseTexture;
     Texture normalTexture;
 };

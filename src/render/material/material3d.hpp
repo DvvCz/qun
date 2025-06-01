@@ -6,12 +6,14 @@
 #include "render/texture.hpp"
 
 namespace material {
+  // Carefully ensure this is std140
   struct Material3D {
-    alignas(16) glm::vec3 ambient;
-    alignas(16) glm::vec3 diffuse;
-    alignas(16) glm::vec3 specular;
+    glm::vec3 ambient;
     float shininess;
+    glm::vec3 diffuse;
     float dissolve;
+    glm::vec3 specular;
+    float _padding;
 
     texture::Texture diffuseTexture;
     texture::Texture normalTexture;
