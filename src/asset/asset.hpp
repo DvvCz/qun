@@ -19,7 +19,7 @@ namespace asset {
     glm::vec3 diffuse;
     glm::vec3 specular;
     float shininess;
-    float dissolve;
+    float dissolve = 1.0f;
     bool isDoubleSided = true;
 
     std::optional<texture::Texture> diffuseTexture;

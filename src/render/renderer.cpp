@@ -37,7 +37,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   cameraPos = constants::WORLD_ORIGIN;
   cameraFront = constants::WORLD_FORWARD;
 
-  projMatrix = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.05f, 100.0f);
+  projMatrix = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.05f, 1000.0f);
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
 
   modelMatrix = glm::mat4(1.0f);

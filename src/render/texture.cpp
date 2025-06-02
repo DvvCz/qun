@@ -94,7 +94,7 @@ std::expected<texture::Texture, std::string> texture::Manager::create(
   textureSlots.push_back(true);
 
   return texture::Texture{/* clang-format off */
-    .uvScale = glm::vec2(width / MAX_WIDTH, height / MAX_HEIGHT),
+    .uvScale = glm::vec2((float)width / (float)MAX_WIDTH, (float)height / (float)MAX_HEIGHT),
     .uvOffset = glm::vec2(0.0f, 0.0f),
     .index = static_cast<GLint>(textureId),
     .uvRotation = 0.0f

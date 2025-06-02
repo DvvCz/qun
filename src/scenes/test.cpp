@@ -1,7 +1,10 @@
+#include "asset/img/img.hpp"
 #include "components/material.hpp"
 #include "game.hpp"
 
 #include <expected>
+#include <memory>
+#include <print>
 #include <string>
 
 #include <glm/glm.hpp>
@@ -18,6 +21,8 @@
 #include "util/error.hpp"
 
 std::expected<bool, std::string> Game::setupScene() noexcept {
+  std::println("Loading assets, this might take a while...");
+
   { // gltf fish
     auto asset = asset::loader::Gltf::tryFromFile("resources/BarramundiFish.glb", *renderer->textureManager3D);
     if (!asset.has_value()) {
@@ -206,6 +211,30 @@ std::expected<bool, std::string> Game::setupScene() noexcept {
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Model3D>(ent, model);
+  }
+
+  { // skybox
+    auto asset = asset::loader::Img::tryFromFile("resources/mountain.jpg", *renderer->textureManager3D);
+    if (!asset.has_value()) {
+      return std::unexpected{std::format("Failed to load skybox asset: {}", util::error::indent(asset.error()))};
+    }
+
+    auto material = std::make_shared<asset::Material>();
+    material->ambient = glm::vec3(1.0f);
+    material->diffuse = glm::vec3(0.0f);
+    material->specular = glm::vec3(0.0f);
+    material->shininess = 0.0f;
+    material->diffuseTexture = asset->texture;
+
+    auto model = std::make_shared<model::Sphere>(100.0f, 4);
+
+    auto matrix = glm::mat4(1.0f);
+    matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Model3D>(ent, model);
+    registry->emplace<components::Material3D>(ent, material);
   }
 
   { // baseplate
