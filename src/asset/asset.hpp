@@ -7,19 +7,10 @@
 
 #include <glm/glm.hpp>
 
+#include "render/texture.hpp"
 #include "render/vertex.hpp"
 
 namespace asset {
-  struct Texture {
-  public:
-    size_t index;
-
-    glm::vec2 uvScale;
-    glm::vec2 uvOffset;
-
-    float uvRotation;
-  };
-
   struct Material {
   public:
     std::string name;
@@ -31,9 +22,9 @@ namespace asset {
     float dissolve;
     bool isDoubleSided = true;
 
-    std::optional<Texture> diffuseTexture;
-    std::optional<Texture> normalTexture;
-    std::optional<Texture> emissiveTexture;
+    std::optional<texture::Texture> diffuseTexture;
+    std::optional<texture::Texture> normalTexture;
+    std::optional<texture::Texture> emissiveTexture;
   };
 
   struct MaterialGroup {
@@ -58,7 +49,6 @@ namespace asset {
   };
 
   struct Asset2D {
-    // TextureID to whatever texture manager this is linked to.
-    size_t textureId;
+    texture::Texture texture;
   };
 }

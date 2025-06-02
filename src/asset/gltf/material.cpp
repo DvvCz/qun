@@ -34,7 +34,7 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
         .dissolve = baseAlpha
     };/* clang-format on */
 
-    auto getTexture = [&asset, &texMan](size_t textureIndex) -> std::expected<size_t, std::string> {
+    auto getTexture = [&asset, &texMan](size_t textureIndex) -> std::expected<texture::Texture, std::string> {
       if (textureIndex >= asset.textures.size()) {
         return std::unexpected{"Texture index out of bounds"};
       }
@@ -50,89 +50,68 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
 
     // Has a normal map
     if (gltfMaterial.normalTexture.has_value()) {
-      auto& normalTexture = gltfMaterial.normalTexture.value();
+      auto& normalTextureInfo = gltfMaterial.normalTexture.value();
 
-      auto textureIdx = getTexture(gltfMaterial.normalTexture.value().textureIndex);
-      if (!textureIdx.has_value()) {
-        return std::unexpected{textureIdx.error()};
+      auto normalTextureResult = getTexture(gltfMaterial.normalTexture.value().textureIndex);
+      if (!normalTextureResult.has_value()) {
+        return std::unexpected{normalTextureResult.error()};
       }
 
-      glm::vec2 uvScale = glm::vec2(1.0f, 1.0f);
-      glm::vec2 uvOffset = glm::vec2(0.0f, 0.0f);
-      float uvRotation = 0.0f;
+      auto normalTexture = normalTextureResult.value();
 
-      if (normalTexture.transform) {
-        auto& transform = *normalTexture.transform;
+      if (normalTextureInfo.transform) {
+        auto& transform = *normalTextureInfo.transform;
 
-        uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
-        uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
-        uvRotation = transform.rotation;
+        normalTexture.uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
+        normalTexture.uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        normalTexture.uvRotation = transform.rotation;
       }
 
-      mat.normalTexture = asset::Texture{/* clang-format off */
-        .index = textureIdx.value(),
-        .uvScale = uvScale,
-        .uvOffset = uvOffset,
-        .uvRotation = uvRotation
-      };/* clang-format on */
+      mat.normalTexture = normalTexture;
     }
 
     // Has a diffuse texture
     if (pbrInfo.baseColorTexture.has_value()) {
-      auto& baseColorTexture = pbrInfo.baseColorTexture.value();
+      auto& baseColorTextureInfo = pbrInfo.baseColorTexture.value();
 
-      auto textureIdx = getTexture(baseColorTexture.textureIndex);
-      if (!textureIdx.has_value()) {
-        return std::unexpected{textureIdx.error()};
+      auto baseColorTextureResult = getTexture(baseColorTextureInfo.textureIndex);
+      if (!baseColorTextureResult.has_value()) {
+        return std::unexpected{baseColorTextureResult.error()};
       }
 
-      glm::vec2 uvScale = glm::vec2(1.0f, 1.0f);
-      glm::vec2 uvOffset = glm::vec2(0.0f, 0.0f);
-      float uvRotation = 0.0f;
+      auto baseColorTexture = baseColorTextureResult.value();
 
-      if (baseColorTexture.transform) {
-        auto& transform = *baseColorTexture.transform;
+      if (baseColorTextureInfo.transform) {
+        auto& transform = *baseColorTextureInfo.transform;
 
-        uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
-        uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
-        uvRotation = transform.rotation;
+        baseColorTexture.uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
+        baseColorTexture.uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        baseColorTexture.uvRotation = transform.rotation;
       }
 
-      mat.diffuseTexture = asset::Texture{/* clang-format off */
-        .index = textureIdx.value(),
-        .uvScale = uvScale,
-        .uvOffset = uvOffset,
-        .uvRotation = uvRotation
-      };/* clang-format on */
+      mat.diffuseTexture = baseColorTexture;
     }
 
     // Has an emissive texture
     if (gltfMaterial.emissiveTexture.has_value()) {
-      auto& emissiveTexture = gltfMaterial.emissiveTexture.value();
+      auto& emissiveTextureInfo = gltfMaterial.emissiveTexture.value();
 
-      auto textureIdx = getTexture(emissiveTexture.textureIndex);
-      if (!textureIdx.has_value()) {
-        return std::unexpected{textureIdx.error()};
+      auto emissiveTextureResult = getTexture(emissiveTextureInfo.textureIndex);
+      if (!emissiveTextureResult.has_value()) {
+        return std::unexpected{emissiveTextureResult.error()};
       }
 
-      glm::vec2 uvScale = glm::vec2(1.0f, 1.0f);
-      glm::vec2 uvOffset = glm::vec2(0.0f, 0.0f);
-      float uvRotation = 0.0f;
+      auto emissiveTexture = emissiveTextureResult.value();
 
-      if (emissiveTexture.transform) {
-        auto& transform = *emissiveTexture.transform;
+      if (emissiveTextureInfo.transform) {
+        auto& transform = *emissiveTextureInfo.transform;
 
-        uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
-        uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
-        uvRotation = transform.rotation;
+        emissiveTexture.uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
+        emissiveTexture.uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        emissiveTexture.uvRotation = transform.rotation;
       }
 
-      mat.emissiveTexture = asset::Texture{/* clang-format off */
-        .index = textureIdx.value(),
-        .uvScale = uvScale,
-        .uvOffset = uvOffset,
-        .uvRotation = uvRotation
-      };/* clang-format on */
+      mat.emissiveTexture = emissiveTexture;
     }
 
     // TODO: This works for phong materials,

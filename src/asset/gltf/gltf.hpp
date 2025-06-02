@@ -29,7 +29,7 @@ namespace asset::loader {
     ) noexcept; /* clang-format on */
 
     /* clang-format off */
-    static std::expected<size_t, std::string> tryCreateTexture(
+    static std::expected<texture::Texture, std::string> tryCreateTexture(
       const fastgltf::Asset& asset,
       const fastgltf::Image& image,
       texture::Manager& texMan

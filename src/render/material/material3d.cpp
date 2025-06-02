@@ -10,19 +10,6 @@ material::Manager3D::Manager3D(uniform::Block<material::Material3D> uniformMater
 material::Manager3D::~Manager3D() {
 }
 
-static texture::Texture assetTexToGLTex(const std::optional<asset::Texture> tex) noexcept {
-  texture::Texture out;
-
-  if (tex.has_value()) {
-    out.index = tex->index;
-    out.uvScale = tex->uvScale;
-    out.uvOffset = tex->uvOffset;
-    out.uvRotation = tex->uvRotation;
-  }
-
-  return out;
-}
-
 // todo: might be able to combine these in the future.
 void material::Manager3D::setMaterial(const asset::Material& material) noexcept {
   /* clang-format off */
@@ -32,9 +19,9 @@ void material::Manager3D::setMaterial(const asset::Material& material) noexcept 
     .diffuse = material.diffuse,
     .dissolve = material.dissolve,
     .specular = material.specular,
-    .diffuseTexture = assetTexToGLTex(material.diffuseTexture),
-    .normalTexture = assetTexToGLTex(material.normalTexture),
-    .emissiveTexture = assetTexToGLTex(material.emissiveTexture),
+    .diffuseTexture = material.diffuseTexture.value_or(texture::Texture{}),
+    .normalTexture = material.normalTexture.value_or(texture::Texture{}),
+    .emissiveTexture = material.emissiveTexture.value_or(texture::Texture{}),
   };/* clang-format on */
 
   if (material.isDoubleSided) {

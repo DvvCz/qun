@@ -61,12 +61,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
         return std::unexpected{std::format("Failed to load texture: {}", asset.error())};
       }
 
-      mat.diffuseTexture = {/* clang-format off */
-        .index = asset->textureId,
-        .uvScale = glm::vec2(1.0f, 1.0f),
-        .uvOffset = glm::vec2(0.0f, 0.0f),
-        .uvRotation = 0.0f
-      }; /* clang-format on */
+      mat.diffuseTexture = asset->texture;
     }
 
     if (!material.normal_texname.empty()) {
@@ -78,12 +73,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
         return std::unexpected{std::format("Failed to load normal texture: {}", asset.error())};
       }
 
-      mat.normalTexture = {/* clang-format off */
-        .index = asset->textureId,
-        .uvScale = glm::vec2(1.0f, 1.0f),
-        .uvOffset = glm::vec2(0.0f, 0.0f),
-        .uvRotation = 0.0f
-      }; /* clang-format on */
+      mat.normalTexture = asset->texture;
     }
 
     if (!material.emissive_texname.empty()) {
@@ -95,12 +85,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
         return std::unexpected{std::format("Failed to load emissive texture: {}", asset.error())};
       }
 
-      mat.emissiveTexture = {/* clang-format off */
-        .index = asset->textureId,
-        .uvScale = glm::vec2(1.0f, 1.0f),
-        .uvOffset = glm::vec2(0.0f, 0.0f),
-        .uvRotation = 0.0f
-      }; /* clang-format on */
+      mat.emissiveTexture = asset->texture;
     }
 
     materials.push_back(mat);

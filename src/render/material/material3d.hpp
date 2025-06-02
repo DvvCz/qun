@@ -5,6 +5,8 @@
 #include "render/uniform/block.hpp"
 #include "render/texture.hpp"
 
+#include "asset/asset.hpp"
+
 namespace material {
   // Carefully ensure this is std140
   struct Material3D {

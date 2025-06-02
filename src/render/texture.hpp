@@ -7,7 +7,6 @@
 #include <glad/glad.h>
 
 #include "uniform/single.hpp"
-#include "asset/asset.hpp"
 
 namespace texture {
   // Carefully ensure this is std140
@@ -19,7 +18,7 @@ namespace texture {
     float _padding[2];
   };
 
-  static_assert(sizeof(Texture) % 16 == 0, "Ensure Texture is std140 compliant");
+  static_assert(sizeof(texture::Texture) % 16 == 0, "Ensure Texture is std140 compliant");
 
   enum Format {
     R = 0,
@@ -36,7 +35,7 @@ namespace texture {
     ~Manager();
 
     /* clang-format off */
-    std::expected<size_t, std::string> create(
+    std::expected<texture::Texture, std::string> create(
       int width,
       int height,
       texture::Format format,

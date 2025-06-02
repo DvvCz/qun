@@ -3,7 +3,7 @@
 #include "asset/img/img.hpp"
 
 /* clang-format off */
-std::expected<size_t, std::string> asset::loader::Gltf::tryCreateTexture(
+std::expected<texture::Texture, std::string> asset::loader::Gltf::tryCreateTexture(
   const fastgltf::Asset& asset,
   const fastgltf::Image& image,
   texture::Manager& texMan
@@ -36,7 +36,7 @@ std::expected<size_t, std::string> asset::loader::Gltf::tryCreateTexture(
         return std::unexpected{out.error()};
       }
 
-      return out.value().textureId;
+      return out.value().texture;
     }
     default:
       return std::unexpected{
@@ -54,7 +54,7 @@ std::expected<size_t, std::string> asset::loader::Gltf::tryCreateTexture(
       return std::unexpected{out.error()};
     }
 
-    return out.value().textureId;
+    return out.value().texture;
   }
 
   return std::unexpected{"Unknown buffer data type for texture"};

@@ -1,5 +1,8 @@
 #include "texture.hpp"
 
+#include <format>
+#include <stdexcept>
+
 #define MAX_WIDTH 2048
 #define MAX_HEIGHT 2048
 #define MAX_TEXTURES 64
@@ -30,7 +33,7 @@ texture::Manager::~Manager() {
 }
 
 /* clang-format off */
-std::expected<size_t, std::string> texture::Manager::create(
+std::expected<texture::Texture, std::string> texture::Manager::create(
   int width,
   int height,
   texture::Format format,
@@ -90,7 +93,12 @@ std::expected<size_t, std::string> texture::Manager::create(
 
   textureSlots.push_back(true);
 
-  return textureId;
+  return texture::Texture{/* clang-format off */
+    .uvScale = glm::vec2(width / MAX_WIDTH, height / MAX_HEIGHT),
+    .uvOffset = glm::vec2(0.0f, 0.0f),
+    .index = static_cast<GLint>(textureId),
+    .uvRotation = 0.0f
+  }; /* clang-format on */
 }
 
 void texture::Manager::bind() {
