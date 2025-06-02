@@ -63,7 +63,7 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
         auto& transform = *normalTextureInfo.transform;
 
         normalTexture.uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
-        normalTexture.uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        normalTexture.uvScale *= glm::vec2(transform.uvScale[0], transform.uvScale[1]);
         normalTexture.uvRotation = transform.rotation;
       }
 
@@ -85,7 +85,7 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
         auto& transform = *baseColorTextureInfo.transform;
 
         baseColorTexture.uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
-        baseColorTexture.uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        baseColorTexture.uvScale *= glm::vec2(transform.uvScale[0], transform.uvScale[1]);
         baseColorTexture.uvRotation = transform.rotation;
       }
 
@@ -107,7 +107,7 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
         auto& transform = *emissiveTextureInfo.transform;
 
         emissiveTexture.uvOffset = glm::vec2(transform.uvOffset[0], transform.uvOffset[1]);
-        emissiveTexture.uvScale = glm::vec2(transform.uvScale[0], transform.uvScale[1]);
+        emissiveTexture.uvScale *= glm::vec2(transform.uvScale[0], transform.uvScale[1]);
         emissiveTexture.uvRotation = transform.rotation;
       }
 

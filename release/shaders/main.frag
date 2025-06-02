@@ -110,7 +110,6 @@ void main() {
         specular += spec * lights[i].color * distAttenuation;
     }
 
-    // Balance the different lighting components
     vec3 ambientPart = materialAmbient * ambient;
     vec3 diffusePart = materialDiffuse * diffuse;
     vec3 specularPart = materialSpecular * specular;
