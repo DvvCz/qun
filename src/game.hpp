@@ -6,9 +6,8 @@
 #include "render/renderer.hpp"
 #include "render/window.hpp"
 
-#include "asset/gltf/gltf.hpp"
-
 #include "systems/particle.hpp"
+#include "systems/transform.hpp"
 
 class Game {
 public:
@@ -19,10 +18,12 @@ public:
 private:
   std::expected<bool, std::string> setupScene() noexcept;
 
-  std::shared_ptr<Window> window;
+  // ECS
   std::shared_ptr<entt::registry> registry;
   std::unique_ptr<systems::Particle> particleSystem;
-  std::unique_ptr<Renderer> renderer;
+  std::unique_ptr<systems::Transform> transformSystem;
 
-  asset::loader::Gltf gltfLoader;
+  // Rendering
+  std::shared_ptr<Window> window;
+  std::unique_ptr<Renderer> renderer;
 };

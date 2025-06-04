@@ -14,6 +14,7 @@
 #include "components/light.hpp"
 
 #include "asset/obj/obj.hpp"
+#include "asset/gltf/gltf.hpp"
 
 #include "render/model/3d/sphere.hpp"
 #include "render/model/3d/cube.hpp"
@@ -246,6 +247,9 @@ std::expected<bool, std::string> Game::setupScene() noexcept {
     registry->emplace<components::GlobalTransform>(ent, matrix);
     registry->emplace<components::Model3D>(ent, model);
     registry->emplace<components::Material3D>(ent, greenMaterial);
+    registry->emplace<components::Position>(ent, glm::vec3(0.0f, -0.5f, 0.0f));
+
+    registry->replace<components::Position>(ent, glm::vec3(0.0f, 0.5f, 0.0f));
   }
 
   // /* clang-format off */
