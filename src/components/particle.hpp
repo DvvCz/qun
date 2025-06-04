@@ -7,4 +7,12 @@ namespace components {
     float timeCreated;
     float lifeSpan;
   };
+
+  struct Velocity {
+    glm::vec3 velocity;
+  };
+
+  struct Acceleration {
+    glm::vec3 acceleration;
+  };
 };
