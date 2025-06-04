@@ -211,6 +211,10 @@ void Renderer::draw3D() {
     } else {
       glEnable(GL_CULL_FACE);
 
+      // This doesn't currently work because:
+      // - We transform vertices by the transforms provided by the gltf.
+      // - Need to change the code so that transforms are stored and applied at runtime
+      // - Potentially need to use glFrontFace?
       if (glm::determinant(globalTransform) < 0.0f) {
         glCullFace(GL_BACK); // clockwise
       } else {
