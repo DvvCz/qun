@@ -2,9 +2,11 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/matrix.hpp>
 #include <print>
 #include <entt/entt.hpp>
 
+#include "asset/asset.hpp"
 #include "render/material/material2d.hpp"
 #include "render/shader/shader.hpp"
 #include "render/shader/program.hpp"
@@ -15,6 +17,7 @@
 #include "components/light.hpp"
 
 #include "constants.hpp"
+#include "render/texture.hpp"
 
 Renderer::Renderer(const std::shared_ptr<Window>& window,
                    const std::shared_ptr<entt::registry>& registry) /* clang-format off */
@@ -124,13 +127,13 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   uniformCameraPos3D.set(cameraPos);
 }
 
-material::Material3D defaultMaterial3D = {
+asset::Material defaultMaterial3D = {
     /* clang-format off */
   .ambient = glm::vec3(0.2f, 0.2f, 0.2f),
-  .shininess = 32.0f,
   .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
+  .specular = glm::vec3(1.0f, 1.0f, 1.0f),
+  .shininess = 32.0f,
   .dissolve = 1.0f,
-  .specular = glm::vec3(1.0f, 1.0f, 1.0f)
 };/* clang-format on */
 
 material::Material2D defaultMaterial2D = {/* clang-format off */
@@ -196,12 +199,23 @@ void Renderer::draw3D() {
     auto globalTransform = registry->get<components::GlobalTransform>(ent);
     auto model = registry->get<components::Model3D>(ent);
 
+    asset::Material material = defaultMaterial3D;
     if (registry->all_of<components::Material3D>(ent)) {
-      auto material = registry->get<components::Material3D>(ent);
-      materialManager3D->setMaterial(*material);
+      material = *registry->get<components::Material3D>(ent);
+    }
+
+    materialManager3D->setMaterial(material);
+
+    if (material.isDoubleSided) {
+      glDisable(GL_CULL_FACE);
     } else {
-      // Use the default material if no specific material is set
-      materialManager3D->setMaterial(defaultMaterial3D);
+      glEnable(GL_CULL_FACE);
+
+      if (glm::determinant(globalTransform) < 0.0f) {
+        glCullFace(GL_BACK); // clockwise
+      } else {
+        glCullFace(GL_FRONT); // counter-clockwise (normal)
+      }
     }
 
     modelMatrix = globalTransform;

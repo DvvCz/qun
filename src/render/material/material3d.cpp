@@ -1,6 +1,7 @@
 #include "material3d.hpp"
 
 #include "render/texture.hpp"
+#include <glm/matrix.hpp>
 #include <print>
 
 material::Manager3D::Manager3D(uniform::Block<material::Material3D> uniformMaterial, std::shared_ptr<texture::Manager> texMan)
@@ -24,15 +25,7 @@ void material::Manager3D::setMaterial(const asset::Material& material) noexcept 
     .emissiveTexture = material.emissiveTexture.value_or(texture::Texture{}),
   };/* clang-format on */
 
-  if (material.isDoubleSided) {
-    glDisable(GL_CULL_FACE);
-  } else {
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-  }
-
-  uniformMaterial.set(newMaterial);
-  currentMaterial = newMaterial;
+  setMaterial(newMaterial);
 }
 
 void material::Manager3D::setMaterial(const material::Material3D& material) noexcept {
