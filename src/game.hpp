@@ -18,6 +18,7 @@ public:
 
 private:
   std::expected<bool, std::string> setupScene() noexcept;
+  void createSystems() noexcept;
 
   // ECS
   std::shared_ptr<entt::registry> registry;

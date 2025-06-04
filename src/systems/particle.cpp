@@ -20,14 +20,13 @@ void systems::Particle::tick(float curTime, float dt) {
     auto& velocity = ents.get<components::Velocity>(ent);
     auto& acceleration = ents.get<components::Acceleration>(ent);
 
-    // Update velocity based on acceleration: v = v + a * dt
-    velocity.velocity += acceleration.acceleration * dt;
+    registry->replace<components::Velocity>(ent, velocity.velocity + acceleration.acceleration * dt);
 
     // Update position based on velocity: p = p + v * dt
     // Check if the entity has a position component
     if (registry->all_of<components::Position>(ent)) {
       auto& position = registry->get<components::Position>(ent);
-      position += velocity.velocity * dt;
+      registry->replace<components::Position>(ent, position + velocity.velocity * dt);
     }
   }
 }

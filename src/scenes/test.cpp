@@ -242,9 +242,9 @@ std::expected<bool, std::string> Game::setupScene() noexcept {
     auto model = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
 
     auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, glm::identity<glm::mat4x4>());
     registry->emplace<components::Model3D>(ent, model);
     registry->emplace<components::Material3D>(ent, greenMaterial);
-    registry->emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
   }
 
   // /* clang-format off */
