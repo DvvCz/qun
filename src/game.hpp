@@ -6,6 +6,7 @@
 #include "render/renderer.hpp"
 #include "render/window.hpp"
 
+#include "systems/particle-spawner.hpp"
 #include "systems/particle.hpp"
 #include "systems/transform.hpp"
 
@@ -22,6 +23,8 @@ private:
   std::shared_ptr<entt::registry> registry;
   std::unique_ptr<systems::Particle> particleSystem;
   std::unique_ptr<systems::Transform> transformSystem;
+
+  std::unique_ptr<systems::ParticleSpawner> particleSpawnerSystem;
 
   // Rendering
   std::shared_ptr<Window> window;

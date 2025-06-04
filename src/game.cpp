@@ -12,6 +12,8 @@ Game::Game() {
   registry = std::make_shared<entt::registry>();
   particleSystem = std::make_unique<systems::Particle>(registry);
   transformSystem = std::make_unique<systems::Transform>(registry);
+
+  particleSpawnerSystem = std::make_unique<systems::ParticleSpawner>(registry);
 }
 
 std::expected<bool, std::string> Game::start() {
@@ -62,6 +64,7 @@ std::expected<bool, std::string> Game::start() {
       lastTime = curTime;
 
       particleSystem->tick(curTime, deltaTime);
+      particleSpawnerSystem->tick(curTime, deltaTime);
 
       // Mouse look
       auto mouseDelta = input::Mouse::getPositionDelta();

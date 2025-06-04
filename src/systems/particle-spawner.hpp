@@ -3,14 +3,17 @@
 #include <entt/entt.hpp>
 #include <memory>
 
+#include "render/model/model.hpp"
+
 namespace systems {
-  class Particle {
+  class ParticleSpawner {
   public:
     void tick(float curTime, float dt);
 
-    Particle(const std::shared_ptr<entt::registry> registry);
+    ParticleSpawner(std::shared_ptr<entt::registry> registry);
 
   private:
     std::shared_ptr<entt::registry> registry;
+    std::shared_ptr<Model3D> particleModel;
   };
 };

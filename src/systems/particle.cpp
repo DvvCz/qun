@@ -3,7 +3,7 @@
 #include "components/particle.hpp"
 #include "components/transform.hpp"
 
-systems::Particle::Particle(const std::shared_ptr<entt::registry>& registry) : registry(registry) {
+systems::Particle::Particle(const std::shared_ptr<entt::registry> registry) : registry(registry) {
 }
 
 void systems::Particle::tick(float curTime, float dt) {
