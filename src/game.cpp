@@ -1,14 +1,16 @@
 #include "game.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
-#include <print>
 #include <string>
 
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"
 
+#include "systems/particle.hpp"
+
 Game::Game() {
   registry = std::make_shared<entt::registry>();
+  particleSystem = std::make_unique<systems::Particle>(registry);
 }
 
 std::expected<bool, std::string> Game::start() {
@@ -57,6 +59,8 @@ std::expected<bool, std::string> Game::start() {
       float curTime = glfwGetTime();
       deltaTime = curTime - lastTime;
       lastTime = curTime;
+
+      particleSystem->tick(curTime, deltaTime);
 
       // Mouse look
       auto mouseDelta = input::Mouse::getPositionDelta();

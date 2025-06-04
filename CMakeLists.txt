@@ -52,6 +52,7 @@ add_executable(trender
     ./src/asset/gltf/texture.cpp
     ./src/asset/gltf/gltf.cpp
     ./src/util/error.cpp
+    ./src/systems/particle.cpp
 
     # Test Scene (included by default)
     ./src/scenes/test.cpp

@@ -8,6 +8,8 @@
 
 #include "asset/gltf/gltf.hpp"
 
+#include "systems/particle.hpp"
+
 class Game {
 public:
   Game();
@@ -19,6 +21,7 @@ private:
 
   std::shared_ptr<Window> window;
   std::shared_ptr<entt::registry> registry;
+  std::unique_ptr<systems::Particle> particleSystem;
   std::unique_ptr<Renderer> renderer;
 
   asset::loader::Gltf gltfLoader;
