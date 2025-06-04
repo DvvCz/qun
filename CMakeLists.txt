@@ -55,6 +55,8 @@ add_executable(trender
     ./src/systems/particle.cpp
     ./src/systems/transform.cpp
     ./src/systems/particle-spawner.cpp
+    ./src/systems/boids.cpp
+    ./src/systems/boid-spawner.cpp
 
     # Test Scene (included by default)
     ./src/scenes/test.cpp

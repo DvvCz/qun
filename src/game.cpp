@@ -7,6 +7,8 @@
 #include "input/raw/mouse.hpp"
 
 #include "systems/particle.hpp"
+#include "systems/boids.hpp"
+#include "systems/boid-spawner.hpp"
 
 Game::Game() {
   registry = std::make_shared<entt::registry>();
@@ -16,6 +18,10 @@ void Game::createSystems() noexcept {
   particleSystem = std::make_unique<systems::Particle>(registry);
   transformSystem = std::make_unique<systems::Transform>(registry);
   particleSpawnerSystem = std::make_unique<systems::ParticleSpawner>(registry);
+
+  // Create boids systems
+  boidsSystem = std::make_unique<systems::Boids>(registry);
+  boidSpawnerSystem = std::make_unique<systems::BoidSpawner>(registry);
 }
 
 std::expected<bool, std::string> Game::start() {
@@ -69,6 +75,10 @@ std::expected<bool, std::string> Game::start() {
 
       particleSystem->tick(curTime, deltaTime);
       particleSpawnerSystem->tick(curTime);
+
+      // Update boids systems
+      boidsSystem->tick(curTime, deltaTime);
+      boidSpawnerSystem->tick(curTime);
 
       // Mouse look
       auto mouseDelta = input::Mouse::getPositionDelta();

@@ -9,6 +9,8 @@
 #include "systems/particle-spawner.hpp"
 #include "systems/particle.hpp"
 #include "systems/transform.hpp"
+#include "systems/boids.hpp"
+#include "systems/boid-spawner.hpp"
 
 class Game {
 public:
@@ -26,6 +28,10 @@ private:
   std::unique_ptr<systems::Transform> transformSystem;
 
   std::unique_ptr<systems::ParticleSpawner> particleSpawnerSystem;
+
+  // Boids systems
+  std::unique_ptr<systems::Boids> boidsSystem;
+  std::unique_ptr<systems::BoidSpawner> boidSpawnerSystem;
 
   // Rendering
   std::shared_ptr<Window> window;
