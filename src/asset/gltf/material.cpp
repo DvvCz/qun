@@ -114,6 +114,8 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
       mat.emissiveTexture = emissiveTexture;
     }
 
+    mat.isDoubleSided = gltfMaterial.doubleSided;
+
     // TODO: This works for phong materials,
     // since we can just remove diffuse and specular.
     // But might not work for PBR later on.

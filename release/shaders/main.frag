@@ -54,6 +54,8 @@ out vec4 outColor;
 vec2 transformUV(vec2 uv, Texture tex) {
     vec2 transformedUV = uv;
 
+    transformedUV *= tex.uvScale;
+
     if (tex.uvRotation != 0.0) {
         float cosAngle = cos(tex.uvRotation);
         float sinAngle = sin(tex.uvRotation);
@@ -61,7 +63,6 @@ vec2 transformUV(vec2 uv, Texture tex) {
         transformedUV = rotationMatrix * transformedUV;
     }
 
-    transformedUV *= tex.uvScale;
     transformedUV += tex.uvOffset;
 
     return transformedUV;
