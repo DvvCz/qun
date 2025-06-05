@@ -1,6 +1,7 @@
 #include "nfs.hpp"
 
 #include <expected>
+#include <print>
 #include <string>
 
 #include <glm/glm.hpp>
@@ -29,11 +30,29 @@ std::expected<void, std::string> scenes::nfs::startup(/* clang-format off */
       return std::unexpected{std::format("Failed to load car asset: {}", util::error::indent(asset.error()))};
     }
 
+    // TODO: For some reason gltf loader doesn't work with this material
+    // Will need to resolve it properly later.
+    for (auto& material : asset->materials) {
+      if (material.name == "Glass") {
+        material.dissolve = 0.3f;
+      }
+    }
+
     auto model = renderer->createAsset3D(asset.value());
 
     auto matrix = glm::mat4(1.0f);
     matrix = glm::scale(matrix, glm::vec3(0.5f));
-    matrix = glm::translate(matrix, glm::vec3(18.0f, 5.0f, 1.2f));
+    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 0.0f));
+
+    auto ent = registry->create();
+    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Model3D>(ent, model);
+  }
+
+  { // baseplate
+    auto model = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
+
+    auto matrix = glm::mat4(1.0f);
 
     auto ent = registry->create();
     registry->emplace<components::GlobalTransform>(ent, matrix);
