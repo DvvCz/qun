@@ -1,9 +1,10 @@
 #include <entt/entt.hpp>
 #include <expected>
 
-#include "render/renderer.hpp"
+class Game;
 
-namespace scenes::nfs {
-  std::expected<void, std::string> startup(std::shared_ptr<entt::registry> reg, std::shared_ptr<Renderer> renderer);
-  std::expected<void, std::string> update(std::shared_ptr<entt::registry> reg, std::shared_ptr<Renderer> renderer);
-}
+namespace scenes {
+  struct NFS {
+    void build(Game& game);
+  };
+};

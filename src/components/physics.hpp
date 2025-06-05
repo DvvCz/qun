@@ -10,4 +10,12 @@ namespace components {
   struct Acceleration {
     glm::vec3 value;
   };
+
+  struct AngularVelocity {
+    glm::vec3 value;
+  };
+
+  struct AngularAcceleration {
+    glm::vec3 value;
+  };
 };

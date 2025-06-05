@@ -12,17 +12,18 @@
 #include "components/light.hpp"
 #include "components/material.hpp"
 
-#include "asset/obj/obj.hpp"
+#include "game.hpp"
+
 #include "asset/gltf/gltf.hpp"
 
-#include "render/model/3d/sphere.hpp"
 #include "render/model/3d/cube.hpp"
+#include "render/renderer.hpp"
 
 #include "util/error.hpp"
 
 #include "constants.hpp"
 
-std::expected<void, std::string> scenes::nfs::startup(/* clang-format off */
+static std::expected<void, std::string> startup(/* clang-format off */
   std::shared_ptr<entt::registry> registry,
   std::shared_ptr<Renderer> renderer
 ) { /* clang-format on */
@@ -46,15 +47,16 @@ std::expected<void, std::string> scenes::nfs::startup(/* clang-format off */
     auto ent = registry->create();
     registry->emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
     registry->emplace<components::Model3D>(ent, model);
+
+    registry->emplace<components::Velocity>(ent, glm::vec3(0.5f, 0.0f, 0.0f));
+    registry->emplace<components::AngularVelocity>(ent, glm::vec3(0.0f, 0.0f, 0.5f));
   }
 
   { // baseplate
     auto model = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
 
-    auto matrix = glm::mat4(1.0f);
-
     auto ent = registry->create();
-    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Position>(ent, constants::WORLD_ORIGIN);
     registry->emplace<components::Model3D>(ent, model);
   }
 
@@ -70,9 +72,14 @@ std::expected<void, std::string> scenes::nfs::startup(/* clang-format off */
   return {};
 }
 
-std::expected<void, std::string> scenes::nfs::update(/* clang-format off */
+static std::expected<void, std::string> update(/* clang-format off */
   std::shared_ptr<entt::registry> registry,
   std::shared_ptr<Renderer> renderer
 ) { /* clang-format on */
   return {};
+}
+
+void scenes::NFS::build(Game& game) {
+  game.addSystem(Schedule::Startup, startup);
+  game.addSystem(Schedule::Update, update);
 }

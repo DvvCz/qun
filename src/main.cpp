@@ -14,8 +14,7 @@ int main() {
   game->addPlugin(DefaultPlugins());
   game->addPlugin(plugins::DebugCamController());
   game->addPlugin(plugins::Physics());
-  game->addSystem(Schedule::Startup, scenes::nfs::startup);
-  game->addSystem(Schedule::Update, scenes::nfs::update);
+  game->addPlugin(scenes::NFS());
 
   auto result = game->start();
   if (!result.has_value()) {
