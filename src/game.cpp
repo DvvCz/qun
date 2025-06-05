@@ -12,7 +12,7 @@ Game::Game() {
 
 void Game::addDefaultSystems() {
   // Rendering system
-  addSystem(Schedule::Startup, [this]() {
+  addSystem(Schedule::Startup, [this]() -> std::expected<void, std::string> {
     if (!glfwInit()) {
       return std::unexpected("Failed to initialize GLFW");
     }
@@ -26,6 +26,8 @@ void Game::addDefaultSystems() {
     }
 
     renderer = std::make_unique<Renderer>(window, registry);
+
+    return {};
   });
   addSystem<entt::registry>(Schedule::Render, [this](entt::registry& reg) {
     renderer->drawFrame();
@@ -110,7 +112,10 @@ void Game::addDefaultSystems() {
 }
 
 std::expected<bool, std::string> Game::start() {
-  runSchedule(Schedule::Startup);
+  auto startupResult = runSchedule(Schedule::Startup);
+  if (!startupResult) {
+    return std::unexpected(startupResult.error());
+  }
 
   while (!window->shouldClose()) {
     // Update
@@ -122,13 +127,19 @@ std::expected<bool, std::string> Game::start() {
         break;
       }
 
-      runSchedule(Schedule::Update);
+      auto updateResult = runSchedule(Schedule::Update);
+      if (!updateResult) {
+        return std::unexpected(updateResult.error());
+      }
 
       input::Keyboard::resetCurrentKeyMaps();
       input::Mouse::resetCurrentMouseMaps();
     }
 
-    runSchedule(Schedule::Render);
+    auto renderResult = runSchedule(Schedule::Render);
+    if (!renderResult) {
+      return std::unexpected(renderResult.error());
+    }
   }
 
   glfwTerminate();

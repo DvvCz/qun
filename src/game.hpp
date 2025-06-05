@@ -34,22 +34,38 @@ public:
   }
 
   template <typename... Resources, typename Func> void addSystem(Schedule schedule, Func&& system) {
-    scheduledSystems[schedule].emplace_back(
-        [this, system = std::forward<Func>(system)]() { system(getResource<Resources>()...); });
+    scheduledSystems[schedule].emplace_back([this, system = std::forward<Func>(system)]() -> std::expected<void, std::string> {
+      if constexpr (std::is_same_v<std::invoke_result_t<Func, decltype(getResource<Resources>())...>, void>) {
+        system(getResource<Resources>()...);
+        return {};
+      } else if constexpr (std::is_same_v<std::invoke_result_t<Func, decltype(getResource<Resources>())...>,
+                                          std::expected<void, std::string>>) {
+        return system(getResource<Resources>()...);
+      } else {
+        static_assert(std::is_same_v<std::invoke_result_t<Func, decltype(getResource<Resources>())...>, void> ||
+                          std::is_same_v<std::invoke_result_t<Func, decltype(getResource<Resources>())...>,
+                                         std::expected<void, std::string>>,
+                      "System functions must return either void or std::expected<void, std::string>");
+      }
+    });
   }
 
   void addDefaultSystems();
 
 private:
   resources::Time time;
-  std::unordered_map<Schedule, std::vector<std::function<void()>>> scheduledSystems;
+  std::unordered_map<Schedule, std::vector<std::function<std::expected<void, std::string>()>>> scheduledSystems;
 
-  void runSchedule(Schedule schedule) {
+  std::expected<void, std::string> runSchedule(Schedule schedule) {
     if (auto it = scheduledSystems.find(schedule); it != scheduledSystems.end()) {
       for (auto& system : it->second) {
-        system();
+        auto result = system();
+        if (!result) {
+          return std::unexpected(result.error());
+        }
       }
     }
+    return {};
   }
 
   // ECS
