@@ -6,6 +6,7 @@ find_package(glm REQUIRED)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Glad
 add_library(glad STATIC ./thirdparty/glad/glad.c)
