@@ -2,26 +2,31 @@
 
 #include "components/transform.hpp"
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 // TODO: when parent relationships are implemented, this is gonna be a lot more complex
 
-static void on_position_update(entt::registry& registry, entt::entity entity) {
-  auto globalTransform = registry.get_or_emplace<components::GlobalTransform>(entity, glm::identity<glm::mat4x4>());
-  auto position = registry.get<components::Position>(entity);
+static void update_global_transform(entt::registry& registry, entt::entity entity) {
+  auto position = registry.get_or_emplace<components::Position>(entity, glm::vec3(0.0f));
+  auto rotation = registry.get_or_emplace<components::Rotation>(entity, glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+  auto scale = registry.get_or_emplace<components::Scale>(entity, glm::vec3(1.0f));
 
-  globalTransform[3] = glm::vec4(position.x, position.y, position.z, 1.0f);
-  registry.emplace_or_replace<components::GlobalTransform>(entity, globalTransform);
-}
+  glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), position);
+  glm::mat4 rotationMatrix = glm::mat4_cast(rotation);
+  glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
 
-static void on_position_construct(entt::registry& registry, entt::entity entity) {
-  auto globalTransform = registry.get_or_emplace<components::GlobalTransform>(entity, glm::identity<glm::mat4x4>());
-  auto position = registry.get<components::Position>(entity);
-
-  globalTransform[3] = glm::vec4(position.x, position.y, position.z, 1.0f);
+  glm::mat4 globalTransform = translationMatrix * rotationMatrix * scaleMatrix;
   registry.emplace_or_replace<components::GlobalTransform>(entity, globalTransform);
 }
 
 void systems::transform::startup(entt::registry& registry) {
-  registry.on_update<components::Position>().connect<on_position_update>();
-  registry.on_construct<components::Position>().connect<on_position_construct>();
+  registry.on_update<components::Position>().connect<update_global_transform>();
+  registry.on_construct<components::Position>().connect<update_global_transform>();
+
+  registry.on_update<components::Rotation>().connect<update_global_transform>();
+  registry.on_construct<components::Rotation>().connect<update_global_transform>();
+
+  registry.on_update<components::Scale>().connect<update_global_transform>();
+  registry.on_construct<components::Scale>().connect<update_global_transform>();
 }
