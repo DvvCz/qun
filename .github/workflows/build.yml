@@ -69,6 +69,10 @@ jobs:
       run: |
         vcpkg install glfw3:${{ matrix.vcpkg_triplet }}
         vcpkg install glm:${{ matrix.vcpkg_triplet }}
+
+    - name: Install OpenGL for Linux
+      if: matrix.os == 'ubuntu-latest'
+      run: |
         vcpkg install opengl:${{ matrix.vcpkg_triplet }}
 
     - name: Configure CMake (Linux)
