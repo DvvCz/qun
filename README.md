@@ -13,7 +13,7 @@ This is an attempt to make a simple game engine / renderer using modern OpenGL (
 - Dynamic entity manipulation making use of [EnTT](https://github.com/skypjack/entt)
 - Support for meshes with multiple materials
 - Obj and glTF file formats for asset imports
-- Heavy use of ECS paradigms (systems, resources)
+- Heavy use of ECS paradigms (plugins, systems, resources)
 - Use of results (`std::expected`) over traditional C++ exceptions
 
 ## Sample

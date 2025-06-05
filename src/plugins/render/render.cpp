@@ -37,4 +37,6 @@ void plugins::Render::build(Game& game) {
     renderer->drawFrame();
     glfwSwapBuffers(window->getGlfwWindow());
   });
+
+  game.addSystem(Schedule::Exit, glfwTerminate);
 }

@@ -24,7 +24,8 @@ enum class Schedule {
   Startup,
   Update,
   PostUpdate,
-  Render
+  Render,
+  Exit
 };
 
 class Game;

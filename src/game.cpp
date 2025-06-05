@@ -2,15 +2,6 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <string>
-#include <memory>
-
-#include "input/raw/keyboard.hpp"
-#include "input/raw/mouse.hpp"
-
-#include "resources/time.hpp"
-
-#include "render/window.hpp"
-#include "render/renderer.hpp"
 
 std::expected<bool, std::string> Game::start() {
   isRunning = true;
@@ -37,7 +28,10 @@ std::expected<bool, std::string> Game::start() {
     }
   }
 
-  glfwTerminate();
+  auto exitResult = runSchedule(Schedule::Exit);
+  if (!exitResult) {
+    return std::unexpected(exitResult.error());
+  }
 
   return true;
 }
