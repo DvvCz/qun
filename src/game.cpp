@@ -45,7 +45,9 @@ void Game::addDefaultSystems() {
     time.deltaTime = time.currentTime - time.lastTime;
     time.lastTime = time.currentTime;
   });
+}
 
+void Game::addDefaultCameraController() {
   // Camera controller
   struct CameraState {
     float yaw = 0.0f;

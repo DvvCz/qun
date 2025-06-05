@@ -28,6 +28,8 @@ public:
       return time;
     } else if constexpr (std::is_same_v<T, entt::registry>) {
       return *registry;
+    } else if constexpr (std::is_same_v<T, Renderer>) {
+      return *renderer;
     } else {
       static_assert(std::is_same_v<T, void>, "Resource type not registered");
     }
@@ -35,22 +37,25 @@ public:
 
   template <typename... Resources, typename Func> void addSystem(Schedule schedule, Func&& system) {
     scheduledSystems[schedule].emplace_back([this, system = std::forward<Func>(system)]() -> std::expected<void, std::string> {
-      if constexpr (std::is_same_v<std::invoke_result_t<Func, decltype(getResource<Resources>())...>, void>) {
+      using ReturnType = std::invoke_result_t<Func, decltype(getResource<Resources>())...>;
+
+      if constexpr (std::is_same_v<ReturnType, void>) {
         system(getResource<Resources>()...);
         return {};
-      } else if constexpr (std::is_same_v<std::invoke_result_t<Func, decltype(getResource<Resources>())...>,
-                                          std::expected<void, std::string>>) {
+      } else if constexpr (std::is_same_v<ReturnType, std::expected<void, std::string>>) {
         return system(getResource<Resources>()...);
       } else {
-        static_assert(std::is_same_v<std::invoke_result_t<Func, decltype(getResource<Resources>())...>, void> ||
-                          std::is_same_v<std::invoke_result_t<Func, decltype(getResource<Resources>())...>,
-                                         std::expected<void, std::string>>,
-                      "System functions must return either void or std::expected<void, std::string>");
+        static_assert(/* clang-format off */
+          std::is_same_v<ReturnType, void> ||
+          std::is_same_v<ReturnType, std::expected<void, std::string>>,
+          "System functions must return either void or std::expected<void, std::string>"
+        ); /* clang-format on */
       }
     });
   }
 
   void addDefaultSystems();
+  void addDefaultCameraController();
 
 private:
   resources::Time time;
