@@ -4,14 +4,14 @@
 
 #include "util/error.hpp"
 
-#include "scenes/test.hpp"
+#include "scenes/nfs.hpp"
 
 int main() {
   auto game = std::make_unique<Game>();
   game->addDefaultSystems();
   game->addDefaultCameraController();
-  game->addSystem<entt::registry, Renderer>(Schedule::Startup, scenes::test::startup);
-  game->addSystem<entt::registry, Renderer>(Schedule::Update, scenes::test::update);
+  game->addSystem<entt::registry, Renderer>(Schedule::Startup, scenes::nfs::startup);
+  game->addSystem<entt::registry, Renderer>(Schedule::Update, scenes::nfs::update);
 
   auto result = game->start();
   if (!result.has_value()) {
