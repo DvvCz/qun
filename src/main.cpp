@@ -6,11 +6,7 @@
 
 int main() {
   auto game = std::make_unique<Game>();
-
-  game->addSystem<resources::Time>(Schedule::Startup, [](resources::Time& time) {
-    // t
-    std::println("Game startup: time is {}", time.currentTime);
-  });
+  game->addDefaultSystems();
 
   auto result = game->start();
   if (!result.has_value()) {
