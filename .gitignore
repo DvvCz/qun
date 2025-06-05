@@ -1,5 +1,5 @@
 build
-resources
+release/resources
 .cache
 
 release/*

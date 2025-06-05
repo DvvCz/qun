@@ -1,5 +1,11 @@
 #pragma once
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <memory>
+#include <glm/glm.hpp>
+#include <entt/entt.hpp>
+
 #include "window.hpp"
 
 #include "render/uniform/single.hpp"
@@ -9,12 +15,6 @@
 #include "render/material/material3d.hpp"
 #include "render/model/3d/asset.hpp"
 #include "render/shader/program.hpp"
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <memory>
-#include <glm/glm.hpp>
-#include <entt/entt.hpp>
 
 #define MAX_LIGHTS 20
 

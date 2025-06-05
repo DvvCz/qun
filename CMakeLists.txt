@@ -52,11 +52,12 @@ add_executable(trender
     ./src/asset/gltf/texture.cpp
     ./src/asset/gltf/gltf.cpp
     ./src/util/error.cpp
-    ./src/systems/particle.cpp
-    ./src/systems/transform.cpp
-    ./src/systems/particle-spawner.cpp
-    ./src/systems/boids.cpp
-    ./src/systems/boid-spawner.cpp
+    ./src/plugins/render/render.cpp
+    ./src/plugins/time/time.cpp
+    ./src/plugins/transform/transform.cpp
+    ./src/plugins/entt/entt.cpp
+    ./src/plugins/input/input.cpp
+    ./src/plugins/debug-cam-controller/debug-cam-controller.cpp
 
     # Test Scene (included by default)
     ./src/scenes/test.cpp

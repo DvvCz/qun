@@ -5,6 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+#include "game.hpp"
+
 // TODO: when parent relationships are implemented, this is gonna be a lot more complex
 
 static void update_global_transform(entt::registry& registry, entt::entity entity) {
@@ -20,13 +22,17 @@ static void update_global_transform(entt::registry& registry, entt::entity entit
   registry.emplace_or_replace<components::GlobalTransform>(entity, globalTransform);
 }
 
-void systems::transform::startup(entt::registry& registry) {
-  registry.on_update<components::Position>().connect<update_global_transform>();
-  registry.on_construct<components::Position>().connect<update_global_transform>();
+static void startup(std::shared_ptr<entt::registry> registry) {
+  registry->on_update<components::Position>().connect<update_global_transform>();
+  registry->on_construct<components::Position>().connect<update_global_transform>();
 
-  registry.on_update<components::Rotation>().connect<update_global_transform>();
-  registry.on_construct<components::Rotation>().connect<update_global_transform>();
+  registry->on_update<components::Rotation>().connect<update_global_transform>();
+  registry->on_construct<components::Rotation>().connect<update_global_transform>();
 
-  registry.on_update<components::Scale>().connect<update_global_transform>();
-  registry.on_construct<components::Scale>().connect<update_global_transform>();
+  registry->on_update<components::Scale>().connect<update_global_transform>();
+  registry->on_construct<components::Scale>().connect<update_global_transform>();
+}
+
+void plugins::Transform::build(Game& game) {
+  game.addSystem(Schedule::Startup, startup);
 }

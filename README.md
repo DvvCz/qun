@@ -20,15 +20,13 @@ This is an attempt to make a simple game engine / renderer using modern OpenGL (
 
 ![sample](./sample.png)
 
-Simplified entrypoint:
-
 ```cpp
 int main() {
   auto game = std::make_unique<Game>();
-  game->addDefaultSystems();
-  game->addDefaultCameraController();
-  game->addSystem<entt::registry, Renderer>(Schedule::Startup, scenes::test::startup);
-  game->addSystem<entt::registry, Renderer>(Schedule::Update, scenes::test::update);
+  game->addPlugin(DefaultPlugins());
+  game->addPlugin(plugins::DebugCamController());
+  game->addSystem(Schedule::Startup, scenes::test::startup);
+  game->addSystem(Schedule::Update, scenes::test::update);
 
   auto result = game->start();
   if (!result.has_value()) {

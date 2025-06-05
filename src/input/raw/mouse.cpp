@@ -3,10 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include <cstdint>
 #include <algorithm>
-#include <array>
-#include <ranges>
 
 namespace input {
   Mouse::MouseButtonMap Mouse::mouseButtonsJustPressed = {false};
