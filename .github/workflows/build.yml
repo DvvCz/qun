@@ -83,14 +83,14 @@ jobs:
         CXX: g++-14
       run: |
         cmake --preset release \
-          -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
+          -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" \
           -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
 
     - name: Configure CMake (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         cmake --preset release `
-          -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
+          -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" `
           -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
 
     - name: Build project
