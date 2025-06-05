@@ -12,7 +12,6 @@
 int main() {
   auto game = std::make_unique<Game>();
   game->addPlugin(DefaultPlugins());
-  game->addPlugin(plugins::DebugCamController());
   game->addPlugin(plugins::Physics());
   game->addPlugin(scenes::NFS());
 

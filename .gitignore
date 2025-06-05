@@ -15,6 +15,7 @@ release/resources/*
 # GLTF
 !release/resources/FlightHelmet
 !release/resources/TextureTransformTest
+!release/resources/CarConcept
 
 # GLB
 !release/resources/BarramundiFish.glb
