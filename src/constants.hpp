@@ -11,6 +11,9 @@ namespace constants {
   constexpr glm::vec3 WORLD_UP = glm::vec3(0.0f, 0.0f, 1.0f);
   constexpr glm::vec3 WORLD_FORWARD = glm::vec3(1.0f, 0.0f, 0.0f);
   constexpr glm::vec3 WORLD_RIGHT = glm::vec3(0.0f, 1.0f, 0.0f);
+
+  constexpr glm::vec3 WORLD_GRAVITY = glm::vec3(0.0f, 0.0f, -9.81f);
+
   /* clang-format off */
   constexpr asset::Material DEFAULT_MATERIAL_3D = {
     .name = "DefaultMaterial",

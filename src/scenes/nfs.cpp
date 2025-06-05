@@ -6,6 +6,7 @@
 
 #include <glm/glm.hpp>
 
+#include "components/physics.hpp"
 #include "components/transform.hpp"
 #include "components/model.hpp"
 #include "components/light.hpp"
@@ -18,6 +19,8 @@
 #include "render/model/3d/cube.hpp"
 
 #include "util/error.hpp"
+
+#include "constants.hpp"
 
 std::expected<void, std::string> scenes::nfs::startup(/* clang-format off */
   std::shared_ptr<entt::registry> registry,
@@ -40,12 +43,8 @@ std::expected<void, std::string> scenes::nfs::startup(/* clang-format off */
 
     auto model = renderer->createAsset3D(asset.value());
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::scale(matrix, glm::vec3(0.5f));
-    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 0.0f));
-
     auto ent = registry->create();
-    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
     registry->emplace<components::Model3D>(ent, model);
   }
 

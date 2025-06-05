@@ -10,7 +10,7 @@
         "name": "Launch",
         "program": "${workspaceFolder}/release/trender",
         "args": [],
-        "cwd": "${workspaceFolder}"
+        "cwd": "${workspaceFolder}/release"
       }
     ]
 }

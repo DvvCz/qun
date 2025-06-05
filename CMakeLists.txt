@@ -58,6 +58,7 @@ add_executable(trender
     ./src/plugins/entt/entt.cpp
     ./src/plugins/input/input.cpp
     ./src/plugins/debug-cam-controller/debug-cam-controller.cpp
+    ./src/plugins/physics/physics.cpp
 
     # Test Scene (included by default)
     ./src/scenes/test.cpp

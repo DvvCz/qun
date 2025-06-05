@@ -3,6 +3,8 @@
 #include <print>
 
 #include "plugins/debug-cam-controller/debug-cam-controller.hpp"
+#include "plugins/physics/physics.hpp"
+
 #include "util/error.hpp"
 
 #include "scenes/nfs.hpp"
@@ -11,6 +13,7 @@ int main() {
   auto game = std::make_unique<Game>();
   game->addPlugin(DefaultPlugins());
   game->addPlugin(plugins::DebugCamController());
+  game->addPlugin(plugins::Physics());
   game->addSystem(Schedule::Startup, scenes::nfs::startup);
   game->addSystem(Schedule::Update, scenes::nfs::update);
 
