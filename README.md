@@ -1,6 +1,6 @@
 # trender
 
-This is an attempt to make a simple renderer using modern OpenGL (4.5) and C++ (23)
+This is an attempt to make a simple game engine / renderer using modern OpenGL (4.5) and C++ (23)
 
 ## Why?
 
@@ -13,10 +13,32 @@ This is an attempt to make a simple renderer using modern OpenGL (4.5) and C++ (
 - Dynamic entity manipulation making use of [EnTT](https://github.com/skypjack/entt)
 - Support for meshes with multiple materials
 - Obj and glTF file formats for asset imports
+- Heavy use of ECS paradigms (systems, resources)
+- Use of results (`std::expected`) over traditional C++ exceptions
 
 ## Sample
 
 ![sample](./sample.png)
+
+Simplified entrypoint:
+
+```cpp
+int main() {
+  auto game = std::make_unique<Game>();
+  game->addDefaultSystems();
+  game->addDefaultCameraController();
+  game->addSystem<entt::registry, Renderer>(Schedule::Startup, scenes::test::startup);
+  game->addSystem<entt::registry, Renderer>(Schedule::Update, scenes::test::update);
+
+  auto result = game->start();
+  if (!result.has_value()) {
+    std::println(stderr, "Failed to start game: {}", result.error());
+    return EXIT_FAILURE;
+  }
+
+  return EXIT_SUCCESS;
+}
+```
 
 ## Building
 
