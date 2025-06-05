@@ -3,9 +3,9 @@
 #include <format>
 #include <stdexcept>
 
-#define MAX_WIDTH 2048
-#define MAX_HEIGHT 2048
-#define MAX_TEXTURES 64
+#define MAX_WIDTH 1024
+#define MAX_HEIGHT 1024
+#define MAX_TEXTURES 128
 
 texture::Manager::Manager(uniform::Single<GLint> sampler2DUniform, GLint textureUnit)
     : sampler2DArray(sampler2DUniform), textureUnit(textureUnit) {

@@ -6,22 +6,74 @@
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"
 
-#include "systems/particle.hpp"
-#include "systems/boids.hpp"
-#include "systems/boid-spawner.hpp"
-
 Game::Game() {
   registry = std::make_shared<entt::registry>();
 }
 
-void Game::createSystems() noexcept {
-  particleSystem = std::make_unique<systems::Particle>(registry);
-  transformSystem = std::make_unique<systems::Transform>(registry);
-  particleSpawnerSystem = std::make_unique<systems::ParticleSpawner>(registry);
+void Game::addDefaultSystems() {
+  // Rendering system
+  addSystem(Schedule::Render, [=, this](entt::registry& reg) {
+    renderer->drawFrame();
+    glfwSwapBuffers(window->getGlfwWindow());
+  });
 
-  // Create boids systems
-  boidsSystem = std::make_unique<systems::Boids>(registry);
-  boidSpawnerSystem = std::make_unique<systems::BoidSpawner>(registry);
+  // Time updating system
+  addSystem(Schedule::Update, [=, this]() {
+
+  });
+
+  // Camera controller
+  addSystem(Schedule::Update, [=, this](resources::Time& time) {
+    auto mouseDelta = input::Mouse::getPositionDelta();
+    yaw -= mouseDelta.x * mouseSensitivity;
+    pitch -= mouseDelta.y * mouseSensitivity; // Invert Y axis for natural camera movement
+
+    // Clamp pitch to prevent camera flipping
+    pitch = std::clamp(pitch, -1.5f, 1.5f); // About ±85 degrees in radians
+
+    // Calculate camera direction from yaw and pitch
+    glm::vec3 cameraFront;
+    cameraFront.x = cos(yaw) * cos(pitch);
+    cameraFront.y = sin(yaw) * cos(pitch);
+    cameraFront.z = sin(pitch);
+    cameraFront = glm::normalize(cameraFront);
+
+    // Calculate right and up vectors for movement
+    glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, glm::vec3(0.0f, 0.0f, 1.0f)));
+    glm::vec3 cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
+
+    // Movement relative to camera direction
+    glm::vec3 cameraPos = renderer->getCameraPos();
+    float velocity = cameraSpeed * time.deltaTime;
+
+    float modifier = 1.0;
+    if (input::Keyboard::isCurrentlyHeld(input::Key::LeftControl)) {
+      modifier *= 0.25f;
+    }
+    if (input::Keyboard::isCurrentlyHeld(input::Key::LeftShift)) {
+      modifier *= 2.0f;
+    }
+
+    if (input::Keyboard::isCurrentlyHeld(input::Key::W)) {
+      cameraPos += cameraFront * velocity * modifier;
+    }
+    if (input::Keyboard::isCurrentlyHeld(input::Key::S)) {
+      cameraPos -= cameraFront * velocity * modifier;
+    }
+    if (input::Keyboard::isCurrentlyHeld(input::Key::A)) {
+      cameraPos -= cameraRight * velocity * modifier;
+    }
+    if (input::Keyboard::isCurrentlyHeld(input::Key::D)) {
+      cameraPos += cameraRight * velocity * modifier;
+    }
+
+    // Update camera position and direction
+    renderer->setCameraPos(cameraPos);
+    renderer->setCameraDir(cameraFront);
+
+    input::Keyboard::resetCurrentKeyMaps();
+    input::Mouse::resetCurrentMouseMaps();
+  });
 }
 
 std::expected<bool, std::string> Game::start() {
@@ -44,10 +96,8 @@ std::expected<bool, std::string> Game::start() {
     return std::unexpected{setupSceneResult.error()};
   }
 
-  createSystems();
-
-  float deltaTime = 0.0f;
-  float lastTime = glfwGetTime();
+  time.lastTime = glfwGetTime();
+  time.deltaTime = 0.0f;
 
   float yaw = 0.0f;
   float pitch = 0.0f;
@@ -59,6 +109,8 @@ std::expected<bool, std::string> Game::start() {
 
   renderer->setCameraPos(glm::vec3(-5.0f, 0.0f, 0.5f));
 
+  runSchedule(Schedule::Startup);
+
   while (!window->shouldClose()) {
     // Update
     {
@@ -69,74 +121,14 @@ std::expected<bool, std::string> Game::start() {
         break;
       }
 
-      float curTime = glfwGetTime();
-      deltaTime = curTime - lastTime;
-      lastTime = curTime;
+      time.currentTime = glfwGetTime();
+      time.deltaTime = time.currentTime - time.lastTime;
+      time.lastTime = time.currentTime;
 
-      particleSystem->tick(curTime, deltaTime);
-      particleSpawnerSystem->tick(curTime);
-
-      // Update boids systems
-      boidsSystem->tick(curTime, deltaTime);
-      boidSpawnerSystem->tick(curTime);
-
-      // Mouse look
-      auto mouseDelta = input::Mouse::getPositionDelta();
-      yaw -= mouseDelta.x * mouseSensitivity;
-      pitch -= mouseDelta.y * mouseSensitivity; // Invert Y axis for natural camera movement
-
-      // Clamp pitch to prevent camera flipping
-      pitch = std::clamp(pitch, -1.5f, 1.5f); // About ±85 degrees in radians
-
-      // Calculate camera direction from yaw and pitch
-      glm::vec3 cameraFront;
-      cameraFront.x = cos(yaw) * cos(pitch);
-      cameraFront.y = sin(yaw) * cos(pitch);
-      cameraFront.z = sin(pitch);
-      cameraFront = glm::normalize(cameraFront);
-
-      // Calculate right and up vectors for movement
-      glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, glm::vec3(0.0f, 0.0f, 1.0f)));
-      glm::vec3 cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
-
-      // Movement relative to camera direction
-      glm::vec3 cameraPos = renderer->getCameraPos();
-      float velocity = cameraSpeed * deltaTime;
-
-      float modifier = 1.0;
-      if (input::Keyboard::isCurrentlyHeld(input::Key::LeftControl)) {
-        modifier *= 0.25f;
-      }
-      if (input::Keyboard::isCurrentlyHeld(input::Key::LeftShift)) {
-        modifier *= 2.0f;
-      }
-
-      if (input::Keyboard::isCurrentlyHeld(input::Key::W)) {
-        cameraPos += cameraFront * velocity * modifier;
-      }
-      if (input::Keyboard::isCurrentlyHeld(input::Key::S)) {
-        cameraPos -= cameraFront * velocity * modifier;
-      }
-      if (input::Keyboard::isCurrentlyHeld(input::Key::A)) {
-        cameraPos -= cameraRight * velocity * modifier;
-      }
-      if (input::Keyboard::isCurrentlyHeld(input::Key::D)) {
-        cameraPos += cameraRight * velocity * modifier;
-      }
-
-      // Update camera position and direction
-      renderer->setCameraPos(cameraPos);
-      renderer->setCameraDir(cameraFront);
-
-      input::Keyboard::resetCurrentKeyMaps();
-      input::Mouse::resetCurrentMouseMaps();
+      runSchedule(Schedule::Update);
     }
 
-    // Draw
-    {
-      renderer->drawFrame();
-      glfwSwapBuffers(window->getGlfwWindow());
-    }
+    runSchedule(Schedule::Render);
   }
 
   glfwTerminate();
