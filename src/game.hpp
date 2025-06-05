@@ -75,14 +75,6 @@ private:
 
   // ECS
   std::shared_ptr<entt::registry> registry;
-  // std::unique_ptr<systems::Particle> particleSystem;
-  // std::unique_ptr<systems::Transform> transformSystem;
-
-  // std::unique_ptr<systems::ParticleSpawner> particleSpawnerSystem;
-
-  // Boids systems
-  // std::unique_ptr<systems::Boids> boidsSystem;
-  // std::unique_ptr<systems::BoidSpawner> boidSpawnerSystem;
 
   // Rendering
   std::shared_ptr<Window> window;

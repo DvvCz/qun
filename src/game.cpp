@@ -5,6 +5,7 @@
 
 #include "input/raw/keyboard.hpp"
 #include "input/raw/mouse.hpp"
+#include "systems/transform.hpp"
 
 Game::Game() {
   registry = std::make_shared<entt::registry>();
@@ -45,6 +46,9 @@ void Game::addDefaultSystems() {
     time.deltaTime = time.currentTime - time.lastTime;
     time.lastTime = time.currentTime;
   });
+
+  // Propagate transforms
+  addSystem<entt::registry>(Schedule::Startup, systems::transform::startup);
 }
 
 void Game::addDefaultCameraController() {
