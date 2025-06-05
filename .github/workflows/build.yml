@@ -69,6 +69,7 @@ jobs:
       run: |
         vcpkg install glfw3:${{ matrix.vcpkg_triplet }}
         vcpkg install glm:${{ matrix.vcpkg_triplet }}
+        vcpkg integrate install
 
     - name: Install OpenGL for Linux
       if: matrix.os == 'ubuntu-latest'
