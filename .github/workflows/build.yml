@@ -1,0 +1,131 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            exe_extension: ""
+            artifact_name: trender-linux
+            vcpkg_triplet: x64-linux
+          - os: windows-latest
+            platform: windows
+            exe_extension: ".exe"
+            artifact_name: trender-windows
+            vcpkg_triplet: x64-windows
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgGitCommitId: 'a42af01b72c28a8e1d7b48107b33e4f286a55ef6'
+
+    - name: Install Linux dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          ninja-build \
+          libgl1-mesa-dev \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libxext-dev \
+          libwayland-dev \
+          libxkbcommon-dev
+
+    - name: Install vcpkg packages
+      run: |
+        vcpkg install glfw3:${{ matrix.vcpkg_triplet }}
+        vcpkg install glm:${{ matrix.vcpkg_triplet }}
+        vcpkg install opengl:${{ matrix.vcpkg_triplet }}
+
+    - name: Configure CMake (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        cmake --preset release \
+          -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" \
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
+
+    - name: Configure CMake (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        cmake --preset release `
+          -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" `
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
+
+    - name: Build project
+      run: cmake --build release --config Release
+
+    - name: Copy resources and assets (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        mkdir -p artifact
+        cp release/trender artifact/
+        cp -r release/resources artifact/ || true
+        cp -r release/shaders artifact/ || true
+        chmod +x artifact/trender
+
+    - name: Copy resources and assets (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        New-Item -ItemType Directory -Force -Path artifact
+        Copy-Item release/trender.exe artifact/
+        if (Test-Path release/resources) { Copy-Item -Recurse release/resources artifact/ }
+        if (Test-Path release/shaders) { Copy-Item -Recurse release/shaders artifact/ }
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact_name }}
+        path: artifact/
+        retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+
+    steps:
+    - name: Download Linux artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: trender-linux
+        path: trender-linux/
+
+    - name: Download Windows artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: trender-windows
+        path: trender-windows/
+
+    - name: Create release archives
+      run: |
+        cd trender-linux && tar -czf ../trender-linux.tar.gz * && cd ..
+        cd trender-windows && zip -r ../trender-windows.zip * && cd ..
+
+    - name: Upload release archives
+      uses: actions/upload-artifact@v4
+      with:
+        name: trender-release-packages
+        path: |
+          trender-linux.tar.gz
+          trender-windows.zip
+        retention-days: 90
