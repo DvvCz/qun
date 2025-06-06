@@ -4,7 +4,7 @@
 #include <string>
 #include <expected>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include "uniform/single.hpp"
 

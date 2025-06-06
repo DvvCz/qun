@@ -10,8 +10,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Glad
-add_library(glad STATIC ./thirdparty/glad/glad.c)
+add_library(glad STATIC ./thirdparty/glad/src/gl.c)
 target_include_directories(glad PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
+target_include_directories(glad PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad/include)
 
 # Rapidobj
 add_library(rapidobj INTERFACE)
@@ -73,6 +74,7 @@ target_include_directories(trender
     PRIVATE
     ./thirdparty
     ./thirdparty/fastgltf/include
+    ./thirdparty/glad/include
     ./src
 )
 

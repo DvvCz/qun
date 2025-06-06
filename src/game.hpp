@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <entt/entt.hpp>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #include "plugins/input/input.hpp"

@@ -24,7 +24,7 @@ void plugins::Render::build(Game& game) {
     input::Keyboard::bindGlfwCallbacks(window->getGlfwWindow());
     input::Mouse::bindGlfwCallbacks(window->getGlfwWindow());
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGL(glfwGetProcAddress)) {
       return std::unexpected("Failed to initialize GLAD");
     }
 
