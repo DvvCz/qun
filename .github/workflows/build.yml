@@ -55,13 +55,16 @@ jobs:
           cmake \
           ninja-build \
           libgl1-mesa-dev \
+          libglu1-mesa-dev \
           libxrandr-dev \
           libxinerama-dev \
           libxcursor-dev \
           libxi-dev \
           libxext-dev \
           libwayland-dev \
-          libxkbcommon-dev
+          libxkbcommon-dev \
+          xorg-dev \
+          pkg-config
         # Set GCC-14 as the default compiler
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
