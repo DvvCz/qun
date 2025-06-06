@@ -33,7 +33,7 @@ jobs:
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: 'a42af01b72c28a8e1d7b48107b33e4f286a55ef6'
+        vcpkgGitCommitId: '5a2324f6667233aeb903d3117f6fd259a2be6f8b'
 
     - name: Setup MSVC (Windows)
       if: matrix.os == 'windows-latest'
