@@ -4,9 +4,9 @@
 #include <algorithm>
 
 namespace input {
-  Keyboard::KeyMap Keyboard::keysJustPressed = {false};
-  Keyboard::KeyMap Keyboard::keysJustReleased = {false};
-  Keyboard::KeyMap Keyboard::keysCurrentlyHeld = {false};
+  Keyboard::KeyMap Keyboard::keysPressedNow = {false};
+  Keyboard::KeyMap Keyboard::keysReleasedNow = {false};
+  Keyboard::KeyMap Keyboard::keysBeingHeld = {false};
 
   void Keyboard::bindGlfwCallbacks(GLFWwindow* window) {
     glfwSetKeyCallback(window, onGlfwKeyCallback);
@@ -15,17 +15,17 @@ namespace input {
   void Keyboard::onKeyPressed(const Key key) {
     auto keyIndex = static_cast<size_t>(key);
 
-    keysJustPressed.at(keyIndex) = true;
-    keysJustReleased.at(keyIndex) = false;
-    keysCurrentlyHeld.at(keyIndex) = true;
+    keysPressedNow.at(keyIndex) = true;
+    keysReleasedNow.at(keyIndex) = false;
+    keysBeingHeld.at(keyIndex) = true;
   }
 
   void Keyboard::onKeyReleased(const Key key) {
     auto keyIndex = static_cast<size_t>(key);
 
-    keysJustPressed.at(keyIndex) = false;
-    keysJustReleased.at(keyIndex) = true;
-    keysCurrentlyHeld.at(keyIndex) = false;
+    keysPressedNow.at(keyIndex) = false;
+    keysReleasedNow.at(keyIndex) = true;
+    keysBeingHeld.at(keyIndex) = false;
   }
 
   void Keyboard::onGlfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -38,20 +38,20 @@ namespace input {
     }
   }
 
-  bool Keyboard::wasJustPressed(const Key key) {
-    return keysJustPressed.at(static_cast<size_t>(key));
+  bool Keyboard::wasPressedNow(const Key key) {
+    return keysPressedNow.at(static_cast<size_t>(key));
   }
 
-  bool Keyboard::wasJustReleased(const Key key) {
-    return keysJustReleased.at(static_cast<size_t>(key));
+  bool Keyboard::wasReleasedNow(const Key key) {
+    return keysReleasedNow.at(static_cast<size_t>(key));
   }
 
-  bool Keyboard::isCurrentlyHeld(const Key key) {
-    return keysCurrentlyHeld.at(static_cast<size_t>(key));
+  bool Keyboard::isBeingHeld(const Key key) {
+    return keysBeingHeld.at(static_cast<size_t>(key));
   }
 
   void Keyboard::resetCurrentKeyMaps() {
-    std::fill(keysJustPressed.begin(), keysJustPressed.end(), false);
-    std::fill(keysJustReleased.begin(), keysJustReleased.end(), false);
+    std::fill(keysPressedNow.begin(), keysPressedNow.end(), false);
+    std::fill(keysReleasedNow.begin(), keysReleasedNow.end(), false);
   }
 }

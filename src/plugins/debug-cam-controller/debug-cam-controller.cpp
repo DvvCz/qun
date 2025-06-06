@@ -55,23 +55,23 @@ void plugins::DebugCamController::build(Game& game) {
     float velocity = cameraState->cameraSpeed * time.deltaTime;
 
     float modifier = 1.0;
-    if (input::Keyboard::isCurrentlyHeld(input::Key::LeftControl)) {
+    if (input::Keyboard::isBeingHeld(input::Key::LeftControl)) {
       modifier *= 0.25f;
     }
-    if (input::Keyboard::isCurrentlyHeld(input::Key::LeftShift)) {
+    if (input::Keyboard::isBeingHeld(input::Key::LeftShift)) {
       modifier *= 2.0f;
     }
 
-    if (input::Keyboard::isCurrentlyHeld(input::Key::W)) {
+    if (input::Keyboard::isBeingHeld(input::Key::W)) {
       cameraPos += cameraFront * velocity * modifier;
     }
-    if (input::Keyboard::isCurrentlyHeld(input::Key::S)) {
+    if (input::Keyboard::isBeingHeld(input::Key::S)) {
       cameraPos -= cameraFront * velocity * modifier;
     }
-    if (input::Keyboard::isCurrentlyHeld(input::Key::A)) {
+    if (input::Keyboard::isBeingHeld(input::Key::A)) {
       cameraPos -= cameraRight * velocity * modifier;
     }
-    if (input::Keyboard::isCurrentlyHeld(input::Key::D)) {
+    if (input::Keyboard::isBeingHeld(input::Key::D)) {
       cameraPos += cameraRight * velocity * modifier;
     }
 

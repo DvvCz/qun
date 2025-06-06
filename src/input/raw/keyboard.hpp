@@ -131,18 +131,18 @@ namespace input {
   public:
     static void bindGlfwCallbacks(GLFWwindow* const glfwWindow);
 
-    [[nodiscard]] static bool wasJustPressed(const Key key);
-    [[nodiscard]] static bool wasJustReleased(const Key key);
-    [[nodiscard]] static bool isCurrentlyHeld(const Key key);
+    [[nodiscard]] static bool wasPressedNow(const Key key);
+    [[nodiscard]] static bool wasReleasedNow(const Key key);
+    [[nodiscard]] static bool isBeingHeld(const Key key);
 
     static void resetCurrentKeyMaps();
 
   private:
     using KeyMap = std::array<bool, GLFW_KEY_LAST + 1>;
 
-    static KeyMap keysJustPressed;
-    static KeyMap keysJustReleased;
-    static KeyMap keysCurrentlyHeld;
+    static KeyMap keysPressedNow;
+    static KeyMap keysReleasedNow;
+    static KeyMap keysBeingHeld;
 
     static void onKeyPressed(const Key key);
     static void onKeyReleased(const Key key);
