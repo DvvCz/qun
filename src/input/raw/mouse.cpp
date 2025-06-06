@@ -72,8 +72,8 @@ namespace input {
   }
 
   void Mouse::resetCurrentMouseMaps() {
-    std::ranges::fill(mouseButtonsJustPressed, false);
-    std::ranges::fill(mouseButtonsJustReleased, false);
+    std::fill(mouseButtonsJustPressed.begin(), mouseButtonsJustPressed.end(), false);
+    std::fill(mouseButtonsJustReleased.begin(), mouseButtonsJustReleased.end(), false);
     mousePositionLastFrame = mousePosition; // Update last position to current, so delta is zero when no movement
   }
 }

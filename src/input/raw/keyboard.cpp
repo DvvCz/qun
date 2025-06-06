@@ -1,7 +1,7 @@
 #include "keyboard.hpp"
 
 #include <print>
-#include <ranges>
+#include <algorithm>
 
 namespace input {
   Keyboard::KeyMap Keyboard::keysJustPressed = {false};
@@ -51,7 +51,7 @@ namespace input {
   }
 
   void Keyboard::resetCurrentKeyMaps() {
-    std::ranges::fill(keysJustPressed, false);
-    std::ranges::fill(keysJustReleased, false);
+    std::fill(keysJustPressed.begin(), keysJustPressed.end(), false);
+    std::fill(keysJustReleased.begin(), keysJustReleased.end(), false);
   }
 }
