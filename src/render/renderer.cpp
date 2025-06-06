@@ -43,11 +43,6 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   projMatrix = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.05f, 1000.0f);
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
 
-  modelMatrix = glm::mat4(1.0f);
-  modelMatrix = glm::translate(modelMatrix, glm::vec3(5.0f, 0.0f, 0.0f));
-  modelMatrix = glm::scale(modelMatrix, glm::vec3(20, 20, 20));
-  modelMatrix = glm::rotate(modelMatrix, glm::radians(-180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
   // Set initial viewport size with 16:9 aspect ratio
   int framebufferWidth, framebufferHeight;
   glfwGetFramebufferSize(window->getGlfwWindow(), &framebufferWidth, &framebufferHeight);
