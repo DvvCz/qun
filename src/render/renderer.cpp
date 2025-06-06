@@ -246,6 +246,7 @@ void Renderer::setCameraPos(const glm::vec3& cameraPos) noexcept {
 
 void Renderer::setCameraDir(const glm::vec3& cameraDir) noexcept {
   this->cameraFront = cameraDir;
+  viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
 }
 
 const glm::vec3& Renderer::getCameraPos() const noexcept {
