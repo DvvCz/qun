@@ -5,6 +5,9 @@
 #include "asset/asset.hpp"
 
 namespace constants {
+  constexpr float PI = 3.14159265358979323846f;
+  constexpr float TAU = 2 * PI;
+
   constexpr glm::vec3 WORLD_ORIGIN = glm::vec3(0.0f, 0.0f, 0.0f);
 
   // Coordinate system matching Unreal Engine

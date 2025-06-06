@@ -1,7 +1,10 @@
 #include "sphere.hpp"
+
 #include <array>
 #include <cmath>
 #include <unordered_map>
+
+#include "constants.hpp"
 
 namespace {
   // Hash function for glm::vec3 to use in unordered_map
@@ -154,7 +157,7 @@ void model::Sphere::generateIcosphere(float radius, int subdivisions) {
 }
 
 glm::vec2 model::Sphere::calculateSphericalUV(const glm::vec3& normal) {
-  float u = 0.5f + std::atan2(normal.z, normal.x) / (2.0f * M_PI);
-  float v = 0.5f - std::asin(normal.y) / M_PI;
+  float u = 0.5f + std::atan2(normal.z, normal.x) / constants::TAU;
+  float v = 0.5f - std::asin(normal.y) / constants::PI;
   return glm::vec2(u, v);
 }
