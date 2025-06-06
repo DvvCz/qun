@@ -22,7 +22,7 @@ jobs:
             platform: windows
             exe_extension: ".exe"
             artifact_name: trender-windows
-            vcpkg_triplet: x64-windows
+            vcpkg_triplet: x64-windows-static
 
     steps:
     - name: Checkout repository
@@ -95,7 +95,8 @@ jobs:
       run: |
         cmake --preset release `
           -DCMAKE_TOOLCHAIN_FILE="${env:RUNVCPKG_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" `
-          -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }} `
+          -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
 
     - name: Build project
       run: cmake --build release --config Release
