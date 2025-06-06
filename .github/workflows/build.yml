@@ -16,12 +16,12 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             exe_extension: ""
-            artifact_name: trender-linux
+            artifact_name: qun-linux
             vcpkg_triplet: x64-linux
           - os: windows-latest
             platform: windows
             exe_extension: ".exe"
-            artifact_name: trender-windows
+            artifact_name: qun-windows
             vcpkg_triplet: x64-windows-static
 
     steps:
@@ -105,16 +105,16 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         mkdir -p artifact
-        cp release/trender artifact/
+        cp release/qun artifact/
         cp -r release/resources artifact/ || true
         cp -r release/shaders artifact/ || true
-        chmod +x artifact/trender
+        chmod +x artifact/qun
 
     - name: Copy resources and assets (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         New-Item -ItemType Directory -Force -Path artifact
-        Copy-Item release/trender.exe artifact/
+        Copy-Item release/qun.exe artifact/
         if (Test-Path release/resources) { Copy-Item -Recurse release/resources artifact/ }
         if (Test-Path release/shaders) { Copy-Item -Recurse release/shaders artifact/ }
 
@@ -134,25 +134,25 @@ jobs:
     - name: Download Linux artifact
       uses: actions/download-artifact@v4
       with:
-        name: trender-linux
-        path: trender-linux/
+        name: qun-linux
+        path: qun-linux/
 
     - name: Download Windows artifact
       uses: actions/download-artifact@v4
       with:
-        name: trender-windows
-        path: trender-windows/
+        name: qun-windows
+        path: qun-windows/
 
     - name: Create release archives
       run: |
-        cd trender-linux && tar -czf ../trender-linux.tar.gz * && cd ..
-        cd trender-windows && zip -r ../trender-windows.zip * && cd ..
+        cd qun-linux && tar -czf ../qun-linux.tar.gz * && cd ..
+        cd qun-windows && zip -r ../qun-windows.zip * && cd ..
 
     - name: Upload release archives
       uses: actions/upload-artifact@v4
       with:
-        name: trender-release-packages
+        name: qun-release-packages
         path: |
-          trender-linux.tar.gz
-          trender-windows.zip
+          qun-linux.tar.gz
+          qun-windows.zip
         retention-days: 90

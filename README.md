@@ -1,4 +1,4 @@
-# trender
+# qun
 
 This is an attempt to make a simple game engine / renderer using modern OpenGL (4.5) and C++ (23)
 
@@ -43,7 +43,7 @@ int main() {
 1. You **must** clone the repository with submodules, as most dependencies are submodules.
 
 ```sh
-git clone https://github.com/DvvCz/trender --recurse-submodules
+git clone https://github.com/DvvCz/qun --recurse-submodules
 ```
 
 2. Ensure you have system dependencies. This relies on `opengl`, `glm` and `glfw` which you may need to install development packages for on your system.

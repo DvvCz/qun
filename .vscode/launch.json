@@ -8,7 +8,7 @@
         "type": "lldb",
         "request": "launch",
         "name": "Launch",
-        "program": "${workspaceFolder}/release/trender",
+        "program": "${workspaceFolder}/release/qun",
         "args": [],
         "cwd": "${workspaceFolder}/release"
       }

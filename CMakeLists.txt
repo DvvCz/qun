@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(trender VERSION 0.1.0 LANGUAGES C CXX)
+project(qun VERSION 0.1.0 LANGUAGES C CXX)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
@@ -29,8 +29,8 @@ target_include_directories(entt INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty
 # fastgltf
 add_subdirectory(thirdparty/fastgltf)
 
-# TRender
-add_executable(trender
+# qun
+add_executable(qun
     ./src/main.cpp
     ./src/game.cpp
     ./src/input/raw/keyboard.cpp
@@ -70,7 +70,7 @@ add_executable(trender
     ./src/scenes/nfs.cpp
 )
 
-target_include_directories(trender
+target_include_directories(qun
     PRIVATE
     ./thirdparty
     ./thirdparty/fastgltf/include
@@ -78,7 +78,7 @@ target_include_directories(trender
     ./src
 )
 
-target_link_libraries(trender
+target_link_libraries(qun
     glad
     rapidobj
     entt
