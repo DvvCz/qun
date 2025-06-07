@@ -3,7 +3,11 @@
 
 class Game;
 
-namespace scenes {
+namespace scenes::nfs {
+  namespace components {
+    struct CameraState {};
+  };
+
   struct NFS {
     void build(Game& game);
   };

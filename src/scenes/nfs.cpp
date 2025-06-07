@@ -97,20 +97,20 @@ static std::expected<void, std::string> update(/* clang-format off */
     auto& velocity = carView.get<components::Velocity>(entity);
     auto& angularVelocity = carView.get<components::AngularVelocity>(entity);
 
-    const float maxCarSpeed = 15.0f;      // Maximum speed in units per second
-    const float acceleration = 25.0f;     // Acceleration rate
-    const float deceleration = 30.0f;     // Deceleration rate when no input
+    const float maxCarSpeed = 15.0f;       // Maximum speed in units per second
+    const float acceleration = 25.0f;      // Acceleration rate
+    const float deceleration = 30.0f;      // Deceleration rate when no input
     const float brakeDeceleration = 40.0f; // Deceleration when braking
-    const float maxTurnSpeed = 2.0f;      // Maximum radians per second
-    const float turnAcceleration = 8.0f;  // How fast we accelerate into turns
-    const float turnDeceleration = 12.0f; // How fast we decelerate out of turns
+    const float maxTurnSpeed = 2.0f;       // Maximum radians per second
+    const float turnAcceleration = 8.0f;   // How fast we accelerate into turns
+    const float turnDeceleration = 12.0f;  // How fast we decelerate out of turns
 
     float targetSpeed = 0.0f;
     float movementInput = 0.0f;         // Track how much we're moving
     float targetAngularVelocity = 0.0f; // Target turning speed
 
     glm::vec3 forward = rotation.value * glm::vec3(0.0f, 1.0f, 0.0f);
-    
+
     // Get current speed in the forward direction
     float currentSpeed = glm::dot(velocity.value, -forward);
 
@@ -120,13 +120,13 @@ static std::expected<void, std::string> update(/* clang-format off */
       movementInput = 1.0f; // Moving forward
     } else if (input::Keyboard::isBeingHeld(input::Key::S)) {
       targetSpeed = -maxCarSpeed * 0.6f; // Reverse is slower
-      movementInput = 1.0f; // Moving backward
+      movementInput = 1.0f;              // Moving backward
     }
 
     // Smooth speed interpolation
     float speedDifference = targetSpeed - currentSpeed;
     float maxSpeedChange;
-    
+
     if (movementInput > 0.0f) {
       // We have input - accelerate towards target
       if ((targetSpeed > 0 && currentSpeed < targetSpeed) || (targetSpeed < 0 && currentSpeed > targetSpeed)) {
@@ -139,14 +139,14 @@ static std::expected<void, std::string> update(/* clang-format off */
       // No input - natural deceleration
       maxSpeedChange = deceleration * time.deltaTime;
     }
-    
+
     // Apply speed change with limits
     if (std::abs(speedDifference) > maxSpeedChange) {
       currentSpeed += (speedDifference > 0) ? maxSpeedChange : -maxSpeedChange;
     } else {
       currentSpeed = targetSpeed;
     }
-    
+
     // Convert speed back to velocity vector
     velocity.value = -forward * currentSpeed;
 
@@ -198,7 +198,10 @@ static std::expected<void, std::string> update(/* clang-format off */
   return {};
 }
 
-void scenes::NFS::build(Game& game) {
+void scenes::nfs::NFS::build(Game& game) {
+  std::shared_ptr<scenes::nfs::components::CameraState> cameraState;
+  game.addResource(cameraState);
+
   game.addSystem(Schedule::Startup, startup);
   game.addSystem(Schedule::Update, update);
 }

@@ -13,7 +13,7 @@ int main() {
   auto game = std::make_unique<Game>();
   game->addPlugin(DefaultPlugins());
   game->addPlugin(plugins::Physics());
-  game->addPlugin(scenes::NFS());
+  game->addPlugin(scenes::nfs::NFS());
 
   auto result = game->start();
   if (!result.has_value()) {
