@@ -58,20 +58,23 @@ static std::expected<void, std::string> startup(/* clang-format off */
     registry->emplace<components::AngularVelocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f)); // Start without rotation
   }
 
-  { // baseplate
-    auto model = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
+  { // city
+    auto asset = asset::loader::Gltf::tryFromFile("resources/City1.glb", *renderer->textureManager3D);
+    if (!asset.has_value()) {
+      return std::unexpected{std::format("Failed to load city asset: {}", util::error::indent(asset.error()))};
+    }
+
+    auto model = renderer->createAsset3D(asset.value());
 
     auto ent = registry->create();
-    registry->emplace<components::Position>(ent, constants::WORLD_ORIGIN);
+    registry->emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
+    registry->emplace<components::Scale>(ent, glm::vec3(0.007f));
     registry->emplace<components::Model3D>(ent, model);
   }
 
   { // main light
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 5.0f));
-
     auto ent = registry->create();
-    registry->emplace<components::GlobalTransform>(ent, matrix);
+    registry->emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 5.0f));
     registry->emplace<components::Light>(ent, glm::vec3(1.0f), 2.0f, 1000.0f);
   }
 
@@ -94,7 +97,7 @@ static std::expected<void, std::string> update(/* clang-format off */
     auto& velocity = carView.get<components::Velocity>(entity);
     auto& angularVelocity = carView.get<components::AngularVelocity>(entity);
 
-    const float carSpeed = 5.0f;          // Units per second
+    const float carSpeed = 10.0f;         // Units per second
     const float maxTurnSpeed = 2.0f;      // Maximum radians per second
     const float turnAcceleration = 8.0f;  // How fast we accelerate into turns
     const float turnDeceleration = 12.0f; // How fast we decelerate out of turns
@@ -103,24 +106,24 @@ static std::expected<void, std::string> update(/* clang-format off */
     float movementInput = 0.0f;         // Track how much we're moving
     float targetAngularVelocity = 0.0f; // Target turning speed
 
-    glm::vec3 forward = rotation * glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 forward = rotation.value * glm::vec3(0.0f, 1.0f, 0.0f);
 
     // Forward/backward movement
-    if (input::Keyboard::isCurrentlyHeld(input::Key::W)) {
+    if (input::Keyboard::isBeingHeld(input::Key::W)) {
       inputVelocity -= forward * carSpeed;
       movementInput = 1.0f; // Moving forward
     }
-    if (input::Keyboard::isCurrentlyHeld(input::Key::S)) {
+    if (input::Keyboard::isBeingHeld(input::Key::S)) {
       inputVelocity += forward * carSpeed;
       movementInput = 1.0f; // Moving backward
     }
 
     // Steering (rotation around Z-axis) - only when moving
     if (movementInput > 0.0f) {
-      if (input::Keyboard::isCurrentlyHeld(input::Key::A)) {
+      if (input::Keyboard::isBeingHeld(input::Key::A)) {
         targetAngularVelocity = maxTurnSpeed * movementInput; // Turn left
       }
-      if (input::Keyboard::isCurrentlyHeld(input::Key::D)) {
+      if (input::Keyboard::isBeingHeld(input::Key::D)) {
         targetAngularVelocity = -maxTurnSpeed * movementInput; // Turn right
       }
     }

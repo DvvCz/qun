@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace components {
   struct Position {
@@ -8,11 +9,15 @@ namespace components {
   };
 
   // Use quat to avoid gimbal lock
-  using Rotation = glm::quat;
+  struct Rotation {
+    glm::quat value;
+  };
 
   struct Scale {
     glm::vec3 value;
   };
 
-  using GlobalTransform = glm::mat4x4;
+  struct GlobalTransform {
+    glm::mat4x4 value;
+  };
 };

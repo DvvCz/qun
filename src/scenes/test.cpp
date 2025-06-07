@@ -6,6 +6,8 @@
 #include <string>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "components/transform.hpp"
 #include "components/model.hpp"
@@ -32,21 +34,15 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
 
     auto model = renderer.createAsset3D(asset.value());
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::scale(matrix, glm::vec3(5.0f));
-    matrix = glm::translate(matrix, glm::vec3(0.0f, -0.25f, 0.1f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(0.0f, -0.25f, 0.1f));
+    registry.emplace<components::Scale>(ent, glm::vec3(5.0f));
     registry.emplace<components::Model3D>(ent, model);
   }
 
   { // main light
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 5.0f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 5.0f));
     registry.emplace<components::Light>(ent, glm::vec3(1.0f), 2.0f, 1000.0f);
   }
 
@@ -79,23 +75,17 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
 
     auto model = renderer.createAsset3D(asset.value());
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(0.0f, 2.0f, -0.325f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(0.0f, 2.0f, -0.325f));
     registry.emplace<components::Model3D>(ent, model);
   }
 
   { // blue cube
     auto model = std::make_shared<model::Cube>(glm::vec3(1.0f));
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::rotate(matrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, 0.5f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 0.5f));
+    registry.emplace<components::Rotation>(ent, glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
     registry.emplace<components::Model3D>(ent, model);
     registry.emplace<components::Material3D>(ent, blueMaterial);
   }
@@ -103,10 +93,8 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
   { // red sphere
     auto model = std::make_shared<model::Sphere>(0.5f, 4);
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(3.0f, 0.0f, 0.5f));
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(3.0f, 0.0f, 0.5f));
     registry.emplace<components::Model3D>(ent, model);
     registry.emplace<components::Material3D>(ent, metallicRedMaterial);
   }
@@ -119,12 +107,9 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
 
     auto model = renderer.createAsset3D(asset.value());
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::scale(matrix, glm::vec3(0.5f));
-    matrix = glm::translate(matrix, glm::vec3(-2.0f, 0.0f, 0.5f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(-1.0f, 0.0f, 0.25f));
+    registry.emplace<components::Scale>(ent, glm::vec3(0.5f));
     registry.emplace<components::Model3D>(ent, model);
   }
 
@@ -136,32 +121,11 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
 
     auto model = renderer.createAsset3D(asset.value());
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::scale(matrix, glm::vec3(0.35f));
-    matrix = glm::translate(matrix, glm::vec3(18.0f, 5.0f, 1.0f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(6.3f, 1.75f, 0.35f));
+    registry.emplace<components::Scale>(ent, glm::vec3(0.35f));
     registry.emplace<components::Model3D>(ent, model);
   }
-
-  // { // car concept
-  //   auto asset = asset::loader::Gltf::tryFromFile("resources/CarConcept/CarConcept.gltf", *renderer->textureManager3D);
-  //   if (!asset.has_value()) {
-  //     return std::unexpected{std::format("Failed to load car asset: {}", util::error::indent(asset.error()))};
-  //   }
-
-  //   auto model = renderer->createAsset3D(asset.value());
-
-  //   auto matrix = glm::mat4(1.0f);
-  //   matrix = glm::scale(matrix, glm::vec3(0.5f));
-  //   matrix = glm::translate(matrix, glm::vec3(18.0f, 5.0f, 1.2f));
-  //   matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate to face forward
-
-  //   auto ent = registry->create();
-  //   registry->emplace<components::GlobalTransform>(ent, matrix);
-  //   registry->emplace<components::Model3D>(ent, model);
-  // }
 
   { // normal tangent test
     auto asset = asset::loader::Gltf::tryFromFile("resources/NormalTangentTest.glb", *renderer.textureManager3D);
@@ -171,11 +135,8 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
 
     auto model = renderer.createAsset3D(asset.value());
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(-10.0f, 3.0f, 1.0f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(-10.0f, 3.0f, 1.0f));
     registry.emplace<components::Model3D>(ent, model);
   }
 
@@ -187,12 +148,9 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
 
     auto model = renderer.createAsset3D(asset.value());
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::scale(matrix, glm::vec3(0.3f));
-    matrix = glm::translate(matrix, glm::vec3(10.0f, 3.0f, 1.0f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(3.0f, 0.9f, 0.3f));
+    registry.emplace<components::Scale>(ent, glm::vec3(0.3f));
     registry.emplace<components::Model3D>(ent, model);
   }
 
@@ -205,11 +163,8 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
 
     auto model = renderer.createAsset3D(asset.value());
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::translate(matrix, glm::vec3(-10.0f, -5.0f, 1.0f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Position>(ent, glm::vec3(-10.0f, -5.0f, 1.0f));
     registry.emplace<components::Model3D>(ent, model);
   }
 
@@ -228,11 +183,8 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
 
     auto model = std::make_shared<model::Sphere>(100.0f, 4);
 
-    auto matrix = glm::mat4(1.0f);
-    matrix = glm::rotate(matrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, matrix);
+    registry.emplace<components::Rotation>(ent, glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     registry.emplace<components::Model3D>(ent, model);
     registry.emplace<components::Material3D>(ent, material);
   }
@@ -241,25 +193,9 @@ std::expected<void, std::string> scenes::test::startup(entt::registry& registry,
     auto model = std::make_shared<model::Cube>(glm::vec3(1000.0f, 1000.0f, 0.01f));
 
     auto ent = registry.create();
-    registry.emplace<components::GlobalTransform>(ent, glm::identity<glm::mat4x4>());
     registry.emplace<components::Model3D>(ent, model);
     registry.emplace<components::Material3D>(ent, greenMaterial);
   }
-
-  // /* clang-format off */
-  // auto basequad = std::make_shared<model::Quad>(
-  //     Vertex2D{glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f)},
-  //     Vertex2D{glm::vec3(0.0f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f)},
-  //     Vertex2D{glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-  //     Vertex2D{glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)}
-  // ); /* clang-format on */
-  // auto quadEnt = registry.create();
-  // registry.emplace<components::GlobalTransform>(quadEnt, glm::mat4(1.0f));
-  // registry.emplace<components::Model2D>(quadEnt, basequad);
-
-  // auto blueMaterial = std::make_shared<material::Material2D>();
-  // blueMaterial->color = glm::vec3(0.0f, 0.0f, 1.0f);
-  // registry.emplace<components::Material2D>(quadEnt, blueMaterial);
 
   return {};
 }

@@ -168,7 +168,7 @@ void Renderer::draw3D() {
   uniformViewMatrix3D.set(viewMatrix);
   uniformCameraPos3D.set(cameraPos);
 
-  auto lightEnts = registry->view<components::GlobalTransform, components::Light>();
+  auto lightEnts = registry->view<components::Position, components::Light>();
   lightsArray.lightCount = 0;
 
   for (const auto ent : lightEnts) {
@@ -178,10 +178,10 @@ void Renderer::draw3D() {
     }
 
     auto light = registry->get<components::Light>(ent);
-    auto globalTransform = registry->get<components::GlobalTransform>(ent);
+    auto position = registry->get<components::Position>(ent);
 
     lightsArray.lights[lightsArray.lightCount++] = {/* clang-format off */
-      .position = glm::vec3(globalTransform[3]),
+      .position = position.value,
       .color = light.color * light.intensity,
       .radius = light.radius
     }; /* clang-format on */
@@ -210,14 +210,14 @@ void Renderer::draw3D() {
       // - We transform vertices by the transforms provided by the gltf.
       // - Need to change the code so that transforms are stored and applied at runtime
       // - Potentially need to use glFrontFace?
-      if (glm::determinant(globalTransform) < 0.0f) {
+      if (glm::determinant(globalTransform.value) < 0.0f) {
         glCullFace(GL_BACK); // clockwise
       } else {
         glCullFace(GL_FRONT); // counter-clockwise (normal)
       }
     }
 
-    modelMatrix = globalTransform;
+    modelMatrix = globalTransform.value;
     uniformModelMatrix3D.set(modelMatrix);
 
     model->draw();

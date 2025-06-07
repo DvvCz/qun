@@ -36,7 +36,7 @@ void plugins::Physics::build(Game& game) {
           if (angle > 0.0f) {
             glm::vec3 axis = glm::normalize(angularVel);
             glm::quat deltaRotation = glm::angleAxis(angle, axis);
-            rotation = deltaRotation * rotation;
+            rotation.value = deltaRotation * rotation.value;
             registry->replace<components::Rotation>(entity, rotation);
           }
         });
