@@ -97,34 +97,67 @@ static std::expected<void, std::string> update(/* clang-format off */
     auto& velocity = carView.get<components::Velocity>(entity);
     auto& angularVelocity = carView.get<components::AngularVelocity>(entity);
 
-    const float carSpeed = 10.0f;         // Units per second
+    const float maxCarSpeed = 15.0f;      // Maximum speed in units per second
+    const float acceleration = 25.0f;     // Acceleration rate
+    const float deceleration = 30.0f;     // Deceleration rate when no input
+    const float brakeDeceleration = 40.0f; // Deceleration when braking
     const float maxTurnSpeed = 2.0f;      // Maximum radians per second
     const float turnAcceleration = 8.0f;  // How fast we accelerate into turns
     const float turnDeceleration = 12.0f; // How fast we decelerate out of turns
 
-    glm::vec3 inputVelocity(0.0f);
+    float targetSpeed = 0.0f;
     float movementInput = 0.0f;         // Track how much we're moving
     float targetAngularVelocity = 0.0f; // Target turning speed
 
     glm::vec3 forward = rotation.value * glm::vec3(0.0f, 1.0f, 0.0f);
+    
+    // Get current speed in the forward direction
+    float currentSpeed = glm::dot(velocity.value, -forward);
 
-    // Forward/backward movement
+    // Forward/backward movement input
     if (input::Keyboard::isBeingHeld(input::Key::W)) {
-      inputVelocity -= forward * carSpeed;
+      targetSpeed = maxCarSpeed;
       movementInput = 1.0f; // Moving forward
-    }
-    if (input::Keyboard::isBeingHeld(input::Key::S)) {
-      inputVelocity += forward * carSpeed;
+    } else if (input::Keyboard::isBeingHeld(input::Key::S)) {
+      targetSpeed = -maxCarSpeed * 0.6f; // Reverse is slower
       movementInput = 1.0f; // Moving backward
     }
 
-    // Steering (rotation around Z-axis) - only when moving
+    // Smooth speed interpolation
+    float speedDifference = targetSpeed - currentSpeed;
+    float maxSpeedChange;
+    
     if (movementInput > 0.0f) {
+      // We have input - accelerate towards target
+      if ((targetSpeed > 0 && currentSpeed < targetSpeed) || (targetSpeed < 0 && currentSpeed > targetSpeed)) {
+        maxSpeedChange = acceleration * time.deltaTime;
+      } else {
+        // Braking (changing direction or going too fast)
+        maxSpeedChange = brakeDeceleration * time.deltaTime;
+      }
+    } else {
+      // No input - natural deceleration
+      maxSpeedChange = deceleration * time.deltaTime;
+    }
+    
+    // Apply speed change with limits
+    if (std::abs(speedDifference) > maxSpeedChange) {
+      currentSpeed += (speedDifference > 0) ? maxSpeedChange : -maxSpeedChange;
+    } else {
+      currentSpeed = targetSpeed;
+    }
+    
+    // Convert speed back to velocity vector
+    velocity.value = -forward * currentSpeed;
+
+    // Steering (rotation around Z-axis) - scale with speed for more realistic handling
+    float speedFactor = std::min(std::abs(currentSpeed) / maxCarSpeed, 1.0f);
+    if (speedFactor > 0.1f) { // Only allow steering when moving with some speed
       if (input::Keyboard::isBeingHeld(input::Key::A)) {
-        targetAngularVelocity = maxTurnSpeed * movementInput; // Turn left
+        targetAngularVelocity = maxTurnSpeed * speedFactor; // Turn left
       }
       if (input::Keyboard::isBeingHeld(input::Key::D)) {
-        targetAngularVelocity = -maxTurnSpeed * movementInput; // Turn right
+        targetAngularVelocity = -maxTurnSpeed * speedFactor; // Turn right
       }
     }
 
@@ -144,9 +177,6 @@ static std::expected<void, std::string> update(/* clang-format off */
     } else {
       angularVelocity.value.z = targetAngularVelocity;
     }
-
-    // Apply the linear velocity
-    velocity.value = inputVelocity;
 
     // Third-person camera system - follow the car from behind
     const float cameraDistance = 10.0f; // Distance behind the car

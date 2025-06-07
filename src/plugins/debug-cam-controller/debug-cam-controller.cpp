@@ -1,3 +1,4 @@
+// TODO: Refactor to be based on a camera entity.
 #include "debug-cam-controller.hpp"
 
 #include "game.hpp"
