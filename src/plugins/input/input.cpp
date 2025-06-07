@@ -18,7 +18,7 @@ void plugins::Input::build(Game& game) {
       game.requestExit();
     }
 
-    if (input::Keyboard::wasJustPressed(input::Key::Escape)) {
+    if (input::Keyboard::wasPressedNow(input::Key::Escape)) {
       game.requestExit();
     }
   }); /* clang-format on */
