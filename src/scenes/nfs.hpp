@@ -11,7 +11,7 @@ namespace scenes::nfs {
       float distance = 10.0f; // Distance from the car
       float height = 3.0f;    // Height offset
 
-      float mouseSensitivity = 0.003f; // Mouse sensitivity
+      float mouseSensitivity = 0.18f;  // Mouse sensitivity (adjusted for delta time)
       float autoReturnSpeed = 2.0f;    // Speed of auto-centering
       float timeSinceLastInput = 0.0f; // Time since last mouse input
       float autoReturnDelay = 2.0f;    // Delay before auto-centering starts

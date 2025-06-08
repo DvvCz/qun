@@ -12,7 +12,7 @@
 struct CameraState {
   float yaw = 0.0f;
   float pitch = 0.0f;
-  float mouseSensitivity = 0.002f;
+  float mouseSensitivity = 0.12f; // Mouse sensitivity (adjusted for delta time)
   float cameraSpeed = 3.0f;
 };
 
@@ -34,8 +34,10 @@ void plugins::DebugCamController::build(Game& game) {
     std::shared_ptr<CameraState> cameraState
   ) {
     auto mouseDelta = input::Mouse::getPositionDelta();
-    cameraState->yaw -= mouseDelta.x * cameraState->mouseSensitivity;
-    cameraState->pitch -= mouseDelta.y * cameraState->mouseSensitivity; // Invert Y axis for natural camera movement
+    // Apply mouse sensitivity with delta time for frame-rate independent movement
+    float deltaTimeSensitivity = cameraState->mouseSensitivity * time.deltaTime;
+    cameraState->yaw -= mouseDelta.x * deltaTimeSensitivity;
+    cameraState->pitch -= mouseDelta.y * deltaTimeSensitivity; // Invert Y axis for natural camera movement
 
     // Clamp pitch to prevent camera flipping
     cameraState->pitch = std::clamp(cameraState->pitch, -1.5f, 1.5f); // About ±85 degrees in radians

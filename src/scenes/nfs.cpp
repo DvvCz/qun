@@ -258,8 +258,10 @@ static std::expected<void, std::string> update(/* clang-format off */
       bool hasMouseInput = glm::length(mouseDelta) > 0.01f;
 
       if (hasMouseInput) {
-        cameraState->yaw -= mouseDelta.x * cameraState->mouseSensitivity;
-        cameraState->pitch += mouseDelta.y * cameraState->mouseSensitivity; // Fixed inversion
+        // Apply mouse sensitivity with delta time for frame-rate independent movement
+        float deltaTimeSensitivity = cameraState->mouseSensitivity * time.deltaTime;
+        cameraState->yaw -= mouseDelta.x * deltaTimeSensitivity;
+        cameraState->pitch += mouseDelta.y * deltaTimeSensitivity; // Fixed inversion
 
         // Clamp pitch to prevent camera flipping
         cameraState->pitch = std::clamp(cameraState->pitch, -1.4f, 0.5f); // About -80° to +30°
