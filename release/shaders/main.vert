@@ -29,6 +29,8 @@ layout(std140, binding = 1) uniform Material3D {
     vec3 materialDiffuse;
     float materialDissolve;
     vec3 materialSpecular;
+    float emissiveStrength;
+    vec3 materialEmissive;
     float _padding;
     Texture diffuseTexture;
     Texture normalTexture;

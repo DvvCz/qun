@@ -29,7 +29,7 @@ layout(location = 2) uniform mat4x4 modelMatrix;
 layout(location = 3) uniform sampler2DArray textureList;
 layout(location = 4) uniform vec3 cameraPos;
 
-#define MAX_LIGHTS 20
+#define MAX_LIGHTS 100
 
 layout(std140, binding = 0) uniform LightsArray {
     uint lightCount;
@@ -42,6 +42,8 @@ layout(std140, binding = 1) uniform Material3D {
     vec3 materialDiffuse;
     float materialDissolve;
     vec3 materialSpecular;
+    float emissiveStrength;
+    vec3 materialEmissive;
     float _padding;
     Texture diffuseTexture;
     Texture normalTexture;
@@ -111,10 +113,17 @@ void main() {
         specular += spec * lights[i].color * distAttenuation;
     }
 
+    vec3 emissive = materialEmissive * emissiveStrength;
+    if (emissiveTexture.index >= 0) {
+        vec2 emissiveUV = transformUV(fragUV, emissiveTexture);
+        vec3 emissiveTextureSample = texture(textureList, vec3(emissiveUV, float(emissiveTexture.index))).rgb;
+        emissive *= emissiveTextureSample;
+    }
+
     vec3 ambientPart = materialAmbient * ambient;
     vec3 diffusePart = materialDiffuse * diffuse;
     vec3 specularPart = materialSpecular * specular;
 
-    vec3 resultColor = ambientPart + diffusePart + specularPart;
+    vec3 resultColor = ambientPart + diffusePart + specularPart + emissive;
     outColor = vec4(resultColor, materialDissolve);
 }

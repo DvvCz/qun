@@ -15,6 +15,8 @@ namespace material {
     glm::vec3 diffuse;
     float dissolve;
     glm::vec3 specular;
+    float emissiveStrength;
+    glm::vec3 emissive;
     float _padding;
 
     texture::Texture diffuseTexture;

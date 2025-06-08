@@ -92,6 +92,9 @@ std::expected<std::vector<asset::Material>, std::string> asset::loader::Gltf::tr
       mat.diffuseTexture = baseColorTexture;
     }
 
+    mat.emissive = glm::vec3(gltfMaterial.emissiveFactor[0], gltfMaterial.emissiveFactor[1], gltfMaterial.emissiveFactor[2]);
+    mat.emissiveStrength = gltfMaterial.emissiveStrength;
+
     // Has an emissive texture
     if (gltfMaterial.emissiveTexture.has_value()) {
       auto& emissiveTextureInfo = gltfMaterial.emissiveTexture.value();

@@ -173,7 +173,6 @@ void Renderer::draw3D() {
 
   for (const auto ent : lightEnts) {
     if (lightsArray.lightCount >= MAX_LIGHTS) {
-      std::println(stderr, "Maximum number of lights exceeded: {}", MAX_LIGHTS);
       break; // Prevent overflow
     }
 

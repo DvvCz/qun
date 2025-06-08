@@ -28,6 +28,77 @@
 #include "input/raw/mouse.hpp"
 #include "resources/time.hpp"
 
+// Function to recursively traverse nodes and create lights for emissive materials
+static void createLightsForEmissiveMaterials(const asset::Asset3D& cityAsset, std::shared_ptr<entt::registry> registry,
+                                             const glm::vec3& baseScale = glm::vec3(0.007f),
+                                             const glm::vec3& basePosition = glm::vec3(0.0f)) {
+  // Helper function to traverse a node recursively
+  std::function<void(size_t)> traverseNode = [&](size_t nodeIndex) {
+    if (nodeIndex >= cityAsset.nodes.size()) {
+      return;
+    }
+
+    const auto& node = cityAsset.nodes[nodeIndex];
+
+    // Check each material group in this node
+    for (const auto& materialGroup : node.groups) {
+      if (!materialGroup.materialId.has_value() || materialGroup.indices.empty()) {
+        continue;
+      }
+
+      size_t materialIndex = materialGroup.materialId.value();
+      if (materialIndex >= cityAsset.materials.size()) {
+        continue;
+      }
+
+      const auto& material = cityAsset.materials[materialIndex];
+
+      // Check if this material has an emissive texture
+      if (material.emissiveTexture.has_value()) {
+        // Calculate the centroid of vertices in this material group
+        glm::vec3 centroid(0.0f);
+        int validVertexCount = 0;
+
+        for (int index : materialGroup.indices) {
+          if (index >= 0 && index < static_cast<int>(cityAsset.vertices.size())) {
+            centroid += cityAsset.vertices[index].pos;
+            validVertexCount++;
+          }
+        }
+
+        if (validVertexCount > 0) {
+          centroid /= static_cast<float>(validVertexCount);
+
+          // Apply the scaling and positioning transformation that's applied to the city model
+          glm::vec3 lightPosition = centroid * baseScale + basePosition;
+
+          // Create a light entity at this position
+          auto lightEntity = registry->create();
+          registry->emplace<components::Position>(lightEntity, lightPosition);
+
+          // Set light properties based on the material
+          // Use a warm color for emissive materials and moderate intensity
+          glm::vec3 lightColor = material.emissive;
+          float intensity = material.emissiveStrength;
+          float radius = 2.0f; // Smaller radius since city is scaled down
+
+          registry->emplace<components::Light>(lightEntity, lightColor, intensity, radius);
+        }
+      }
+    }
+
+    // Recursively process child nodes
+    for (size_t childIndex : node.children) {
+      traverseNode(childIndex);
+    }
+  };
+
+  // Start traversal from all root nodes
+  for (size_t rootNodeIndex : cityAsset.rootNodes) {
+    traverseNode(rootNodeIndex);
+  }
+}
+
 static std::expected<void, std::string> startup(/* clang-format off */
   std::shared_ptr<entt::registry> registry,
   std::shared_ptr<Renderer> renderer
@@ -68,6 +139,9 @@ static std::expected<void, std::string> startup(/* clang-format off */
     registry->emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
     registry->emplace<components::Scale>(ent, glm::vec3(0.007f));
     registry->emplace<components::Model3D>(ent, model);
+
+    // Create lights for emissive materials in the city asset
+    createLightsForEmissiveMaterials(asset.value(), registry);
   }
 
   { // main light

@@ -21,6 +21,8 @@ namespace asset {
     float shininess;
     float dissolve = 1.0f;
     bool isDoubleSided = true;
+    glm::vec3 emissive;
+    float emissiveStrength;
 
     std::optional<texture::Texture> diffuseTexture;
     std::optional<texture::Texture> normalTexture;

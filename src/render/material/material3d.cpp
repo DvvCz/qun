@@ -20,6 +20,8 @@ void material::Manager3D::setMaterial(const asset::Material& material) noexcept 
     .diffuse = material.diffuse,
     .dissolve = material.dissolve,
     .specular = material.specular,
+    .emissiveStrength = material.emissiveStrength,
+    .emissive = material.emissive,
     .diffuseTexture = material.diffuseTexture.value_or(texture::Texture{}),
     .normalTexture = material.normalTexture.value_or(texture::Texture{}),
     .emissiveTexture = material.emissiveTexture.value_or(texture::Texture{}),
