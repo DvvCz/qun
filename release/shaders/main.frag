@@ -29,7 +29,7 @@ layout(location = 2) uniform mat4x4 modelMatrix;
 layout(location = 3) uniform sampler2DArray textureList;
 layout(location = 4) uniform vec3 cameraPos;
 
-#define MAX_LIGHTS 100
+#define MAX_LIGHTS 40
 
 layout(std140, binding = 0) uniform LightsArray {
     uint lightCount;

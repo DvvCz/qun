@@ -12,6 +12,9 @@ release/resources/*
 # Allow all attribution
 !release/resources/*.attribution.md
 
+# PNG
+!release/resources/CubeMap.png
+
 # GLTF
 !release/resources/FlightHelmet
 !release/resources/TextureTransformTest

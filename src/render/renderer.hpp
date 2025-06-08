@@ -16,7 +16,7 @@
 #include "render/model/3d/asset.hpp"
 #include "render/shader/program.hpp"
 
-#define MAX_LIGHTS 100
+#define MAX_LIGHTS 40
 
 namespace render {
   struct Light {
