@@ -27,6 +27,7 @@
 #include "constants.hpp"
 
 #include "input/raw/keyboard.hpp"
+#include "input/raw/mouse.hpp"
 #include "resources/time.hpp"
 
 static std::expected<void, std::string> startup(/* clang-format off */
@@ -84,6 +85,7 @@ static std::expected<void, std::string> startup(/* clang-format off */
 static std::expected<void, std::string> update(/* clang-format off */
   std::shared_ptr<entt::registry> registry,
   std::shared_ptr<Renderer> renderer,
+  std::shared_ptr<scenes::nfs::components::CameraState> cameraState,
   resources::Time& time
 ) { /* clang-format on */
 
@@ -178,28 +180,86 @@ static std::expected<void, std::string> update(/* clang-format off */
       angularVelocity.value.z = targetAngularVelocity;
     }
 
-    // Third-person camera system - follow the car from behind
-    const float cameraDistance = 10.0f; // Distance behind the car
-    const float cameraHeight = 3.0f;    // Height above the car
+    // GTA 5-style camera system
+    auto carView = registry->view<components::Position, components::Rotation>();
+    for (auto carEntity : carView) {
+      auto& carPosition = carView.get<components::Position>(carEntity);
+      auto& carRotation = carView.get<components::Rotation>(carEntity);
 
-    // Calculate camera position: behind the car + height offset
-    glm::vec3 cameraOffset = forward * cameraDistance + glm::vec3(0.0f, 0.0f, cameraHeight);
-    glm::vec3 cameraPos = position.value + cameraOffset;
+      // Get car forward direction
+      glm::vec3 carForward = carRotation.value * glm::vec3(0.0f, 1.0f, 0.0f);
 
-    // Camera looks at the car (slightly ahead of it)
-    glm::vec3 lookTarget = position.value - forward * 2.0f;
-    glm::vec3 cameraDir = glm::normalize(lookTarget - cameraPos);
+      // Handle mouse input for camera rotation
+      glm::vec2 mouseDelta = input::Mouse::getPositionDelta();
+      bool hasMouseInput = glm::length(mouseDelta) > 0.01f;
 
-    // Update renderer camera
-    renderer->setCameraPos(cameraPos);
-    renderer->setCameraDir(cameraDir);
+      if (hasMouseInput) {
+        cameraState->yaw -= mouseDelta.x * cameraState->mouseSensitivity;
+        cameraState->pitch += mouseDelta.y * cameraState->mouseSensitivity; // Fixed inversion
+
+        // Clamp pitch to prevent camera flipping
+        cameraState->pitch = std::clamp(cameraState->pitch, -1.4f, 0.5f); // About -80° to +30°
+
+        cameraState->isUserControlling = true;
+        cameraState->timeSinceLastInput = 0.0f;
+      } else {
+        cameraState->timeSinceLastInput += time.deltaTime;
+
+        // Start auto-centering after delay
+        if (cameraState->timeSinceLastInput > cameraState->autoReturnDelay) {
+          cameraState->isUserControlling = false;
+
+          // Calculate target yaw (behind the car)
+          glm::vec3 carForwardXY = glm::normalize(glm::vec3(carForward.x, carForward.y, 0.0f));
+          cameraState->targetYaw = atan2(carForwardXY.y, carForwardXY.x) + constants::PI; // Behind the car
+
+          // Smoothly interpolate back to target position
+          float returnSpeed = cameraState->autoReturnSpeed * time.deltaTime;
+
+          // Handle yaw wrapping (shortest rotation path)
+          float yawDiff = cameraState->targetYaw - cameraState->yaw;
+          while (yawDiff > glm::pi<float>())
+            yawDiff -= 2.0f * glm::pi<float>();
+          while (yawDiff < -glm::pi<float>())
+            yawDiff += 2.0f * glm::pi<float>();
+
+          cameraState->yaw += yawDiff * returnSpeed;
+          cameraState->pitch += (cameraState->targetPitch - cameraState->pitch) * returnSpeed;
+        }
+      }
+
+      // Calculate camera position based on yaw, pitch, and distance
+      float cosYaw = cos(cameraState->yaw);
+      float sinYaw = sin(cameraState->yaw);
+      float cosPitch = cos(cameraState->pitch);
+      float sinPitch = sin(cameraState->pitch);
+
+      // Camera offset in spherical coordinates (negative distance to position behind car)
+      glm::vec3 cameraOffset;
+      cameraOffset.x = -cameraState->distance * cosYaw * cosPitch;
+      cameraOffset.y = -cameraState->distance * sinYaw * cosPitch;
+      cameraOffset.z = cameraState->height + cameraState->distance * sinPitch;
+
+      glm::vec3 cameraPos = carPosition.value + cameraOffset;
+
+      // Camera looks at the car (with slight forward offset)
+      glm::vec3 lookTarget = carPosition.value + carForward * 1.0f + glm::vec3(0.0f, 0.0f, 1.0f);
+      glm::vec3 cameraDir = glm::normalize(lookTarget - cameraPos);
+
+      // Update renderer camera
+      renderer->setCameraPos(cameraPos);
+      renderer->setCameraDir(cameraDir);
+
+      // Only handle the first car entity for now
+      break;
+    }
   }
 
   return {};
 }
 
 void scenes::nfs::NFS::build(Game& game) {
-  std::shared_ptr<scenes::nfs::components::CameraState> cameraState;
+  auto cameraState = std::make_shared<scenes::nfs::components::CameraState>();
   game.addResource(cameraState);
 
   game.addSystem(Schedule::Startup, startup);
