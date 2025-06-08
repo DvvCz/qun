@@ -73,10 +73,10 @@ vec2 transformUV(vec2 uv, Texture tex) {
 void main() {
     vec3 fragToCameraDir = normalize(cameraPos - fragPos);
 
-    vec3 ambient = vec3(1.0);
+    vec3 baseColor = vec3(1.0);
     if (diffuseTexture.index >= 0) {
         vec2 diffuseUV = transformUV(fragUV, diffuseTexture);
-        ambient = texture(textureList, vec3(diffuseUV, float(diffuseTexture.index))).rgb;
+        baseColor = texture(textureList, vec3(diffuseUV, float(diffuseTexture.index))).rgb;
     }
 
     vec3 normal = fragNormal;
@@ -120,8 +120,8 @@ void main() {
         emissive *= emissiveTextureSample;
     }
 
-    vec3 ambientPart = materialAmbient * ambient;
-    vec3 diffusePart = materialDiffuse * diffuse;
+    vec3 ambientPart = materialAmbient * baseColor;
+    vec3 diffusePart = materialDiffuse * baseColor * diffuse;
     vec3 specularPart = materialSpecular * specular;
 
     vec3 resultColor = ambientPart + diffusePart + specularPart + emissive;
