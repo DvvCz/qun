@@ -140,9 +140,9 @@ void Renderer::draw2D() {
 
   textureManager2D->bind();
 
-  auto ents2d = registry->view<components::GlobalTransform, components::Model2D>();
+  auto ents2d = registry->view<components::Model2D>();
   for (const auto ent : ents2d) {
-    auto globalTransform = registry->get<components::GlobalTransform>(ent);
+    // auto globalTransform = registry->get<components::GlobalTransform>(ent);
     auto model = registry->get<components::Model2D>(ent);
 
     if (registry->all_of<components::Material2D>(ent)) {
@@ -226,11 +226,15 @@ void Renderer::draw3D() {
 }
 
 void Renderer::drawFrame() {
-  glClearColor(0.3f, 0.3f, 0.6f, 1.0f);
+  // glClearColor(0.3f, 0.3f, 0.6f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
-  draw3D();
+  // todo: make it more clear this is a skybox stage
+  glDisable(GL_DEPTH_TEST);
   draw2D();
+  glEnable(GL_DEPTH_TEST);
+
+  draw3D();
 }
 
 void Renderer::setCameraPos(const glm::vec3& cameraPos) noexcept {

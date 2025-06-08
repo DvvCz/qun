@@ -13,12 +13,15 @@
 #include "components/transform.hpp"
 #include "components/model.hpp"
 #include "components/light.hpp"
+#include "components/material.hpp"
 
 #include "game.hpp"
 
 #include "asset/gltf/gltf.hpp"
+#include "asset/img/img.hpp"
 
 #include "render/renderer.hpp"
+#include "render/model/2d/quad.hpp"
 
 #include "util/error.hpp"
 
@@ -141,6 +144,30 @@ static std::expected<void, std::string> startup(/* clang-format off */
     registry->emplace<components::Model3D>(ent, model);
 
     createLightsForEmissiveMaterials(asset.value(), registry);
+  }
+
+  { // skybox
+    auto img = asset::loader::Img::tryFromFile("resources/CubeMap.png", *renderer->textureManager2D);
+    if (!img.has_value()) {
+      return std::unexpected{std::format("Failed to load skybox image: {}", util::error::indent(img.error()))};
+    }
+
+    /* clang-format off */
+    auto skyboxModel = std::make_shared<model::Quad>(
+      Vertex2D({-1.0f, -1.0f}, {0.0f, 1.0f}),
+      Vertex2D({ 1.0f, -1.0f}, {1.0f, 1.0f}),
+      Vertex2D({ 1.0f,  1.0f}, {1.0f, 0.0f}),
+      Vertex2D({-1.0f,  1.0f}, {0.0f, 0.0f})
+    ); /* clang-format on */
+
+    /* clang-format off */
+    auto skyboxMaterial = std::make_shared<material::Material2D>(
+      glm::vec3(1.0f, 0.0f, 0.0f)
+    ); /* clang-format on */
+
+    auto skyboxEnt = registry->create();
+    registry->emplace<components::Model2D>(skyboxEnt, skyboxModel);
+    registry->emplace<components::Material2D>(skyboxEnt, skyboxMaterial);
   }
 
   return {};
