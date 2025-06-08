@@ -58,7 +58,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
     return std::unexpected{"GLTF asset has no scenes defined"};
   }
 
-  std::vector<asset::Shape> shapes;
+  std::vector<asset::Node> nodes;
   std::string errorMessage;
   bool hasError = false;
 
@@ -79,15 +79,15 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
 
       // todo: revert terrible conversion name change
       auto worldTransform = Gltf::parserMatAsGlm(worldTransformRaw);
-      auto shapeResult = Gltf::tryConvertNode(asset, node, mesh, worldTransform, vertices);
+      auto nodeResult = Gltf::tryConvertNode(asset, node, mesh, worldTransform, vertices);
 
-      if (!shapeResult.has_value()) {
-        errorMessage = shapeResult.error();
+      if (!nodeResult.has_value()) {
+        errorMessage = nodeResult.error();
         hasError = true;
         return;
       }
 
-      shapes.push_back(std::move(shapeResult.value()));
+      nodes.push_back(std::move(nodeResult.value()));
     }
   ); /* clang-format on */
 
@@ -97,7 +97,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
 
   return asset::Asset3D{/* clang-format off */
     std::move(vertices),
-    std::move(shapes),
+    std::move(nodes),
     std::move(materials),
     path
   };/* clang-format on */

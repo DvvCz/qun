@@ -43,8 +43,8 @@ model::Asset::Asset(/* clang-format off */
     glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx); // Bind index buffer to VAO
   }
 
-  for (const auto& shape : asset.shapes) {
-    for (const auto& group : shape.groups) {
+  for (const auto& node : asset.nodes) {
+    for (const auto& group : node.groups) {
       allIndices.insert(allIndices.end(), group.indices.begin(), group.indices.end());
       materialGroups.push_back(group);
     }

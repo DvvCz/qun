@@ -36,7 +36,7 @@ namespace asset::loader {
     ) noexcept; /* clang-format on */
 
     /* clang-format off */
-    static std::expected<asset::Shape, std::string> tryConvertNode(
+    static std::expected<asset::Node, std::string> tryConvertNode(
       const fastgltf::Asset& asset,
       const fastgltf::Node& node,
       const fastgltf::Mesh& mesh,

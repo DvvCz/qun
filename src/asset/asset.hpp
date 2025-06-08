@@ -34,7 +34,7 @@ namespace asset {
     std::vector<int> indices;
   };
 
-  struct Shape {
+  struct Node {
   public:
     std::string name;
     std::vector<MaterialGroup> groups;
@@ -42,7 +42,7 @@ namespace asset {
 
   struct Asset3D {
     std::vector<Vertex3D> vertices;
-    std::vector<Shape> shapes;
+    std::vector<Node> nodes;
     std::vector<Material> materials;
 
     std::filesystem::path path;

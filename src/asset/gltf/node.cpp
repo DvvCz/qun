@@ -75,7 +75,7 @@ static void calculateTangents(std::vector<Vertex3D>& vertices, const std::vector
 }
 
 /* clang-format off */
-std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
+std::expected<asset::Node, std::string> asset::loader::Gltf::tryConvertNode(
   const fastgltf::Asset& asset,
   const fastgltf::Node& node,
   const fastgltf::Mesh& mesh,
@@ -243,12 +243,12 @@ std::expected<asset::Shape, std::string> asset::loader::Gltf::tryConvertNode(
     }
   }
 
-  std::string shapeName;
+  std::string nodeName;
   if (!node.name.empty()) {
-    shapeName = std::string(node.name);
+    nodeName = std::string(node.name);
   } else { // todo: include node index
-    shapeName = std::string("<unnamed_shape>");
+    nodeName = std::string("<unnamed>");
   }
 
-  return asset::Shape{.name = shapeName, .groups = std::move(groups)};
+  return asset::Node{.name = nodeName, .groups = std::move(groups)};
 }

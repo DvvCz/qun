@@ -16,7 +16,7 @@ target_include_directories(glad PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/g
 
 # Rapidobj
 add_library(rapidobj INTERFACE)
-target_include_directories(rapidobj INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidobj/include)
+target_include_directories(rapidobj SYSTEM INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidobj/include)
 
 # stb_image
 add_library(stb INTERFACE)
