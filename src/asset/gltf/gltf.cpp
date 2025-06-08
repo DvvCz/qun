@@ -73,35 +73,6 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
     nodes.push_back(std::move(nodeResult.value()));
   }
 
-  // fastgltf::iterateSceneNodes(/* clang-format off */
-  //   asset,
-  //   defaultScene,
-  //   fastgltf::math::fmat4x4(),
-  //   [&](fastgltf::Node& node, fastgltf::math::fmat4x4 worldTransformRaw) {
-  //     if (hasError) return;
-
-  //     if (!node.meshIndex.has_value()) {
-  //       // Nothing to render for this node.
-  //       // Still important for transforms / grouping.
-  //       return;
-  //     }
-
-  //     const auto& mesh = asset.meshes[node.meshIndex.value()];
-
-  //     // todo: revert terrible conversion name change
-  //     auto worldTransform = Gltf::parserMatAsGlm(worldTransformRaw);
-  //     auto nodeResult = Gltf::tryConvertNode(asset, node, mesh, worldTransform, vertices);
-
-  //     if (!nodeResult.has_value()) {
-  //       errorMessage = nodeResult.error();
-  //       hasError = true;
-  //       return;
-  //     }
-
-  //     nodes.push_back(std::move(nodeResult.value()));
-  //   }
-  // ); /* clang-format on */
-
   return asset::Asset3D{/* clang-format off */
     std::move(vertices),
     std::move(nodes),
