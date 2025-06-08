@@ -1,4 +1,5 @@
 #include "nfs.hpp"
+#include "components/parent.hpp"
 
 #include <expected>
 #include <print>
@@ -34,8 +35,7 @@ static std::expected<void, std::string> startup(/* clang-format off */
   std::shared_ptr<entt::registry> registry,
   std::shared_ptr<Renderer> renderer
 ) { /* clang-format on */
-
-  { // car concept
+  {                                                                                 // car concept
     auto asset = asset::loader::Gltf::tryFromFile("resources/CarConcept/CarConcept.gltf", *renderer->textureManager3D);
     if (!asset.has_value()) {
       return std::unexpected{std::format("Failed to load car asset: {}", util::error::indent(asset.error()))};
@@ -49,30 +49,14 @@ static std::expected<void, std::string> startup(/* clang-format off */
       }
     }
 
-    std::function<void(const asset::Node&, int)> printNode = [&](const asset::Node& node, int depth) {
-      std::string indent(depth, '\t');
-
-      std::println("{}{}", indent, node.name);
-
-      for (const auto& childIdx : node.children) {
-        auto& child = asset->nodes[childIdx];
-        printNode(child, depth + 1);
-      }
-    };
-
-    for (auto rootNodeIdx : asset->rootNodes) {
-      const auto& rootNode = asset->nodes[rootNodeIdx];
-      printNode(rootNode, 0);
-    }
-
     auto model = renderer->createAsset3D(asset.value());
 
     auto ent = registry->create();
     registry->emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
     registry->emplace<components::Model3D>(ent, model);
 
-    registry->emplace<components::Velocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f));        // Start stationary
-    registry->emplace<components::AngularVelocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f)); // Start without rotation
+    registry->emplace<components::Velocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
+    registry->emplace<components::AngularVelocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
   }
 
   { // city
