@@ -103,7 +103,7 @@ static std::expected<void, std::string> startup(/* clang-format off */
   std::shared_ptr<entt::registry> registry,
   std::shared_ptr<Renderer> renderer
 ) { /* clang-format on */
-  {                                                                                 // car concept
+  {
     auto asset = asset::loader::Gltf::tryFromFile("resources/CarConcept/CarConcept.gltf", *renderer->textureManager3D);
     if (!asset.has_value()) {
       return std::unexpected{std::format("Failed to load car asset: {}", util::error::indent(asset.error()))};
@@ -140,14 +140,7 @@ static std::expected<void, std::string> startup(/* clang-format off */
     registry->emplace<components::Scale>(ent, glm::vec3(0.007f));
     registry->emplace<components::Model3D>(ent, model);
 
-    // Create lights for emissive materials in the city asset
     createLightsForEmissiveMaterials(asset.value(), registry);
-  }
-
-  { // main light
-    auto ent = registry->create();
-    registry->emplace<components::Position>(ent, glm::vec3(0.0f, 0.0f, 5.0f));
-    registry->emplace<components::Light>(ent, glm::vec3(1.0f), 2.0f, 1000.0f);
   }
 
   return {};
