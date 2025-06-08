@@ -49,6 +49,22 @@ static std::expected<void, std::string> startup(/* clang-format off */
       }
     }
 
+    std::function<void(const asset::Node&, int)> printNode = [&](const asset::Node& node, int depth) {
+      std::string indent(depth, '\t');
+
+      std::println("{}{}", indent, node.name);
+
+      for (const auto& childIdx : node.children) {
+        auto& child = asset->nodes[childIdx];
+        printNode(child, depth + 1);
+      }
+    };
+
+    for (auto rootNodeIdx : asset->rootNodes) {
+      const auto& rootNode = asset->nodes[rootNodeIdx];
+      printNode(rootNode, 0);
+    }
+
     auto model = renderer->createAsset3D(asset.value());
 
     auto ent = registry->create();

@@ -93,6 +93,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
 
   std::vector<Vertex3D> vertices;
   std::vector<asset::Node> nodes;
+  std::vector<size_t> rootNodes;
 
   for (const auto& shape : obj.shapes) {
     // Create a map of material ID to vector of indices
@@ -157,6 +158,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
       }
     }
 
+    rootNodes.push_back(nodes.size());
     nodes.push_back(asset::Node{/* clang-format off */
         .name = shape.name,
         .groups = std::move(groups)
@@ -166,6 +168,7 @@ std::expected<asset::Asset3D, std::string> asset::loader::Obj::tryFromFile(
   return asset::Asset3D{/* clang-format off */
     std::move(vertices),
     std::move(nodes),
+    std::move(rootNodes),
     std::move(materials),
     std::move(path)
   };/* clang-format on */

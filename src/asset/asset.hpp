@@ -37,12 +37,14 @@ namespace asset {
   struct Node {
   public:
     std::string name;
+    std::vector<size_t> children; // Indices into the Node[] in Asset3D
     std::vector<MaterialGroup> groups;
   };
 
   struct Asset3D {
     std::vector<Vertex3D> vertices;
     std::vector<Node> nodes;
+    std::vector<size_t> rootNodes; // Indices into the Node[] for root nodes
     std::vector<Material> materials;
 
     std::filesystem::path path;

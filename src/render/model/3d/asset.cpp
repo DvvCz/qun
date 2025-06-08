@@ -4,6 +4,7 @@
 #include "render/material/material3d.hpp"
 
 #include "constants.hpp"
+#include <functional>
 #include <print>
 
 model::Asset::Asset(/* clang-format off */
@@ -43,11 +44,23 @@ model::Asset::Asset(/* clang-format off */
     glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx); // Bind index buffer to VAO
   }
 
-  for (const auto& node : asset.nodes) {
+  // Recursive function to traverse nodes and collect material groups
+  std::function<void(size_t)> traverseNode = [&](size_t nodeIndex) {
+    const auto& node = asset.nodes[nodeIndex];
     for (const auto& group : node.groups) {
       allIndices.insert(allIndices.end(), group.indices.begin(), group.indices.end());
       materialGroups.push_back(group);
     }
+
+    // Recursively traverse child nodes
+    for (size_t childIndex : node.children) {
+      traverseNode(childIndex);
+    }
+  };
+
+  // Start traversal from root nodes
+  for (size_t rootNodeIndex : asset.rootNodes) {
+    traverseNode(rootNodeIndex);
   }
 
   glNamedBufferData(glBufferIdx, sizeof(Vertex3D) * asset.vertices.size(), asset.vertices.data(), GL_STATIC_DRAW);

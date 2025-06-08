@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "fastgltf/math.hpp"
 #include "render/texture.hpp"
 
 /* clang-format off */
@@ -59,45 +60,52 @@ std::expected<asset::Asset3D, std::string> asset::loader::Gltf::tryFromFile(
   }
 
   std::vector<asset::Node> nodes;
-  std::string errorMessage;
-  bool hasError = false;
+  std::vector<size_t> rootNodes;
+  for (auto& gltfNodeIdx : asset.scenes[defaultScene].nodeIndices) {
+    auto& gltfNode = asset.nodes[gltfNodeIdx];
 
-  fastgltf::iterateSceneNodes(/* clang-format off */
-    asset,
-    defaultScene,
-    fastgltf::math::fmat4x4(),
-    [&](fastgltf::Node& node, fastgltf::math::fmat4x4 worldTransformRaw) {
-      if (hasError) return;
-
-      if (!node.meshIndex.has_value()) {
-        // Nothing to render for this node.
-        // Still important for transforms / grouping.
-        return;
-      }
-
-      const auto& mesh = asset.meshes[node.meshIndex.value()];
-
-      // todo: revert terrible conversion name change
-      auto worldTransform = Gltf::parserMatAsGlm(worldTransformRaw);
-      auto nodeResult = Gltf::tryConvertNode(asset, node, mesh, worldTransform, vertices);
-
-      if (!nodeResult.has_value()) {
-        errorMessage = nodeResult.error();
-        hasError = true;
-        return;
-      }
-
-      nodes.push_back(std::move(nodeResult.value()));
+    auto nodeResult = Gltf::tryConvertNode(asset, gltfNode, fastgltf::math::fmat4x4(1.0f), nodes, vertices);
+    if (!nodeResult.has_value()) {
+      return std::unexpected{nodeResult.error()};
     }
-  ); /* clang-format on */
 
-  if (hasError) {
-    return std::unexpected{errorMessage};
+    rootNodes.push_back(nodes.size());
+    nodes.push_back(std::move(nodeResult.value()));
   }
+
+  // fastgltf::iterateSceneNodes(/* clang-format off */
+  //   asset,
+  //   defaultScene,
+  //   fastgltf::math::fmat4x4(),
+  //   [&](fastgltf::Node& node, fastgltf::math::fmat4x4 worldTransformRaw) {
+  //     if (hasError) return;
+
+  //     if (!node.meshIndex.has_value()) {
+  //       // Nothing to render for this node.
+  //       // Still important for transforms / grouping.
+  //       return;
+  //     }
+
+  //     const auto& mesh = asset.meshes[node.meshIndex.value()];
+
+  //     // todo: revert terrible conversion name change
+  //     auto worldTransform = Gltf::parserMatAsGlm(worldTransformRaw);
+  //     auto nodeResult = Gltf::tryConvertNode(asset, node, mesh, worldTransform, vertices);
+
+  //     if (!nodeResult.has_value()) {
+  //       errorMessage = nodeResult.error();
+  //       hasError = true;
+  //       return;
+  //     }
+
+  //     nodes.push_back(std::move(nodeResult.value()));
+  //   }
+  // ); /* clang-format on */
 
   return asset::Asset3D{/* clang-format off */
     std::move(vertices),
     std::move(nodes),
+    std::move(rootNodes),
     std::move(materials),
     path
   };/* clang-format on */

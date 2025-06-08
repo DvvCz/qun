@@ -39,8 +39,8 @@ namespace asset::loader {
     static std::expected<asset::Node, std::string> tryConvertNode(
       const fastgltf::Asset& asset,
       const fastgltf::Node& node,
-      const fastgltf::Mesh& mesh,
-      const glm::mat4x4 worldTransform,
+      const fastgltf::math::fmat4x4& parentTransform,
+      std::vector<asset::Node>& allNodes,
       std::vector<Vertex3D>& allVertices
     ) noexcept; /* clang-format on */
 

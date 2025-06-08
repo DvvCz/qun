@@ -1,6 +1,10 @@
+#include "asset/asset.hpp"
 #include "constants.hpp"
+#include "fastgltf/math.hpp"
+#include "fastgltf/tools.hpp"
 #include "gltf.hpp"
 #include <map>
+#include <variant>
 
 // Calculate tangents for a set of vertices using Lengyel's method
 static void calculateTangents(std::vector<Vertex3D>& vertices, const std::vector<std::uint32_t>& indices) {
@@ -78,16 +82,35 @@ static void calculateTangents(std::vector<Vertex3D>& vertices, const std::vector
 std::expected<asset::Node, std::string> asset::loader::Gltf::tryConvertNode(
   const fastgltf::Asset& asset,
   const fastgltf::Node& node,
-  const fastgltf::Mesh& mesh,
-  const glm::mat4x4 worldTransform,
+  const fastgltf::math::fmat4x4& gltfParentTransform,
+  std::vector<Node>& allNodes,
   std::vector<Vertex3D>& allVertices
 ) noexcept { /* clang-format off */
-  // Extract normal matrix (for transforming normals and tangents)
-  glm::mat3 rawNormalMatrix = glm::transpose(glm::inverse(glm::mat3(worldTransform)));
+  asset::Node outputNode;
+  outputNode.name = std::string(node.name.empty() ? "<unnamed>" : node.name);
 
-  // Create a map of material ID to vector of indices
+  auto gltfNodeTransform = fastgltf::getTransformMatrix(node, gltfParentTransform);
+  for (auto& childIdx: node.children) {
+    auto childNode = asset.nodes[childIdx];
+
+    auto childResult = tryConvertNode(asset, childNode, gltfNodeTransform, allNodes, allVertices);
+    if (!childResult.has_value()) {
+      return std::unexpected{childResult.error()};
+    }
+
+    outputNode.children.push_back(allNodes.size());
+    allNodes.push_back(std::move(childResult.value()));
+  }
+
+  if (!node.meshIndex.has_value()) {
+    return outputNode; // No mesh, just a transform node
+  }
+  const auto& mesh = asset.meshes[node.meshIndex.value()];
+
+  auto rawNodeTransform = asset::loader::Gltf::parserMatAsGlm(gltfNodeTransform);
+  auto rawNormalMatrix = glm::transpose(glm::inverse(glm::mat3(rawNodeTransform)));
+
   std::map<int, std::vector<int>> materialGroups;
-
   for (const auto& primitive : mesh.primitives) {
     int materialId = primitive.materialIndex.value_or(-1);
 
@@ -108,7 +131,7 @@ std::expected<asset::Node, std::string> asset::loader::Gltf::tryConvertNode(
         positionAccessor,
         [&](fastgltf::math::fvec3 pos, std::size_t idx) {
           auto raw = Gltf::parserVecAsGlm(pos);
-          auto rawTransform = glm::vec3(worldTransform * glm::vec4(raw, 1.0f));
+          auto rawTransform = glm::vec3(rawNodeTransform * glm::vec4(raw, 1.0f));
           primitiveVertices[idx].pos = convertFromGLTF(rawTransform.x, rawTransform.y, rawTransform.z);
         }
       ); /* clang-format on */
@@ -233,22 +256,13 @@ std::expected<asset::Node, std::string> asset::loader::Gltf::tryConvertNode(
     }
   }
 
-  // Convert the map to the vector of asset::MaterialGroup
-  std::vector<asset::MaterialGroup> groups;
   for (const auto& [materialId, indices] : materialGroups) {
     if (materialId == -1) {
-      groups.push_back(asset::MaterialGroup{.materialId = std::nullopt, .indices = indices});
+      outputNode.groups.push_back(asset::MaterialGroup{.materialId = std::nullopt, .indices = indices});
     } else {
-      groups.push_back(asset::MaterialGroup{.materialId = materialId, .indices = indices});
+      outputNode.groups.push_back(asset::MaterialGroup{.materialId = materialId, .indices = indices});
     }
   }
 
-  std::string nodeName;
-  if (!node.name.empty()) {
-    nodeName = std::string(node.name);
-  } else { // todo: include node index
-    nodeName = std::string("<unnamed>");
-  }
-
-  return asset::Node{.name = nodeName, .groups = std::move(groups)};
+  return outputNode;
 }
