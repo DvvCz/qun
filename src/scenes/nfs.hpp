@@ -28,10 +28,6 @@ namespace scenes::nfs {
       float targetYaw = 0.0f;    // Target yaw (behind the car)
       float targetPitch = -0.1f; // Target pitch (slightly down)
     };
-
-    struct CrateAsset {
-      std::shared_ptr<model::Asset> asset; // The crate 3D model asset
-    };
   };
 
   struct NFS {
