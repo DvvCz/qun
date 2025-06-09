@@ -1,6 +1,7 @@
 build
 release/resources
 .cache
+vcpkg_installed
 
 release/*
 !release/shaders

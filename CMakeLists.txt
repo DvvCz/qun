@@ -4,30 +4,23 @@ project(qun VERSION 0.1.0 LANGUAGES C CXX)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
+find_package(Stb REQUIRED)
+find_package(EnTT CONFIG REQUIRED)
+find_package(fastgltf CONFIG REQUIRED)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Glad
+# glad
 add_library(glad STATIC ./thirdparty/glad/src/gl.c)
 target_include_directories(glad PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
 target_include_directories(glad PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad/include)
 
-# Rapidobj
+
+# rapidobj
 add_library(rapidobj INTERFACE)
 target_include_directories(rapidobj SYSTEM INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidobj/include)
-
-# stb_image
-add_library(stb INTERFACE)
-target_include_directories(stb INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
-
-# entt
-add_library(entt INTERFACE)
-target_include_directories(entt INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/entt/single_include)
-
-# fastgltf
-add_subdirectory(thirdparty/fastgltf)
 
 # qun
 add_executable(qun
@@ -73,7 +66,6 @@ add_executable(qun
 target_include_directories(qun
     PRIVATE
     ./thirdparty
-    ./thirdparty/fastgltf/include
     ./thirdparty/glad/include
     ./src
 )
@@ -81,8 +73,8 @@ target_include_directories(qun
 target_link_libraries(qun
     glad
     rapidobj
-    entt
-    fastgltf
+    EnTT::EnTT
+    fastgltf::fastgltf
     glfw
     OpenGL::GL
     glm::glm

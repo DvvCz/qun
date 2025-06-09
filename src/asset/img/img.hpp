@@ -4,7 +4,7 @@
 #include <string>
 #include <filesystem>
 
-#include <stb/stb_image.h>
+#include <stb_image.h>
 
 #include "asset/asset.hpp"
 

@@ -2,7 +2,7 @@
 #include "render/texture.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
+#include <stb_image.h>
 
 #define STBI_FORCE_RGBA 4
 
