@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 project(qun VERSION 0.1.0 LANGUAGES C CXX)
 
+# Force static linking for all vcpkg libraries
+set(VCPKG_TARGET_ARCHITECTURE x64)
+set(VCPKG_CRT_LINKAGE static)
+set(VCPKG_LIBRARY_LINKAGE static)
+
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
