@@ -3,10 +3,14 @@
 
 class Game;
 
+#include "render/model/3d/asset.hpp"
+
 namespace scenes::nfs {
   namespace components {
     struct Car {};
+  };
 
+  namespace resources {
     struct CameraState {
       float yaw = 0.0f;       // Horizontal rotation around the car
       float pitch = -0.1f;    // Vertical angle (looking down slightly at the car)
@@ -23,6 +27,10 @@ namespace scenes::nfs {
       // Target values for smooth auto-centering
       float targetYaw = 0.0f;    // Target yaw (behind the car)
       float targetPitch = -0.1f; // Target pitch (slightly down)
+    };
+
+    struct CrateAsset {
+      std::shared_ptr<model::Asset> asset; // The crate 3D model asset
     };
   };
 

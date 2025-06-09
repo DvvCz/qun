@@ -106,10 +106,27 @@ static void createLightsForEmissiveMaterials(const asset::Asset3D& cityAsset, st
   }
 }
 
-static std::expected<void, std::string> startup(/* clang-format off */
+static std::expected<void, std::string>
+startup(/* clang-format off */
   std::shared_ptr<entt::registry> registry,
-  std::shared_ptr<Renderer> renderer
-) { /* clang-format on */
+  std::shared_ptr<Renderer> renderer,
+  std::shared_ptr<scenes::nfs::resources::CrateAsset> crateAsset /* clang-format on */
+) {
+  {
+    auto crateResult = asset::loader::Gltf::tryFromFile("resources/CrateBox.glb", *renderer->textureManager3D);
+    if (!crateResult.has_value()) {
+      return std::unexpected{std::format("Failed to load crate asset: {}", util::error::indent(crateResult.error()))};
+    }
+
+    crateAsset->asset = renderer->createAsset3D(crateResult.value());
+  }
+
+  { // baseplate 1000x1000 (invisible)
+    auto baseplateEnt = registry->create();
+    registry->emplace<components::Position>(baseplateEnt, glm::vec3(0.0f, 0.0f, -0.2f));
+    registry->emplace<components::BoxCollider>(baseplateEnt, glm::vec3(500.0f, 500.0f, 0.05f));
+  }
+
   {
     auto asset = asset::loader::Gltf::tryFromFile("resources/CarConcept/CarConcept.gltf", *renderer->textureManager3D);
     if (!asset.has_value()) {
@@ -133,18 +150,19 @@ static std::expected<void, std::string> startup(/* clang-format off */
     registry->emplace<components::Velocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
     registry->emplace<components::AngularVelocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
     registry->emplace<scenes::nfs::components::Car>(ent); // mark as car entity
+    registry->emplace<components::BoxCollider>(ent, glm::vec3(0.5f, 0.5f, 0.20f));
 
     auto cubeModel = std::make_shared<model::Cube>(glm::vec3(1.0f));
 
     auto cubeEnt = registry->create();
-    registry->emplace<components::Position>(cubeEnt, -constants::WORLD_FORWARD * 5.0f);
+    registry->emplace<components::Position>(cubeEnt, constants::WORLD_RIGHT * 5.0f);
     registry->emplace<components::Child>(cubeEnt, ent); // make it a child of the car
     registry->emplace<components::Model3D>(cubeEnt, cubeModel);
 
     std::vector<entt::entity> carChildren;
     carChildren.push_back(cubeEnt);
 
-    registry->emplace<components::Parent>(ent, carChildren); // make car a parent of the cube
+    registry->emplace<components::Parent>(ent, carChildren);
   }
 
   { // city
@@ -188,9 +206,23 @@ static std::expected<void, std::string> startup(/* clang-format off */
 static std::expected<void, std::string> update(/* clang-format off */
   std::shared_ptr<entt::registry> registry,
   std::shared_ptr<Renderer> renderer,
-  std::shared_ptr<scenes::nfs::components::CameraState> cameraState,
+  std::shared_ptr<scenes::nfs::resources::CameraState> cameraState,
+  std::shared_ptr<scenes::nfs::resources::CrateAsset> crateAsset,
   resources::Time& time
 ) { /* clang-format on */
+
+  if (input::Mouse::wasJustPressed(input::MouseButton::Left)) {
+    auto boxAsset = std::make_shared<model::Cube>(glm::vec3(1.0f));
+
+    // Create the box entity
+    auto boxEntity = registry->create();
+    registry->emplace<components::Position>(boxEntity, glm::vec3(0.0f, 0.0f, 20.0f));
+    // registry->emplace<components::Scale>(boxEntity, glm::vec3(0.03f));
+    registry->emplace<components::Model3D>(boxEntity, boxAsset);
+    registry->emplace<components::Velocity>(boxEntity, glm::vec3(0.0f, 0.0f, 0.0f));
+    registry->emplace<components::Acceleration>(boxEntity, constants::WORLD_GRAVITY);
+    registry->emplace<components::BoxCollider>(boxEntity, glm::vec3(0.5f));
+  }
 
   // Car controller system
   auto carView = registry->view<components::Position, components::Rotation, components::Velocity, components::AngularVelocity,
@@ -361,8 +393,11 @@ static std::expected<void, std::string> update(/* clang-format off */
 }
 
 void scenes::nfs::NFS::build(Game& game) {
-  auto cameraState = std::make_shared<scenes::nfs::components::CameraState>();
+  auto cameraState = std::make_shared<scenes::nfs::resources::CameraState>();
   game.addResource(cameraState);
+
+  auto crateAsset = std::make_shared<scenes::nfs::resources::CrateAsset>();
+  game.addResource(crateAsset);
 
   game.addSystem(Schedule::Startup, startup);
   game.addSystem(Schedule::Update, update);
