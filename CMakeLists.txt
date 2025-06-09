@@ -83,7 +83,7 @@ add_executable(qun
 )
 
 if (MSVC)
-  target_link_options(qun PRIVATE /SUBSYSTEM:WINDOWS)
+  target_link_options(qun PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
 endif()
 
 target_include_directories(qun
