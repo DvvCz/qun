@@ -26,12 +26,12 @@ jobs:
 
     - uses: lukka/get-cmake@latest
 
-    - name: Setup vcpkg
-      uses: lukka/run-vcpkg@v11
-
     - name: Setup MSVC (Windows)
       if: matrix.os == 'windows-latest'
       uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
 
     - name: Install Linux system dependencies
       if: matrix.os == 'ubuntu-latest'
