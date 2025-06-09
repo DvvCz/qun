@@ -84,6 +84,8 @@ jobs:
         Copy-Item release/${{ matrix.executable }} artifact/
         if (Test-Path release/resources) { Copy-Item -Recurse release/resources artifact/ }
         if (Test-Path release/shaders) { Copy-Item -Recurse release/shaders artifact/ }
+        # Copy any DLLs that were copied by the build process
+        Get-ChildItem -Path release -Filter "*.dll" | Copy-Item -Destination artifact/ -ErrorAction SilentlyContinue
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
