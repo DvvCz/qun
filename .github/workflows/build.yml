@@ -50,6 +50,12 @@ jobs:
           libxcursor-dev \
           libxi-dev
 
+    - name: Set gcc 14 as default (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+
     - name: Configure and build
       uses: lukka/run-cmake@v10
       with:
