@@ -13,7 +13,7 @@ release/resources/*
 !release/resources/*.attribution.md
 
 # PNG
-!release/resources/CubeMap.png
+!release/resources/ClearNight.png
 
 # GLTF
 !release/resources/FlightHelmet

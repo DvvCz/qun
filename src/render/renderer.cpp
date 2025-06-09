@@ -40,7 +40,7 @@ Renderer::Renderer(const std::shared_ptr<Window>& window,
   cameraPos = constants::WORLD_ORIGIN;
   cameraFront = constants::WORLD_FORWARD;
 
-  projMatrix = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.05f, 1000.0f);
+  projMatrix = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.05f, 10000.0f);
   viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, constants::WORLD_UP);
 
   // Set initial viewport size with 16:9 aspect ratio
@@ -226,7 +226,6 @@ void Renderer::draw3D() {
 }
 
 void Renderer::drawFrame() {
-  // glClearColor(0.3f, 0.3f, 0.6f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 
   // todo: make it more clear this is a skybox stage

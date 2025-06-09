@@ -8,6 +8,7 @@
 namespace material {
   struct Material2D {
     alignas(16) glm::vec3 color;
+    texture::Texture texture;
   };
 
   class Manager2D {

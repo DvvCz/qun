@@ -1,6 +1,8 @@
 #include "nfs.hpp"
+#include "render/model/3d/sphere.hpp"
 
 #include <expected>
+#include <glm/ext/quaternion_trigonometric.hpp>
 #include <print>
 #include <string>
 
@@ -146,28 +148,23 @@ static std::expected<void, std::string> startup(/* clang-format off */
     createLightsForEmissiveMaterials(asset.value(), registry);
   }
 
-  { // skybox
-    auto img = asset::loader::Img::tryFromFile("resources/CubeMap.png", *renderer->textureManager2D);
+  { // skybox (3d sphere)
+    auto img = asset::loader::Img::tryFromFile("resources/ClearNight.png", *renderer->textureManager3D);
     if (!img.has_value()) {
       return std::unexpected{std::format("Failed to load skybox image: {}", util::error::indent(img.error()))};
     }
 
-    /* clang-format off */
-    auto skyboxModel = std::make_shared<model::Quad>(
-      Vertex2D({-1.0f, -1.0f}, {0.0f, 1.0f}),
-      Vertex2D({ 1.0f, -1.0f}, {1.0f, 1.0f}),
-      Vertex2D({ 1.0f,  1.0f}, {1.0f, 0.0f}),
-      Vertex2D({-1.0f,  1.0f}, {0.0f, 0.0f})
-    ); /* clang-format on */
+    auto skyboxModel = std::make_shared<model::Sphere>(1000.0f);
 
-    /* clang-format off */
-    auto skyboxMaterial = std::make_shared<material::Material2D>(
-      glm::vec3(1.0f, 0.0f, 0.0f)
-    ); /* clang-format on */
+    auto skyboxMaterial = std::make_shared<asset::Material>();
+    skyboxMaterial->ambient = glm::vec3(0.5f);
+    skyboxMaterial->diffuseTexture = img.value().texture;
 
     auto skyboxEnt = registry->create();
-    registry->emplace<components::Model2D>(skyboxEnt, skyboxModel);
-    registry->emplace<components::Material2D>(skyboxEnt, skyboxMaterial);
+    registry->emplace<components::Position>(skyboxEnt, glm::vec3(0.0f, 0.0f, -100.0f));
+    registry->emplace<components::Rotation>(skyboxEnt, glm::angleAxis(glm::radians(90.0f), constants::WORLD_FORWARD));
+    registry->emplace<components::Model3D>(skyboxEnt, skyboxModel);
+    registry->emplace<components::Material3D>(skyboxEnt, skyboxMaterial);
   }
 
   return {};

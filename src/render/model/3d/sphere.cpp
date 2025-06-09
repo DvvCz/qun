@@ -1,29 +1,10 @@
 #include "sphere.hpp"
 
-#include <array>
 #include <cmath>
-#include <unordered_map>
 
 #include "constants.hpp"
 
-namespace {
-  // Hash function for glm::vec3 to use in unordered_map
-  struct Vec3Hash {
-    std::size_t operator()(const glm::vec3& v) const {
-      return std::hash<float>()(v.x) ^ (std::hash<float>()(v.y) << 1) ^ (std::hash<float>()(v.z) << 2);
-    }
-  };
-
-  // Equality function for glm::vec3
-  struct Vec3Equal {
-    bool operator()(const glm::vec3& a, const glm::vec3& b) const {
-      const float epsilon = 1e-6f;
-      return std::abs(a.x - b.x) < epsilon && std::abs(a.y - b.y) < epsilon && std::abs(a.z - b.z) < epsilon;
-    }
-  };
-}
-
-model::Sphere::Sphere(float radius, int subdivisions) : radius(radius), subdivisions(subdivisions) {
+model::Sphere::Sphere(float radius, int rings, int sectors) : radius(radius), rings(rings), sectors(sectors) {
   glCreateVertexArrays(1, &glAttributesIdx);
   glCreateBuffers(1, &glBufferIdx);
   glCreateBuffers(1, &glIndexBufferIdx);
@@ -52,7 +33,7 @@ model::Sphere::Sphere(float radius, int subdivisions) : radius(radius), subdivis
     glVertexArrayElementBuffer(glAttributesIdx, glIndexBufferIdx);
   }
 
-  generateIcosphere(radius, subdivisions);
+  generateUVSphere(radius, rings, sectors);
 
   glNamedBufferData(glBufferIdx, vertices.size() * sizeof(Vertex3D), vertices.data(), GL_STATIC_DRAW);
   glNamedBufferData(glIndexBufferIdx, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
@@ -69,90 +50,51 @@ void model::Sphere::draw() const {
   glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void model::Sphere::generateIcosphere(float radius, int subdivisions) {
+void model::Sphere::generateUVSphere(float radius, int rings, int sectors) {
   vertices.clear();
   indices.clear();
 
-  // Create icosahedron vertices
-  const float t = (1.0f + std::sqrt(5.0f)) / 2.0f; // Golden ratio
+  // Generate vertices
+  for (int r = 0; r <= rings; ++r) {
+    float v = static_cast<float>(r) / static_cast<float>(rings);
+    float phi = v * constants::PI; // Latitude angle from 0 to PI
 
-  std::vector<glm::vec3> icosahedronVertices = {
-      glm::normalize(glm::vec3(-1, t, 0)),  glm::normalize(glm::vec3(1, t, 0)),   glm::normalize(glm::vec3(-1, -t, 0)),
-      glm::normalize(glm::vec3(1, -t, 0)),  glm::normalize(glm::vec3(0, -1, t)),  glm::normalize(glm::vec3(0, 1, t)),
-      glm::normalize(glm::vec3(0, -1, -t)), glm::normalize(glm::vec3(0, 1, -t)),  glm::normalize(glm::vec3(t, 0, -1)),
-      glm::normalize(glm::vec3(t, 0, 1)),   glm::normalize(glm::vec3(-t, 0, -1)), glm::normalize(glm::vec3(-t, 0, 1))};
+    for (int s = 0; s <= sectors; ++s) {
+      float u = static_cast<float>(s) / static_cast<float>(sectors);
+      float theta = u * constants::TAU; // Longitude angle from 0 to 2*PI
 
-  // Create icosahedron faces
-  std::vector<std::array<int, 3>> icosahedronFaces = {
-      {0, 11, 5}, {0, 5, 1}, {0, 1, 7}, {0, 7, 10}, {0, 10, 11}, {1, 5, 9}, {5, 11, 4}, {11, 10, 2}, {10, 7, 6}, {7, 1, 8},
-      {3, 9, 4},  {3, 4, 2}, {3, 2, 6}, {3, 6, 8},  {3, 8, 9},   {4, 9, 5}, {2, 4, 11}, {6, 2, 10},  {8, 6, 7},  {9, 8, 1}};
+      // Calculate position using spherical coordinates
+      float x = std::sin(phi) * std::cos(theta);
+      float y = std::cos(phi);
+      float z = std::sin(phi) * std::sin(theta);
 
-  // Use a map to avoid duplicate vertices
-  std::unordered_map<glm::vec3, GLuint, Vec3Hash, Vec3Equal> vertexMap;
+      glm::vec3 position = glm::vec3(x, y, z) * radius;
+      glm::vec3 normal = glm::normalize(glm::vec3(x, y, z));
+      glm::vec2 uv = glm::vec2(u, v);
 
-  auto addVertex = [&](const glm::vec3& position) -> GLuint {
-    auto it = vertexMap.find(position);
-    if (it != vertexMap.end()) {
-      return it->second;
+      // Calculate tangent for normal mapping
+      glm::vec3 tangent = glm::normalize(glm::vec3(-std::sin(theta), 0.0f, std::cos(theta)));
+
+      vertices.push_back({position, normal, uv, tangent});
     }
-
-    GLuint index = vertices.size();
-    glm::vec3 normal = glm::normalize(position);
-    glm::vec3 scaledPosition = normal * radius;
-    glm::vec2 uv = calculateSphericalUV(normal);
-
-    vertices.push_back({scaledPosition, normal, uv});
-    vertexMap[position] = index;
-    return index;
-  };
-
-  // Add initial icosahedron vertices
-  for (const auto& vertex : icosahedronVertices) {
-    addVertex(vertex);
   }
 
-  // Add initial faces
-  std::vector<std::array<GLuint, 3>> faces;
-  for (const auto& face : icosahedronFaces) {
-    faces.push_back({static_cast<GLuint>(face[0]), static_cast<GLuint>(face[1]), static_cast<GLuint>(face[2])});
-  }
+  // Generate indices for triangles
+  for (int r = 0; r < rings; ++r) {
+    for (int s = 0; s < sectors; ++s) {
+      int current = r * (sectors + 1) + s;
+      int next = current + sectors + 1;
 
-  // Subdivide faces
-  for (int level = 0; level < subdivisions; ++level) {
-    std::vector<std::array<GLuint, 3>> newFaces;
+      // First triangle
+      indices.push_back(current);
+      indices.push_back(next);
+      indices.push_back(current + 1);
 
-    for (const auto& face : faces) {
-      glm::vec3 v1 = glm::normalize(vertices[face[0]].pos / radius);
-      glm::vec3 v2 = glm::normalize(vertices[face[1]].pos / radius);
-      glm::vec3 v3 = glm::normalize(vertices[face[2]].pos / radius);
-
-      // Calculate midpoints and normalize them to the sphere surface
-      glm::vec3 m1 = glm::normalize((v1 + v2) * 0.5f);
-      glm::vec3 m2 = glm::normalize((v2 + v3) * 0.5f);
-      glm::vec3 m3 = glm::normalize((v3 + v1) * 0.5f);
-
-      GLuint i1 = addVertex(v1);
-      GLuint i2 = addVertex(v2);
-      GLuint i3 = addVertex(v3);
-      GLuint im1 = addVertex(m1);
-      GLuint im2 = addVertex(m2);
-      GLuint im3 = addVertex(m3);
-
-      // Create 4 new triangles
-      newFaces.push_back({i1, im1, im3});
-      newFaces.push_back({i2, im2, im1});
-      newFaces.push_back({i3, im3, im2});
-      newFaces.push_back({im1, im2, im3});
+      // Second triangle
+      indices.push_back(current + 1);
+      indices.push_back(next);
+      indices.push_back(next + 1);
     }
-
-    faces = std::move(newFaces);
-  }
-
-  // Convert faces to indices
-  for (const auto& face : faces) {
-    indices.push_back(face[0]);
-    indices.push_back(face[1]);
-    indices.push_back(face[2]);
   }
 }
 
