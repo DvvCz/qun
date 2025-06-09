@@ -5,11 +5,19 @@
   "description": "A graphics application using modern OpenGL",
   "dependencies": [
     "opengl",
-    "glfw3",
+    {
+      "name": "glfw3",
+      "default-features": false,
+      "features": []
+    },
     "glm",
     "stb",
     "entt",
-    "fastgltf"
+    {
+      "name": "fastgltf",
+      "default-features": false,
+      "features": []
+    }
   ],
   "builtin-baseline": "984f9232b2fe0eb94f5e9f161d6c632c581fff0c"
 }

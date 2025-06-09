@@ -2,9 +2,23 @@ cmake_minimum_required(VERSION 3.20)
 project(qun VERSION 0.1.0 LANGUAGES C CXX)
 
 # Force static linking for all vcpkg libraries
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 set(VCPKG_TARGET_ARCHITECTURE x64)
 set(VCPKG_CRT_LINKAGE static)
 set(VCPKG_LIBRARY_LINKAGE static)
+
+# Platform-specific static linking settings
+if(WIN32)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES .lib .a)
+    set(BUILD_SHARED_LIBS OFF)
+elseif(UNIX)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)
+    set(BUILD_SHARED_LIBS OFF)
+endif()
+
+# Force static linking for specific libraries
+set(GLFW_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
