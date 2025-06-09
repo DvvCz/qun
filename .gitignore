@@ -27,6 +27,7 @@ release/resources/*
 !release/resources/NormalTangentTest.glb
 !release/resources/NegativeScaleTest.glb
 !release/resources/TextureTransformMultiTest.glb
+!release/resources/City1.glb
 
 # OBJ
 !release/resources/Bunny.obj
