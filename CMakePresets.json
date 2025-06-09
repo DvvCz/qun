@@ -17,7 +17,7 @@
         "rhs": "Linux"
       },
       "environment": {
-        "VCPKG_DEFAULT_TRIPLET": "x64-linux-static"
+        "VCPKG_DEFAULT_TRIPLET": "x64-linux"
       }
     },
     {
@@ -50,7 +50,7 @@
       "environment": {
         "CFLAGS": "-DDEBUG=1,-DSHADER_HOTRELOADING=1",
         "CXXFLAGS": "-DDEBUG=1,-DSHADER_HOTRELOADING=1",
-        "VCPKG_DEFAULT_TRIPLET": "x64-linux-static"
+        "VCPKG_DEFAULT_TRIPLET": "x64-linux"
       }
     },
     {
