@@ -63,8 +63,8 @@ jobs:
     - name: Configure and build
       uses: lukka/run-cmake@v10
       with:
-        configurePreset: ${{ matrix.os == 'windows-latest' && 'release-windows' || 'release' }}
-        buildPreset: ${{ matrix.os == 'windows-latest' && 'release-windows' || 'release' }}
+        configurePreset: ${{ matrix.os == 'windows-latest' && 'debug-windows' || 'debug' }}
+        buildPreset: ${{ matrix.os == 'windows-latest' && 'debug-windows' || 'debug' }}
       env:
         VCPKG_DEFAULT_TRIPLET: ${{ matrix.os == 'windows-latest' && 'x64-windows-static' || 'x64-linux-static' }}
 
