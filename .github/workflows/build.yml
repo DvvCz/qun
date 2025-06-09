@@ -14,107 +14,58 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            platform: linux
-            exe_extension: ""
             artifact_name: qun-linux
-            vcpkg_triplet: x64-linux
+            executable: qun
           - os: windows-latest
-            platform: windows
-            exe_extension: ".exe"
             artifact_name: qun-windows
-            vcpkg_triplet: x64-windows-static
+            executable: qun.exe
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
-      with:
-        vcpkgGitCommitId: '5a2324f6667233aeb903d3117f6fd259a2be6f8b'
 
     - name: Setup MSVC (Windows)
       if: matrix.os == 'windows-latest'
       uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: x64
 
-    - name: Install Linux dependencies
+    - name: Install Linux system dependencies
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        # Add the Ubuntu Toolchain PPA for newer GCC versions
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-        sudo apt-get update
         sudo apt-get install -y \
-          gcc-14 \
-          g++-14 \
           build-essential \
           cmake \
           ninja-build \
+          pkg-config \
           libgl1-mesa-dev \
-          libglu1-mesa-dev \
           libxrandr-dev \
           libxinerama-dev \
           libxcursor-dev \
-          libxi-dev \
-          libxext-dev \
-          libwayland-dev \
-          libxkbcommon-dev \
-          xorg-dev \
-          pkg-config
-        # Set GCC-14 as the default compiler
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+          libxi-dev
 
-    - name: Install vcpkg packages
-      run: |
-        vcpkg install glfw3:${{ matrix.vcpkg_triplet }}
-        vcpkg install glm:${{ matrix.vcpkg_triplet }}
-        vcpkg integrate install
+    - name: Configure and build
+      uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'release'
+        buildPreset: 'release'
 
-    - name: Install OpenGL for Linux
+    - name: Package artifacts (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-        vcpkg install opengl:${{ matrix.vcpkg_triplet }}
-
-    - name: Configure CMake (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      env:
-        CC: gcc-14
-        CXX: g++-14
-      run: |
-        cmake --preset release \
-          -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" \
-          -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }}
-
-    - name: Configure CMake (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        cmake --preset release `
-          -DCMAKE_TOOLCHAIN_FILE="${env:RUNVCPKG_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" `
-          -DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg_triplet }} `
-          -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
-
-    - name: Build project
-      run: cmake --build release --config Release
-
-    - name: Copy resources and assets (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        mkdir -p artifact
-        cp release/qun artifact/
-        cp -r release/resources artifact/ || true
-        cp -r release/shaders artifact/ || true
+        mkdir artifact
+        cp release/${{ matrix.executable }} artifact/
+        cp -r release/resources artifact/ 2>/dev/null || true
+        cp -r release/shaders artifact/ 2>/dev/null || true
         chmod +x artifact/qun
 
-    - name: Copy resources and assets (Windows)
+    - name: Package artifacts (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         New-Item -ItemType Directory -Force -Path artifact
-        Copy-Item release/qun.exe artifact/
+        Copy-Item release/${{ matrix.executable }} artifact/
         if (Test-Path release/resources) { Copy-Item -Recurse release/resources artifact/ }
         if (Test-Path release/shaders) { Copy-Item -Recurse release/shaders artifact/ }
 
@@ -128,25 +79,18 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
 
     steps:
-    - name: Download Linux artifact
+    - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
-        name: qun-linux
-        path: qun-linux/
-
-    - name: Download Windows artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: qun-windows
-        path: qun-windows/
+        path: artifacts/
 
     - name: Create release archives
       run: |
-        cd qun-linux && tar -czf ../qun-linux.tar.gz * && cd ..
-        cd qun-windows && zip -r ../qun-windows.zip * && cd ..
+        cd artifacts/qun-linux && tar -czf ../../qun-linux.tar.gz * && cd ../..
+        cd artifacts/qun-windows && zip -r ../../qun-windows.zip * && cd ../..
 
     - name: Upload release archives
       uses: actions/upload-artifact@v4
