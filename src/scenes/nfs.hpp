@@ -5,6 +5,8 @@ class Game;
 
 namespace scenes::nfs {
   namespace components {
+    struct Car {};
+
     struct CameraState {
       float yaw = 0.0f;       // Horizontal rotation around the car
       float pitch = -0.1f;    // Vertical angle (looking down slightly at the car)

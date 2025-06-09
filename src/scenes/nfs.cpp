@@ -1,4 +1,6 @@
 #include "nfs.hpp"
+#include "components/parent.hpp"
+#include "render/model/3d/cube.hpp"
 #include "render/model/3d/sphere.hpp"
 
 #include <expected>
@@ -130,6 +132,19 @@ static std::expected<void, std::string> startup(/* clang-format off */
 
     registry->emplace<components::Velocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
     registry->emplace<components::AngularVelocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
+    registry->emplace<scenes::nfs::components::Car>(ent); // mark as car entity
+
+    auto cubeModel = std::make_shared<model::Cube>(glm::vec3(1.0f));
+
+    auto cubeEnt = registry->create();
+    registry->emplace<components::Position>(cubeEnt, -constants::WORLD_FORWARD * 5.0f);
+    registry->emplace<components::Child>(cubeEnt, ent); // make it a child of the car
+    registry->emplace<components::Model3D>(cubeEnt, cubeModel);
+
+    std::vector<entt::entity> carChildren;
+    carChildren.push_back(cubeEnt);
+
+    registry->emplace<components::Parent>(ent, carChildren); // make car a parent of the cube
   }
 
   { // city
@@ -178,8 +193,8 @@ static std::expected<void, std::string> update(/* clang-format off */
 ) { /* clang-format on */
 
   // Car controller system
-  auto carView =
-      registry->view<components::Position, components::Rotation, components::Velocity, components::AngularVelocity>();
+  auto carView = registry->view<components::Position, components::Rotation, components::Velocity, components::AngularVelocity,
+                                scenes::nfs::components::Car>();
 
   for (auto entity : carView) {
     auto& position = carView.get<components::Position>(entity);
@@ -268,81 +283,78 @@ static std::expected<void, std::string> update(/* clang-format off */
       angularVelocity.value.z = targetAngularVelocity;
     }
 
-    // GTA 5-style camera system
-    auto carView = registry->view<components::Position, components::Rotation>();
-    for (auto carEntity : carView) {
-      auto& carPosition = carView.get<components::Position>(carEntity);
-      auto& carRotation = carView.get<components::Rotation>(carEntity);
+    // GTA 5-style camera system - use the current car entity
+    auto& carPosition = position; // Use the current car's position
+    auto& carRotation = rotation; // Use the current car's rotation
 
-      // Get car forward direction
-      glm::vec3 carForward = carRotation.value * glm::vec3(0.0f, 1.0f, 0.0f);
+    // Get car forward direction
+    glm::vec3 carForward = carRotation.value * glm::vec3(0.0f, 1.0f, 0.0f);
 
-      // Handle mouse input for camera rotation
-      glm::vec2 mouseDelta = input::Mouse::getPositionDelta();
-      bool hasMouseInput = glm::length(mouseDelta) > 0.01f;
+    // Handle mouse input for camera rotation
+    glm::vec2 mouseDelta = input::Mouse::getPositionDelta();
+    bool hasMouseInput = glm::length(mouseDelta) > 0.01f;
 
-      if (hasMouseInput) {
-        // Apply mouse sensitivity with delta time for frame-rate independent movement
-        float deltaTimeSensitivity = cameraState->mouseSensitivity * time.deltaTime;
-        cameraState->yaw -= mouseDelta.x * deltaTimeSensitivity;
-        cameraState->pitch += mouseDelta.y * deltaTimeSensitivity; // Fixed inversion
+    if (hasMouseInput) {
+      // Apply mouse sensitivity with delta time for frame-rate independent movement
+      float deltaTimeSensitivity = cameraState->mouseSensitivity * time.deltaTime;
+      cameraState->yaw -= mouseDelta.x * deltaTimeSensitivity;
+      cameraState->pitch += mouseDelta.y * deltaTimeSensitivity; // Fixed inversion
 
-        // Clamp pitch to prevent camera flipping
-        cameraState->pitch = std::clamp(cameraState->pitch, -1.4f, 0.5f); // About -80° to +30°
+      // Clamp pitch to prevent camera flipping
+      cameraState->pitch = std::clamp(cameraState->pitch, -1.4f, 0.5f); // About -80° to +30°
 
-        cameraState->isUserControlling = true;
-        cameraState->timeSinceLastInput = 0.0f;
-      } else {
-        cameraState->timeSinceLastInput += time.deltaTime;
+      cameraState->isUserControlling = true;
+      cameraState->timeSinceLastInput = 0.0f;
+    } else {
+      cameraState->timeSinceLastInput += time.deltaTime;
 
-        // Start auto-centering after delay
-        if (cameraState->timeSinceLastInput > cameraState->autoReturnDelay) {
-          cameraState->isUserControlling = false;
+      // Start auto-centering after delay
+      if (cameraState->timeSinceLastInput > cameraState->autoReturnDelay) {
+        cameraState->isUserControlling = false;
 
-          // Calculate target yaw (behind the car)
-          glm::vec3 carForwardXY = glm::normalize(glm::vec3(carForward.x, carForward.y, 0.0f));
-          cameraState->targetYaw = atan2(carForwardXY.y, carForwardXY.x) + constants::PI; // Behind the car
+        // Calculate target yaw (behind the car)
+        glm::vec3 carForwardXY = glm::normalize(glm::vec3(carForward.x, carForward.y, 0.0f));
+        cameraState->targetYaw = atan2(carForwardXY.y, carForwardXY.x) + constants::PI; // Behind the car
 
-          // Smoothly interpolate back to target position
-          float returnSpeed = cameraState->autoReturnSpeed * time.deltaTime;
+        // Smoothly interpolate back to target position
+        float returnSpeed = cameraState->autoReturnSpeed * time.deltaTime;
 
-          // Handle yaw wrapping (shortest rotation path)
-          float yawDiff = cameraState->targetYaw - cameraState->yaw;
-          while (yawDiff > glm::pi<float>())
-            yawDiff -= 2.0f * glm::pi<float>();
-          while (yawDiff < -glm::pi<float>())
-            yawDiff += 2.0f * glm::pi<float>();
+        // Handle yaw wrapping (shortest rotation path)
+        float yawDiff = cameraState->targetYaw - cameraState->yaw;
+        while (yawDiff > glm::pi<float>())
+          yawDiff -= 2.0f * glm::pi<float>();
+        while (yawDiff < -glm::pi<float>())
+          yawDiff += 2.0f * glm::pi<float>();
 
-          cameraState->yaw += yawDiff * returnSpeed;
-          cameraState->pitch += (cameraState->targetPitch - cameraState->pitch) * returnSpeed;
-        }
+        cameraState->yaw += yawDiff * returnSpeed;
+        cameraState->pitch += (cameraState->targetPitch - cameraState->pitch) * returnSpeed;
       }
-
-      // Calculate camera position based on yaw, pitch, and distance
-      float cosYaw = cos(cameraState->yaw);
-      float sinYaw = sin(cameraState->yaw);
-      float cosPitch = cos(cameraState->pitch);
-      float sinPitch = sin(cameraState->pitch);
-
-      // Camera offset in spherical coordinates (negative distance to position behind car)
-      glm::vec3 cameraOffset;
-      cameraOffset.x = -cameraState->distance * cosYaw * cosPitch;
-      cameraOffset.y = -cameraState->distance * sinYaw * cosPitch;
-      cameraOffset.z = cameraState->height + cameraState->distance * sinPitch;
-
-      glm::vec3 cameraPos = carPosition.value + cameraOffset;
-
-      // Camera looks at the car (with slight forward offset)
-      glm::vec3 lookTarget = carPosition.value + carForward * 1.0f + glm::vec3(0.0f, 0.0f, 1.0f);
-      glm::vec3 cameraDir = glm::normalize(lookTarget - cameraPos);
-
-      // Update renderer camera
-      renderer->setCameraPos(cameraPos);
-      renderer->setCameraDir(cameraDir);
-
-      // Only handle the first car entity for now
-      break;
     }
+
+    // Calculate camera position based on yaw, pitch, and distance
+    float cosYaw = cos(cameraState->yaw);
+    float sinYaw = sin(cameraState->yaw);
+    float cosPitch = cos(cameraState->pitch);
+    float sinPitch = sin(cameraState->pitch);
+
+    // Camera offset in spherical coordinates (negative distance to position behind car)
+    glm::vec3 cameraOffset;
+    cameraOffset.x = -cameraState->distance * cosYaw * cosPitch;
+    cameraOffset.y = -cameraState->distance * sinYaw * cosPitch;
+    cameraOffset.z = cameraState->height + cameraState->distance * sinPitch;
+
+    glm::vec3 cameraPos = carPosition.value + cameraOffset;
+
+    // Camera looks at the car (with slight forward offset)
+    glm::vec3 lookTarget = carPosition.value + carForward * 1.0f + glm::vec3(0.0f, 0.0f, 1.0f);
+    glm::vec3 cameraDir = glm::normalize(lookTarget - cameraPos);
+
+    // Update renderer camera
+    renderer->setCameraPos(cameraPos);
+    renderer->setCameraDir(cameraDir);
+
+    // Only handle the first car entity for now
+    break;
   }
 
   return {};
