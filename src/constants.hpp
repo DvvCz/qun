@@ -18,7 +18,7 @@ namespace constants {
   constexpr glm::vec3 WORLD_GRAVITY = glm::vec3(0.0f, 0.0f, -9.81f);
 
   /* clang-format off */
-  constexpr asset::Material DEFAULT_MATERIAL_3D = {
+  const asset::Material DEFAULT_MATERIAL_3D = {
     .name = "DefaultMaterial",
     .ambient = glm::vec3(0.05f),
     .diffuse = glm::vec3(0.8f, 0.8f, 0.8f),
