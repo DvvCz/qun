@@ -82,6 +82,10 @@ add_executable(qun
     ./src/scenes/nfs.cpp
 )
 
+if (MSVC)
+  target_link_options(qun PRIVATE /SUBSYSTEM:WINDOWS)
+endif()
+
 target_include_directories(qun
     PRIVATE
     ./thirdparty
