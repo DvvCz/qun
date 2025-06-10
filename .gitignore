@@ -1,7 +1,11 @@
+# Qun
+
 build
 release/resources
 .cache
 vcpkg_installed
+
+# Release Assets
 
 release/*
 !release/shaders

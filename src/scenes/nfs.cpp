@@ -139,18 +139,6 @@ static std::expected<void, std::string> startup(/* clang-format off */
     registry->emplace<components::AngularVelocity>(ent, glm::vec3(0.0f, 0.0f, 0.0f));
     registry->emplace<scenes::nfs::components::Car>(ent); // mark as car entity
     registry->emplace<components::BoxCollider>(ent, glm::vec3(0.5f, 0.5f, 0.20f));
-
-    auto cubeModel = std::make_shared<model::Cube>(glm::vec3(1.0f));
-
-    auto cubeEnt = registry->create();
-    registry->emplace<components::Position>(cubeEnt, constants::WORLD_RIGHT * 5.0f);
-    registry->emplace<components::Child>(cubeEnt, ent); // make it a child of the car
-    registry->emplace<components::Model3D>(cubeEnt, cubeModel);
-
-    std::vector<entt::entity> carChildren;
-    carChildren.push_back(cubeEnt);
-
-    registry->emplace<components::Parent>(ent, carChildren);
   }
 
   { // city
