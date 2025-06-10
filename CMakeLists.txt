@@ -52,6 +52,7 @@ add_executable(qun
     ./src/render/model/2d/quad.cpp
     ./src/render/model/3d/cube.cpp
     ./src/render/model/3d/sphere.cpp
+    ./src/render/model/3d/icosphere.cpp
     ./src/render/model/3d/asset.cpp
     ./src/render/material/material2d.cpp
     ./src/render/material/material3d.cpp

@@ -6,6 +6,5 @@
 #include "render/renderer.hpp"
 
 namespace scenes::test {
-  std::expected<void, std::string> startup(entt::registry& reg, Renderer& renderer);
-  std::expected<void, std::string> update(entt::registry& reg, Renderer& renderer);
+  std::expected<void, std::string> startup(std::shared_ptr<entt::registry> reg, std::shared_ptr<Renderer> renderer);
 }
