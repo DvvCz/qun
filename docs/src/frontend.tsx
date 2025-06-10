@@ -41,7 +41,7 @@ function FootNote(props: { r: number, children?: React.ReactNode }) {
 function App() {
   return (
     <div className="flex flex-col text-black dark:text-white bg-white dark:bg-black items-center px-4 py-8">
-      <div className="size-full flex flex-col items-center md:items-start max-w-6xl">
+      <div className="size-full flex flex-col max-w-6xl">
         <h1 className="text-4xl">Qun</h1>
         <hr className="my-2 w-full border-black dark:border-white" />
 
@@ -194,8 +194,8 @@ function App() {
                 It's heavily inspired by Bevy, check out the simple code that spins up the example Need For Speed scene.
               </p>
 
-              <div className="bg-gray-100 dark:bg-gray-800 px-2 rounded-md mt-2">
-                <pre className="text-sm">
+              <div className="bg-gray-100 max-w-full w-fit dark:bg-gray-800 px-4 py-2 rounded-md mt-2">
+                <pre className="text-sm whitespace-pre-wrap max-w-full">
                   <code lang="cpp" dangerouslySetInnerHTML={{ __html: hljs.highlight(`
 int main() {
   auto game = std::make_unique<Game>();
@@ -230,7 +230,7 @@ int main() {
         <h2 className="text-3xl mt-8">Final Product</h2>
         <hr className="my-2 w-1/2 border-black dark:border-white" />
 
-        <iframe className="mt-4 md:w-full lg:h-[720px]"  src="https://www.youtube.com/embed/fUAYiQOhAow">
+        <iframe className="mt-4 w-full h-64 md:h-[720px]"  src="https://www.youtube.com/embed/fUAYiQOhAow">
         </iframe>
 
         <h2 className="text-3xl mt-8">Future Work</h2>
@@ -250,8 +250,8 @@ int main() {
           </p>
         </div>
 
-        <div className="w-full flex flex-row gap-20 justify-evenly">
-          <div className="w-1/2">
+        <div className="w-full flex flex-col md:flex-row md:gap-20 md:justify-evenly">
+          <div className="md:w-1/2">
             <h2 className="text-3xl mt-6">Links</h2>
             <hr className="my-2 w-full border-black dark:border-white" />
 
@@ -299,7 +299,7 @@ int main() {
             </ul>
           </div>
 
-          <div className="w-1/2">
+          <div className="md:w-1/2">
             <h2 className="text-3xl mt-8">Build Instructions</h2>
             <hr className="my-2 w-full border-black dark:border-white" />
 
