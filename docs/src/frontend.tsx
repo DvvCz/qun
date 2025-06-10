@@ -46,7 +46,7 @@ function App() {
         <hr className="my-2 w-full border-black dark:border-white" />
 
         <p>
-          <Link href="https://github.com/DvvCz/qun">Qun</Link> is a project I created for Professor Fahim Khan's CSC 471 class for Spring 2025 at Cal Poly.
+          <Link href="https://github.com/DvvCz/qun">Qun</Link> <Ref r={5} /> is a project I created for Professor Fahim Khan's CSC 471 class for Spring 2025 at Cal Poly.
         </p>
 
         <p>
@@ -366,6 +366,12 @@ int main() {
           <li>
             <FootNote r={4}>
               <i><Link href="https://www.vulkan.org/">Vulkan</Link> is a new graphics API by the same people who created OpenGL. It's far more advanced and difficult to use on its own.</i>
+            </FootNote>
+          </li>
+
+          <li>
+            <FootNote r={5}>
+              <i>Qun comes from the Chinese word for "flock" - which is a synonym for a Bevy, since this is heavily inspired by it.</i>
             </FootNote>
           </li>
         </ol>
